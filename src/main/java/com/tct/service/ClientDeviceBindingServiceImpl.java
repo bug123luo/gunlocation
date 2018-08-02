@@ -72,7 +72,7 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			messageMap=new Hashtable<String,Object>();
 		}
 		
-		messageMap.put(message.getSerialNumber(), message);		
+		messageMap.put("s"+message.getSerialNumber(), message);		
 		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
 		
 		
@@ -143,7 +143,7 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
+			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), serverbingJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
 			
 			flag = true;

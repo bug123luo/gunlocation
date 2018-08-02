@@ -161,7 +161,7 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
+			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), serverInWareHouseReplyJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
 			flag = true;
 		}

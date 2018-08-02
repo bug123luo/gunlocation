@@ -3,14 +3,12 @@ package com.tct.codec.pojo;
 import lombok.Data;
 
 @Data
-public class ServerOffLocationSearchBody {
-	
-	private String assDeviceNo;
+public class ServerOffLocationSearchToClientBody {
+	private String reserve;
 	private String id;
+	private String bluetoothMac;
 	private String lo;
 	private String la;
-	private String lostDeviceNo;
-	private String lostphone;
 	private String lostTime;
-		
+	private String authCode;
 }

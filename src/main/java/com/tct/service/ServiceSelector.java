@@ -10,22 +10,30 @@ import com.tct.codec.ClientHeartBeatReplyMessageCodec;
 import com.tct.codec.ClientInWareHouseMessageCodec;
 import com.tct.codec.ClientOffLocationWarningMessageCodec;
 import com.tct.codec.ClientOutWareHouseMessageCodec;
+import com.tct.codec.ClientVersionSyncMessageCodec;
 import com.tct.codec.DeviceBulletCountMessageCodec;
 import com.tct.codec.MessageCodec;
 import com.tct.codec.ServerInWareHouseMessageCodec;
 import com.tct.codec.ServerInWareHouseMessageReplyCodec;
+import com.tct.codec.ServerOffLocationSearchMessageCodec;
+import com.tct.codec.ServerOffLocationSearchReplyMessageCodec;
+import com.tct.codec.ServerOffLocationWarningStartStopMessageCodec;
+import com.tct.codec.ServerOffLocationWarningStartStopReplyMessageCodec;
 import com.tct.codec.ServerOutWareHouseMessageCodec;
 import com.tct.codec.ServerOutWareHouseReplyMessageCodec;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
-import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.DeviceBulletCountMessage;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
+import com.tct.codec.pojo.ServerOffLocationSearchMessage;
+import com.tct.codec.pojo.ServerOffLocationSearchReplyMessage;
+import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
+import com.tct.codec.pojo.ServerOffLocationWarningStartStopReplyMessage;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
 import com.tct.codec.pojo.ServerOutWareHouseReplyMessage;
 
@@ -122,7 +130,7 @@ public class ServiceSelector {
 				flag = true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				flag = true;
+				flag = false;
 			}
 		}else if (messageCodec instanceof ClientOutWareHouseMessageCodec) {
 			try {
@@ -132,7 +140,7 @@ public class ServiceSelector {
 				flag = true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				flag = true;
+				flag = false;
 			}
 			
 		}else if (messageCodec instanceof DeviceBulletCountMessageCodec) {
@@ -143,7 +151,7 @@ public class ServiceSelector {
 				flag = true;
 			} catch (Exception e) {
 				e.printStackTrace();
-				flag = true;
+				flag = false;
 			}
 		}else if(messageCodec instanceof ClientInWareHouseMessageCodec){
 			try {
@@ -153,7 +161,55 @@ public class ServiceSelector {
 				flag = true;
 			} catch (Exception e) {
 				e.printStackTrace();
+				flag = false;
+			}
+		}else if(messageCodec instanceof ServerOffLocationSearchMessageCodec) {
+			try {
+				ServerOffLocationSearchMessage serverOffLocationSearchMessage = new ServerOffLocationSearchMessage();
+				ServerOffLocationSearchService serverOffLocationSearchService = SpringContextUtil.getBean("serverOffLocationSearchService");
+				serverOffLocationSearchService.handleCodeMsg(serverOffLocationSearchMessage);
 				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}else if (messageCodec instanceof ServerOffLocationSearchReplyMessageCodec) {
+			try {
+				ServerOffLocationSearchReplyMessage serverOffLocationSearchReplyMessage =new ServerOffLocationSearchReplyMessage();
+				ServerOffLocationSearchService serverOffLocationSearchService = SpringContextUtil.getBean("serverOffLocationSearchService");
+				serverOffLocationSearchService.handleCodeMsg(serverOffLocationSearchReplyMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}
+		else if (messageCodec instanceof ServerOffLocationWarningStartStopReplyMessageCodec) {
+			try {
+				ServerOffLocationWarningStartStopReplyMessage serverOffLocationWarningStartStopReplyMessage = new ServerOffLocationWarningStartStopReplyMessage();
+				ServerOffLocationWarningStartStopService serverOffLocationWarningStartStopService = SpringContextUtil.getBean("serverOffLocationWarningStartStopService");
+				serverOffLocationWarningStartStopService.handleCodeMsg(serverOffLocationWarningStartStopReplyMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}
+		else if(messageCodec instanceof ServerOffLocationWarningStartStopMessageCodec) {
+			try {
+				ServerOffLocationWarningStartStopMessage serverOffLocationWarningStartStopMessage = new ServerOffLocationWarningStartStopMessage();
+				ServerOffLocationWarningStartStopService serverOffLocationWarningStartStopService = SpringContextUtil.getBean("serverOffLocationWarningStartStopService");
+				serverOffLocationWarningStartStopService.handleCodeMsg(serverOffLocationWarningStartStopMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}else if (messageCodec instanceof ClientVersionSyncMessageCodec) {
+			try {
+				
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		}
 		return flag;

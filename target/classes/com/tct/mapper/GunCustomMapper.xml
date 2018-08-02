@@ -46,4 +46,13 @@
 			</if>
 		</where>
 	</select>
+	
+	<select id="selectByGunTag" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
+		select * from gun
+		<where>
+			<if test="gunCustom!=null and gunCustom.gunTag!=null">
+				gun_tag=#{gunCustom.gunTag}
+			</if>
+		</where>
+	</select>
 </mapper>
