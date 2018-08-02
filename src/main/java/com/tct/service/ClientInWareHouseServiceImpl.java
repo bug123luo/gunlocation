@@ -1,8 +1,10 @@
 package com.tct.service;
 
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,40 +12,40 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
-import com.tct.codec.pojo.ClientOffLocationWarningMessage;
-import com.tct.codec.pojo.ClientOffLocationWarningReplyBody;
-import com.tct.codec.pojo.ClientOffLocationWarningReplyMessage;
+import com.tct.codec.pojo.ClientInWareHouseMessage;
+import com.tct.codec.pojo.ClientInWareHouseReplyBody;
+import com.tct.codec.pojo.ClientInWareHouseReplyMessage;
+import com.tct.codec.pojo.ServerInWareHouseBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
-import com.tct.dao.ClientOffLocationWarningDao;
+import com.tct.dao.ClientInWareHouseDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
-import com.tct.po.SosMessageCustom;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service(value="clientOffLocationWarningService")
-public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWarningService {
+@Service(value="clientInWareHouseService")
+public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
 	@Autowired
-	ClientOffLocationWarningDao clientOffLocationWarningDao;
+	ClientInWareHouseDao clientInWareHouseDao;
 	
 	@Autowired
 	ClientDeviceBindingDao clientDeviceBindingDao;
-	
+		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
-		ClientOffLocationWarningMessage message = (ClientOffLocationWarningMessage)msg;
+		ClientInWareHouseMessage message = (ClientInWareHouseMessage)msg;
 		
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
@@ -79,46 +81,34 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 		messageMap.put(message.getSerialNumber(), message);		
 		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
 		
-		//插入device_location表，插入sos_message表，更新 gun表状态
+		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
-		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
 		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+		DeviceGunCustom deviceGunCustom2 = new DeviceGunCustom();
+		deviceGunCustom2.setGunMac(message.getMessageBody().getBluetoothMac());
+		deviceGunCustom2.setInWarehouseTime(new Date());
+		deviceGunCustom2.setState(1);
 		
-		GunCustom gunCustom = new GunCustom();
-		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
-		gunCustom.setRealTimeState(0);
-		gunCustom.setWarehouseId(Integer.valueOf(message.getMessageBody().getAreaCode()));
-		
-		SosMessageCustom sosMessageCustom =  new SosMessageCustom();
-		sosMessageCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
-		sosMessageCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
-		sosMessageCustom.setGunMac(message.getMessageBody().getBluetoothMac());
-		sosMessageCustom.setLatitude(message.getMessageBody().getLa());
-		sosMessageCustom.setLongitude(message.getMessageBody().getLo());
-		sosMessageCustom.setSosTime(StringUtil.getDate(message.getSendTime()));
-		sosMessageCustom.setFinallyTime(StringUtil.getDate(message.getSendTime()));
-		sosMessageCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
-		sosMessageCustom.setState(0);
-		
-		boolean flag=clientOffLocationWarningDao.updateClientOffLocationWaring(deviceLocationCustom, gunCustom, sosMessageCustom);
-		
-		if(flag) {
-			ClientOffLocationWarningReplyMessage clientOffLocationWarningReplyMessage = new ClientOffLocationWarningReplyMessage();
-			ClientOffLocationWarningReplyBody clientOffLocationWarningReplyBody = new ClientOffLocationWarningReplyBody();
-			clientOffLocationWarningReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
-			clientOffLocationWarningReplyBody.setReserve(Integer.toString(0));
-			clientOffLocationWarningReplyMessage.setDeviceType(message.getDeviceType());
-			clientOffLocationWarningReplyMessage.setFormatVersion(message.getFormatVersion());
-			clientOffLocationWarningReplyMessage.setMessageBody(clientOffLocationWarningReplyBody);
-			clientOffLocationWarningReplyMessage.setMessageType("18");
-			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
-			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
-			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
+		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom);
+		if (flag) {
+			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
+			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
+			clientInWareHouseReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
+			clientInWareHouseReplyBody.setReserve(Integer.toString(0));
 			
-			String msgJson = JSONObject.toJSONString(clientOffLocationWarningReplyMessage);
+			clientInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
+			clientInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
+			clientInWareHouseReplyMessage.setMessageType("12");
+			clientInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
+			clientInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
+			clientInWareHouseReplyMessage.setServiceType(message.getServiceType());
+			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
+			
+			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
@@ -127,11 +117,8 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
 			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
-			
-			
-
 			
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
@@ -139,21 +126,21 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			gunQueryVo.setGunCustom(gunCustom2);
 			gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
 			
-			ServerInWareHouseReplyMessage serverInWareHouseReplyMessage = new ServerInWareHouseReplyMessage();
-			ServerInWareHouseReplyBody serverInWareHouseReplyBody =  new ServerInWareHouseReplyBody();
+			ServerInWareHouseReplyMessage serverInWareHouseReplyMessage =  new ServerInWareHouseReplyMessage();
+			ServerInWareHouseReplyBody serverInWareHouseReplyBody = new ServerInWareHouseReplyBody();
 			serverInWareHouseReplyBody.setDeviceNo(deviceGunCustom.getDeviceNo());
 			serverInWareHouseReplyBody.setGunTag(gunCustom2.getGunTag());
-			serverInWareHouseReplyBody.setState(Integer.toString(2));
-
+			serverInWareHouseReplyBody.setState(Integer.toString(0));
+			
 			serverInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
-			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
-			serverInWareHouseReplyMessage.setMessageType("18");
+			serverInWareHouseReplyMessage.setMessageType("12");
 			serverInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
-			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());
+			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
+			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			
-			String serverInWareHouseReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
+			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
 			if(unhandlerReceiveMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get("WebOutQueue");
@@ -161,11 +148,13 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			
 			flag = true;
+		}else {
+			flag = false;
 		}
-		
 		
 		return false;
 	}

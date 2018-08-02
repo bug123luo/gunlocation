@@ -7,16 +7,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
+import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
+import com.tct.codec.pojo.ClientDeviceBindingReplyMessage;
+import com.tct.codec.pojo.ServerDeviceBindingBody;
+import com.tct.codec.pojo.ServerDeviceBindingReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
+import com.tct.po.GunQueryVo;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -81,11 +87,66 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
 		gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
 		gunCustom.setRealTimeState(Integer.valueOf(0));
-		gunCustom.setGunTag(deviceGunCustom.getDeviceNo());
 		boolean flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 		
 		if (flag) {
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
+			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
+			ClientDeviceBindingReplyBody clientDeviceBindingReplyBody = new ClientDeviceBindingReplyBody();
+			clientDeviceBindingReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
+			clientDeviceBindingReplyBody.setReserve(Integer.toString(1));
+			clientDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
+			clientDeviceBindingReplyMessage.setFormatVersion(message.getFormatVersion());
+			clientDeviceBindingReplyMessage.setMessageBody(clientDeviceBindingReplyBody);
+			clientDeviceBindingReplyMessage.setMessageType("08");
+			clientDeviceBindingReplyMessage.setSendTime(StringUtil.getDateString());
+			clientDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
+			clientDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+			
+			String bingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
+			//将回应APP消息放进消息缓存队列中
+			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
+			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
+			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+			
+			//将回应消息发送到Web前端队列
+			GunCustom gunCustom2 = new GunCustom();
+			GunQueryVo gunQueryVo = new GunQueryVo();
+			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunQueryVo.setGunCustom(gunCustom2);
+			gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
+			
+			ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
+			ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
+			serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
+			serverDeviceBindingBody.setState(Integer.toString(0));
+			serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
+			serverDeviceBindingReplyMessage.setFormatVersion(message.getFormatVersion());
+			serverDeviceBindingReplyMessage.setMessageBody(serverDeviceBindingBody);
+			serverDeviceBindingReplyMessage.setMessageType("08");
+			serverDeviceBindingReplyMessage.setSendTime(message.getSendTime());
+			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
+			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+			
+			String serverbingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
+			
+			if(unhandlerReceiveMessageHashMap.containsKey("WebOutQueue")) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get("WebOutQueue");
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			
+			flag = true;
 		}else {
 			flag =  false;
 		}

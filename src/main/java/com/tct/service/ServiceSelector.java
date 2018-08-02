@@ -7,6 +7,7 @@ import com.tct.codec.AuthCodeMessageCodec;
 import com.tct.codec.ClientDeviceBindingMessageCodec;
 import com.tct.codec.ClientHeartBeatMessageCodec;
 import com.tct.codec.ClientHeartBeatReplyMessageCodec;
+import com.tct.codec.ClientInWareHouseMessageCodec;
 import com.tct.codec.ClientOffLocationWarningMessageCodec;
 import com.tct.codec.ClientOutWareHouseMessageCodec;
 import com.tct.codec.DeviceBulletCountMessageCodec;
@@ -19,6 +20,7 @@ import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
+import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.DeviceBulletCountMessage;
@@ -138,6 +140,16 @@ public class ServiceSelector {
 				DeviceBulletCountMessage deviceBulletCountMessage =  new DeviceBulletCountMessage();
 				DeviceBulletCountService deviceBulletCountService =  SpringContextUtil.getBean("deviceBulletCountService");
 				deviceBulletCountService.handleCodeMsg(deviceBulletCountMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = true;
+			}
+		}else if(messageCodec instanceof ClientInWareHouseMessageCodec){
+			try {
+				ClientInWareHouseMessage clientInWareHouseMessage = new ClientInWareHouseMessage();
+				ClientInWareHouseService clientInWareHouseService =  SpringContextUtil.getBean("clientInWareHouseService");
+				clientInWareHouseService.handleCodeMsg(clientInWareHouseMessage);
 				flag = true;
 			} catch (Exception e) {
 				e.printStackTrace();

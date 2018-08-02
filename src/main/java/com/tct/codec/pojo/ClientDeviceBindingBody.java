@@ -7,6 +7,7 @@ public class ClientDeviceBindingBody{
 	private String lo;
 	private String la;
 	private String authCode;
+	private String id;
 	
 	public String getBluetoothMac() {
 		return bluetoothMac;
@@ -37,6 +38,12 @@ public class ClientDeviceBindingBody{
 	}
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	

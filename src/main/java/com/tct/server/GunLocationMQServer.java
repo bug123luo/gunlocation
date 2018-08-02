@@ -24,6 +24,10 @@ public class GunLocationMQServer {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml","classpath:applicationContext-transaction.xml"});
 		
 		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+
+		Hashtable<String, String> messagemap = new Hashtable<String,String>();
+		messagemap.put("sendQueue", "WebOutQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebOutQueue", messagemap);
 		
 		HashMap<String, Object> paraMap = new HashMap<>();
 		paraMap.put("connectionFactory", cf);
@@ -35,7 +39,7 @@ public class GunLocationMQServer {
 		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
 		gateWayConsumerThread.start();
 		
-		paraMap.put("queneName","WebQueue");
+		paraMap.put("queneName","WebInQueue");
 		WebConsumerThread webConsumerThread=new WebConsumerThread(paraMap,"webConsumer");
 		webConsumerThread.start();
 	}

@@ -9,6 +9,7 @@ import com.tct.mapper.DeviceLocationCustomMapper;
 import com.tct.mapper.GunCustomMapper;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
+import com.tct.po.GunQueryVo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,13 +27,20 @@ public class ClientDeviceBindingDaoImpl implements ClientDeviceBindingDao {
 	@Override
 	public boolean updateDeviceBindingState(DeviceLocationCustom deviceLocationCustom, GunCustom gunCustom)
 			throws Exception {
-		
 		deviceLocationCustomMapper.updateByPrimaryKeySelective(deviceLocationCustom);
 		
 		gunCustomMapper.updateSelective(gunCustom);
 		
 		return true;
+
 	}
+
+	@Override
+	public GunCustom selectBybluetoothMac(GunQueryVo gunQueryVo) throws Exception {
+		return gunCustomMapper.selectBybluetoothMac(gunQueryVo);
+	}
+	
+	
 	
 
 }

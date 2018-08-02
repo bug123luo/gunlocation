@@ -37,4 +37,13 @@
 		</set>
 		where bluetooth_Mac=#{bluetoothMac} and real_time_state=0
 	</update>
+	
+	<select id="selectBybluetoothMac" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
+		select * from gun
+		<where>
+			<if test="gunCustom!=null and gunCustom.bluetoothMac!=null">
+				bluetooth_Mac=#{gunCustom.bluetoothMac} and state=0
+			</if>
+		</where>
+	</select>
 </mapper>

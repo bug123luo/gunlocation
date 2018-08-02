@@ -17,4 +17,40 @@
 			</if>
 		</where>
 	</select>
+	
+	<update id="updateByDeviceGunCustom" parameterType="com.tct.po.DeviceGunCustom">
+	 <set>
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="deviceNo != null">
+        device_no = #{deviceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="gunMac != null">
+        gun_mac = #{gunMac,jdbcType=VARCHAR},
+      </if>
+      <if test="outWarehouseTime != null">
+        out_warehouse_time = #{outWarehouseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inWarehouseTime != null">
+        in_warehouse_time = #{inWarehouseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="temperanceTime != null">
+        temperance_time = #{temperanceTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+    </set>
+    where device_no =#{gunMac} and state=0
+	</update>
 </mapper>
