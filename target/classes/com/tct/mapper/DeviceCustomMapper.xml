@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tct.mapper.DeviceCustomMapper">  
+  <select id="selectByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo" resultType="int">
+ 		SELECT id FROM device
+  		<where>
+			<if test="deviceCustom !=null and deviceCustom.deviceNo!=null and deviceCustom.deviceNo.length()>0">
+				device_no=#{deviceCustom.deviceNo}
+			</if>
+		</where>
+	</select>
+</mapper>
