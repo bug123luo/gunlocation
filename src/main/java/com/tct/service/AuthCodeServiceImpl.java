@@ -73,7 +73,7 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 			
 			authCodeReplyMessage.setDeviceType(message.getDeviceType());
 			authCodeReplyMessage.setFormatVersion(message.getFormatVersion());
-			authCodeReplyMessage.setMessageType(message.getMessageType());
+			authCodeReplyMessage.setMessageType("02");
 			authCodeReplyMessage.setSendTime(message.getSendTime());
 			authCodeReplyMessage.setSerialNumber(message.getSerialNumber());;
 			authCodeReplyMessage.setServiceType(message.getServiceType());

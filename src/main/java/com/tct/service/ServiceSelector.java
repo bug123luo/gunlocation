@@ -4,9 +4,12 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
 import com.tct.codec.AuthCodeMessageCodec;
+import com.tct.codec.ClientDeviceBindingMessageCodec;
 import com.tct.codec.ClientHeartBeatMessageCodec;
 import com.tct.codec.ClientHeartBeatReplyMessageCodec;
 import com.tct.codec.ClientOffLocationWarningMessageCodec;
+import com.tct.codec.ClientOutWareHouseMessageCodec;
+import com.tct.codec.DeviceBulletCountMessageCodec;
 import com.tct.codec.MessageCodec;
 import com.tct.codec.ServerInWareHouseMessageCodec;
 import com.tct.codec.ServerInWareHouseMessageReplyCodec;
@@ -17,6 +20,8 @@ import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
+import com.tct.codec.pojo.ClientOutWareHouseMessage;
+import com.tct.codec.pojo.DeviceBulletCountMessage;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
@@ -80,7 +85,7 @@ public class ServiceSelector {
 			ServerInWareHouseReplyMessage serverInWareHouseReplyMessage = null;
 			try {
 				serverInWareHouseReplyMessage = (ServerInWareHouseReplyMessage) messageCodec.decode(textMessage.getText());
-				ServerInWareHouseService serverInWareHouseReplyService =  SpringContextUtil.getBean("serverInWareHouseReplyService");
+				ServerInWareHouseReplyService serverInWareHouseReplyService =  SpringContextUtil.getBean("serverInWareHouseReplyService");
 				serverInWareHouseReplyService.handleCodeMsg(serverInWareHouseReplyMessage);
 				flag = true;
 			} catch (Exception e) {
@@ -106,6 +111,37 @@ public class ServiceSelector {
 			} catch (Exception e) {
 				e.printStackTrace();
 				flag = false;
+			}
+		}else if (messageCodec instanceof ClientDeviceBindingMessageCodec) {
+			try {
+				ClientDeviceBindingMessage clientDeviceBindingMessage = new ClientDeviceBindingMessage();
+				ClientDeviceBindingService clientDeviceBindingService = SpringContextUtil.getBean("clientDeviceBindingService");
+				clientDeviceBindingService.handleCodeMsg(clientDeviceBindingMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = true;
+			}
+		}else if (messageCodec instanceof ClientOutWareHouseMessageCodec) {
+			try {
+				ClientOutWareHouseMessage clientOutWareHouseMessage =  new ClientOutWareHouseMessage();
+				ClientOutWareHouseService clientOutWareHouseService =  SpringContextUtil.getBean("clientOutWareHouseService");
+				clientOutWareHouseService.handleCodeMsg(clientOutWareHouseMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = true;
+			}
+			
+		}else if (messageCodec instanceof DeviceBulletCountMessageCodec) {
+			try {
+				DeviceBulletCountMessage deviceBulletCountMessage =  new DeviceBulletCountMessage();
+				DeviceBulletCountService deviceBulletCountService =  SpringContextUtil.getBean("deviceBulletCountService");
+				deviceBulletCountService.handleCodeMsg(deviceBulletCountMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = true;
 			}
 		}
 		return flag;

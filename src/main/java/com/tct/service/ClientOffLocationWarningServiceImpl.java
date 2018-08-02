@@ -106,7 +106,7 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			clientOffLocationWarningReplyMessage.setDeviceType(message.getDeviceType());
 			clientOffLocationWarningReplyMessage.setFormatVersion(message.getFormatVersion());
 			clientOffLocationWarningReplyMessage.setMessageBody(clientOffLocationWarningReplyBody);
-			clientOffLocationWarningReplyMessage.setMessageType(message.getMessageType());
+			clientOffLocationWarningReplyMessage.setMessageType("18");
 			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
 			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
