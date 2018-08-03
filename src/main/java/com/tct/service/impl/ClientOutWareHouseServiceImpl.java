@@ -98,7 +98,7 @@ public class ClientOutWareHouseServiceImpl implements ClientOutWareHouseService 
 		clientOutWareHouseReplyMessage.setMessageBody(clientOutWareHouseReplyBody);
 		clientOutWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 		clientOutWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
-		clientOutWareHouseReplyMessage.setMessageType("02");
+		clientOutWareHouseReplyMessage.setMessageType("06");
 		clientOutWareHouseReplyMessage.setSendTime(message.getSendTime());
 		clientOutWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 		clientOutWareHouseReplyMessage.setServiceType(message.getServiceType());
