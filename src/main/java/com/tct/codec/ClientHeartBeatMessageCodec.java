@@ -24,6 +24,8 @@ public class ClientHeartBeatMessageCodec implements MessageCodec {
 		clientHeartBeatMessage.setSerialNumber(json.getString("serialNumber"));
 		clientHeartBeatMessage.setMessageType(json.getString("messageType"));
 		clientHeartBeatMessage.setSendTime(json.getString("sendTime"));
+		clientHeartBeatMessage.setSessionToken(json.getString("sessionToken"));
+		
 		return clientHeartBeatMessage;
 	}
 

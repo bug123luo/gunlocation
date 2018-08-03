@@ -48,27 +48,22 @@ public class ProducerThread extends Thread {
 			while(true) {
 				
 				//从未发消息缓存队列中获取消息，并且构造json消息，将消息发送出去
-				ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 				ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageCacheMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 				
-				for(String sessionToken:unSendReplyMessageCacheMap.keySet()) {	
-					Hashtable<String, Object> unSendMessageMap =unSendReplyMessageCacheMap.get(sessionToken);
-					Destination destination =  session.createQueue(sessionToken);
+				for(String queueName:unSendReplyMessageCacheMap.keySet()) {	
+					Hashtable<String, Object> unSendMessageMap =unSendReplyMessageCacheMap.get(queueName);
+					Destination destination =  session.createQueue(queueName);
 					MessageProducer producer =  session.createProducer(destination);
 				
 					for(String serialNumber:unSendMessageMap.keySet()) {
 						String jsonMsg = (String) unSendMessageMap.get(serialNumber);
 						TextMessage message = session.createTextMessage(jsonMsg);
+						log.info("producer 发送消息");
+						log.info(message.getText());
 						producer.send(message);
 						unSendMessageMap.remove(serialNumber);
 						
 						session.commit();
-						
-						Hashtable<String, Object> messageMap=new Hashtable<String,Object>();
-						if (unhandlerReceiveMessageHashMap.containsKey(sessionToken)){
-							messageMap= unhandlerReceiveMessageHashMap.get(sessionToken);
-							messageMap.remove(serialNumber);
-						}
 					}	
 				}	
 			}

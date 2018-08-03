@@ -24,6 +24,7 @@ public class AuthCodeMessageCodec implements MessageCodec{
 		authCodeMessage.setMessageType(json.getString("messageType"));
 		authCodeMessage.setSendTime(json.getString("sendTime"));
 		authCodeMessage.setMessageBody(json.getObject("messageBody", AuthCodeMessageBody.class));
+		authCodeMessage.setSessionToken(json.getString("sessionToken"));
 		
 		//authCodeMessage.setMessageBody((AuthCodeMessageBody)json.get("messageBody"));
 		

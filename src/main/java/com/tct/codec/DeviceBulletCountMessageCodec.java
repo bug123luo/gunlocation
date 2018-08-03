@@ -24,6 +24,8 @@ public class DeviceBulletCountMessageCodec implements MessageCodec {
 		deviceBulletCountMessage.setSerialNumber(json.getString("serialNumber"));
 		deviceBulletCountMessage.setMessageType(json.getString("messageType"));
 		deviceBulletCountMessage.setSendTime(json.getString("sendTime"));
+		deviceBulletCountMessage.setSessionToken(json.getString("sessionToken"));
+		
 		return deviceBulletCountMessage;
 	}
 

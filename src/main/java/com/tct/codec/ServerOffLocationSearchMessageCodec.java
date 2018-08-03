@@ -24,6 +24,7 @@ public class ServerOffLocationSearchMessageCodec implements MessageCodec {
 		serverOffLocationSearchMessage.setSerialNumber(json.getString("serialNumber"));
 		serverOffLocationSearchMessage.setMessageType(json.getString("messageType"));
 		serverOffLocationSearchMessage.setSendTime(json.getString("sendTime"));
+		serverOffLocationSearchMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return serverOffLocationSearchMessage;
 	}

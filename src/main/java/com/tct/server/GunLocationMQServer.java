@@ -30,9 +30,14 @@ public class GunLocationMQServer {
 		messagemap.put("sendQueue", "WebOutQueue");
 		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebOutQueue", messagemap);
 		
+		
 		HashMap<String, Object> paraMap = new HashMap<>();
 		paraMap.put("connectionFactory", cf);
-		paraMap.put("queneName", "InputQueue");
+		paraMap.put("nettyRecQue", "InputQueue");
+		
+		messagemap.put("nettyRecQue", "InputQueue");
+		messagemap.put("nettySendQue", "OutQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("NettyServer", messagemap);
 		/*paraMap.put("queneName", "ubo");*/
 		
 		ProducerThread producerThread =new ProducerThread(paraMap,"producer");

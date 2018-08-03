@@ -24,6 +24,7 @@ public class ClientOffLocationWarningMessageCodec implements MessageCodec {
 		clientOffLocationWarningMessage.setSerialNumber(json.getString("serialNumber"));
 		clientOffLocationWarningMessage.setMessageType(json.getString("messageType"));
 		clientOffLocationWarningMessage.setSendTime(json.getString("sendTime"));
+		clientOffLocationWarningMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return clientOffLocationWarningMessage;
 	}

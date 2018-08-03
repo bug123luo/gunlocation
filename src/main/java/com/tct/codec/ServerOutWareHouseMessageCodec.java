@@ -24,6 +24,7 @@ public class ServerOutWareHouseMessageCodec implements MessageCodec {
 		serverOutWareHouseMessage.setMessageType(json.getString("messageType"));
 		serverOutWareHouseMessage.setSendTime(json.getString("sendTime"));
 		serverOutWareHouseMessage.setMessageBody(json.getObject("messageBody",ServerOutWareHouseBody.class));
+		serverOutWareHouseMessage.setSessionToken(json.getString("sessionToken"));
 
 		log.info(json.toJSONString());
 		return serverOutWareHouseMessage;

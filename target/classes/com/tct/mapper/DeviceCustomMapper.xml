@@ -11,7 +11,7 @@
 	</select>
 	
 	  <select id="selectDeviceByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo" resultType="com.tct.po.DeviceCustom">
- 		SELECT * FROM device
+ 		SELECT id,device_no as deviceNo,device_name as deviceName FROM device
   		<where>
 			<if test="deviceCustom !=null and deviceCustom.deviceName!=null">
 				device_name=#{deviceCustom.deviceName}

@@ -32,10 +32,10 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	DeviceLocationCustomMapper deviceLocationCustomMapper;
 	
 	@Transactional
-	public Boolean findDeviceUserAndUpdateLocation(Object obj) {
+	public Boolean findDeviceUserAndUpdateLocation(Object obj,String deviceNo) {
 		
 		AuthCodeMessage message = (AuthCodeMessage)obj;
-		String deviceNo = message.getMessageBody().getUsername();
+		String tempDeviceNo = deviceNo;
 		Boolean flag=false;
 		
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
@@ -44,7 +44,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		
 		Date date=StringUtil.getDate(message.getSendTime());
 
-		deviceCustom.setDeviceNo(deviceNo);
+		deviceCustom.setDeviceNo(tempDeviceNo);
 		//deviceCustom.setDeviceName(message.getMessageBody().getUsername());
 		deviceQueryVo.setDeviceCustom(deviceCustom);
 		
@@ -75,26 +75,28 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		} catch (Exception e2) { 
 			log.debug("device_location表中没有该用户的记录");
 			e2.printStackTrace();
-		}finally {
-			if (deviceLocationCustom2 !=null) {
-				try {
-					deviceLocationCustomMapper.updateByPrimaryKeySelective(deviceLocationCustom);
-				} catch (Exception e3) {
-					log.debug("更新device_location表失败");
-				}
-				flag = true;
-			}else {
-				
-				try {
-					deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
-				} catch (Exception e4) {
-						log.debug("插入device_location表失败");	
-						e4.printStackTrace();
-				}
-				flag = true;
-			}
+			return flag;
 		}
-
+		
+		if (deviceLocationCustom2 !=null) {
+			try {
+				deviceLocationCustomMapper.updateByPrimaryKeySelective(deviceLocationCustom);
+			} catch (Exception e3) {
+				log.debug("更新device_location表失败");
+				flag = false;
+			}
+			flag = true;
+		}else {
+			try {
+				deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
+			} catch (Exception e4) {
+				log.debug("插入device_location表失败");	
+				e4.printStackTrace();
+				flag = false;
+			}
+			flag = true;
+		}
+		
 		return flag;
 	}
 

@@ -26,6 +26,7 @@ public class ServerOffLocationWarningStartStopReplyMessageCodec implements Messa
 		serverOffLocationWarningStartStopReplyMessage.setMessageType(json.getString("messageType"));
 		serverOffLocationWarningStartStopReplyMessage.setSendTime(json.getString("sendTime"));
 		serverOffLocationWarningStartStopReplyMessage.setMessageBody(json.getObject("messageBody", ServerOffLocationWarningStartStopReplyBody.class));
+		serverOffLocationWarningStartStopReplyMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return serverOffLocationWarningStartStopReplyMessage;
 	}

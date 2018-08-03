@@ -25,6 +25,7 @@ public class ServerOutWareHouseReplyMessageCodec implements MessageCodec {
 		serverOutWareHouseReplyMessage.setMessageType(json.getString("messageType"));
 		serverOutWareHouseReplyMessage.setSendTime(json.getString("sendTime"));
 		serverOutWareHouseReplyMessage.setMessageBody(json.getObject("messageBody", ServerOutWareHouseReplyBody.class));
+		serverOutWareHouseReplyMessage.setSessionToken(json.getString("sessionToken"));
 
 		return serverOutWareHouseReplyMessage;
 	}

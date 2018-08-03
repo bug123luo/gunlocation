@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
 import com.tct.codec.pojo.ClientDeviceBindingReplyMessage;
@@ -48,34 +49,13 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
-		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
-		//创建发送到终端队列的队列名
-		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			userQueueMap=userOnlineQueueHashMap.get(deviceGunCustom.getDeviceNo());
-		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", message.getSessionToken());
-		
-		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
-		
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
-		}
-		if(messageMap ==null) {
-			messageMap=new Hashtable<String,Object>();
-		}
-		
-		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
-		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
@@ -103,18 +83,19 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			clientDeviceBindingReplyMessage.setSendTime(StringUtil.getDateString());
 			clientDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+			clientDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String bingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
 			//将回应APP消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
-			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 			
 			//将回应消息发送到Web前端队列
 			GunCustom gunCustom2 = new GunCustom();
@@ -135,6 +116,7 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			serverDeviceBindingReplyMessage.setSendTime(message.getSendTime());
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String serverbingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
 			

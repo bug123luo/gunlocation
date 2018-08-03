@@ -1,7 +1,4 @@
-package com.tct.codec;
-
-import com.tct.codec.pojo.ServerOffLocationSearchToClientBody;
-import com.tct.codec.pojo.SimpleMessage;
+package com.tct.codec.pojo;
 
 public class ServerOffLocationSearchToClientMessage extends SimpleMessage {
 	private ServerOffLocationSearchToClientBody messageBody;

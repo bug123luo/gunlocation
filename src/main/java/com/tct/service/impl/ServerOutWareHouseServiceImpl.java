@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
 import com.tct.dao.ServerOutWareHouseDao;
 import com.tct.po.DeviceGunCustom;
@@ -29,10 +30,10 @@ public class ServerOutWareHouseServiceImpl implements ServerOutWareHouseService 
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ServerOutWareHouseMessage message = (ServerOutWareHouseMessage)msg;
 		
-		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+
 		//获取需要通知的终端的 deviceNo信息
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
@@ -40,35 +41,29 @@ public class ServerOutWareHouseServiceImpl implements ServerOutWareHouseService 
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		DeviceGunCustom deviceGunCustom2 = serverOutWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);
 			
-		String sessionToken = "";
-		if(userOnlineQueueHashMap.contains(deviceGunCustom2.getDeviceNo())) {
-			sessionToken = userOnlineQueueHashMap.get(deviceGunCustom2.getDeviceNo()).get("sendQueue");
+		String sessionToken = userOnlineSessionCache.get(deviceGunCustom2.getDeviceNo());
+		if(sessionToken == null) {
+			log.info("协助查找人员不在线，请选择另外一个人来发送");
+			return false;
 		}
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(sessionToken)) {
-			messageMap= unhandlerReceiveMessageHashMap.get(sessionToken);
-		}
-		if(messageMap ==null) {
-			messageMap=new Hashtable<String,Object>();
-		}
-		
-		messageMap.put("s"+message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(sessionToken, messageMap);
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		//发送到producer处理队列上
+		message.setSessionToken(sessionToken);
 		String outWareJson = JSONObject.toJSONString(message);
 
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-		if(unhandlerReceiveMessageHashMap.containsKey(sessionToken)) {
-			tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(sessionToken);
+		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
 		}
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), outWareJson);
-		unSendReplyMessageHashMap.put(sessionToken, tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 		
 		return true;
 	}

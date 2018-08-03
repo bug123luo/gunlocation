@@ -25,6 +25,7 @@ public class ServerOffLocationWarningStartStopMessageCodec implements MessageCod
 		serverOffLocationWarningStartStopMessage.setSerialNumber(json.getString("serialNumber"));
 		serverOffLocationWarningStartStopMessage.setMessageType(json.getString("messageType"));
 		serverOffLocationWarningStartStopMessage.setSendTime(json.getString("sendTime"));
+		serverOffLocationWarningStartStopMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return serverOffLocationWarningStartStopMessage;
 	}

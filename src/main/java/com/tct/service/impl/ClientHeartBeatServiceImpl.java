@@ -49,28 +49,8 @@ public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
 		//创建发送到终端队列的队列名
-		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			userQueueMap=userOnlineQueueHashMap.get(deviceGunCustom.getDeviceNo());
-		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", deviceGunCustom.getDeviceNo());
-		
-		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
-		
-		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
-		}
-		if(messageMap ==null) {
-			messageMap=new Hashtable<String,Object>();
-		}
-		
-		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -98,17 +78,17 @@ public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
 			clientHeartBeatReplyMessage.setServiceType(message.getServiceType());
 			clientHeartBeatReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String authJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
+			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
-			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), heartBeatJson);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 			
 			return true;
 		}

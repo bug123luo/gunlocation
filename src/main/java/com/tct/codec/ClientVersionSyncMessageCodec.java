@@ -24,6 +24,7 @@ public class ClientVersionSyncMessageCodec implements MessageCodec {
 		clientVersionSyncMessage.setMessageType(json.getString("messageType"));
 		clientVersionSyncMessage.setSendTime(json.getString("sendTime"));
 		clientVersionSyncMessage.setMessageBody(json.getObject("messageBody", ClientVersionSyncBody.class));
+		clientVersionSyncMessage.setSessionToken(json.getString("sessionToken"));
 		
 		//authCodeMessage.setMessageBody((AuthCodeMessageBody)json.get("messageBody"));
 		

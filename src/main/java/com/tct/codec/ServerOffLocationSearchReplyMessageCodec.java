@@ -26,6 +26,7 @@ public class ServerOffLocationSearchReplyMessageCodec implements MessageCodec {
 		serverOffLocationSearchReplyMessage.setMessageType(json.getString("messageType"));
 		serverOffLocationSearchReplyMessage.setSendTime(json.getString("sendTime"));
 		serverOffLocationSearchReplyMessage.setMessageBody(json.getObject("messageBody", ServerOffLocationSearchBody.class));
+		serverOffLocationSearchReplyMessage.setSessionToken(json.getString("sessionToken"));
 		
 		//authCodeMessage.setMessageBody((AuthCodeMessageBody)json.get("messageBody"));
 		

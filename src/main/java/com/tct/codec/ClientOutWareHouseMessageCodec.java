@@ -24,6 +24,7 @@ public class ClientOutWareHouseMessageCodec implements MessageCodec {
 		clientOutWareHouseMessage.setSerialNumber(json.getString("serialNumber"));
 		clientOutWareHouseMessage.setMessageType(json.getString("messageType"));
 		clientOutWareHouseMessage.setSendTime(json.getString("sendTime"));
+		clientOutWareHouseMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return clientOutWareHouseMessage;
 	}

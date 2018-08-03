@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ClientInWareHouseReplyBody;
 import com.tct.codec.pojo.ClientInWareHouseReplyMessage;
@@ -54,35 +55,14 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
-		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+
 		//创建发送到终端队列的队列名
-		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			userQueueMap=userOnlineQueueHashMap.get(deviceGunCustom.getDeviceNo());
-		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", message.getSessionToken());
-		
-		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
-		
-		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
-		}
-		if(messageMap ==null) {
-			messageMap=new Hashtable<String,Object>();
-		}
-		
-		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
-		
-		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+				
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
@@ -114,14 +94,14 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
-			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 			
 			
 			//将向服务器的发送消息放在缓存队列中
@@ -146,11 +126,10 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
-			if(unhandlerReceiveMessageHashMap.containsKey("WebOutQueue")) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get("WebOutQueue");
+			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();

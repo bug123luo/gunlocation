@@ -24,7 +24,7 @@ public class GateWayConsumerThread extends Thread{
 	public GateWayConsumerThread(HashMap<String, Object> paraMap,String threadName) {
 		super(threadName);
 		this.cf = (ConnectionFactory) paraMap.get("connectionFactory");
-		this.queueName = (String) paraMap.get("queneName");
+		this.queueName = (String) paraMap.get("nettyRecQue");
 	}
 	
 	public void run() {

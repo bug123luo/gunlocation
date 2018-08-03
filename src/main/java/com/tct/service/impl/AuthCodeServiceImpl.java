@@ -12,12 +12,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
-import com.tct.codec.DeviceBulletCountMessageCodec;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
 import com.tct.codec.pojo.AuthCodeReplyMessage;
 import com.tct.dao.AuthCodeDao;
-import com.tct.mapper.DeviceCustomMapper;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceQueryVo;
 import com.tct.service.AuthCodeService;
@@ -35,11 +34,9 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 		AuthCodeMessage message=(AuthCodeMessage)msg;
 		//缓存消息
 		//AuthCodeMessage 中的username目前是警员编号
-		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
-		
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		//根据用户名查询在线队列的人的名称
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		DeviceCustom deviceCustom =  new DeviceCustom();
@@ -47,31 +44,19 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 		deviceCustom.setPassword(message.getMessageBody().getCommand());
 		deviceQueryVo.setDeviceCustom(deviceCustom);
 		DeviceCustom deviceCustom2 = authcodeDao.findByDeviceQueryVo(deviceQueryVo);
-		//创建发送到终端队列的队列名
-		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(deviceCustom2.getDeviceNo())) {
-			userQueueMap=userOnlineQueueHashMap.get(deviceCustom2.getDeviceNo());
-		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", message.getSessionToken());
 		
-		userOnlineQueueHashMap.put(deviceCustom2.getDeviceNo(), userQueueMap);	
+		if(deviceCustom2.getDeviceNo()==null) {
+			log.info("用户不存在请重新注册或者在数据库中添加");
+			return false;
+		}
+		
+		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
-		}
-		if(messageMap ==null) {
-			messageMap=new Hashtable<String,Object>();
-		}
-		
-		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 
-		Boolean tempboolean = authcodeDao.findDeviceUserAndUpdateLocation(message);
+		Boolean tempboolean = authcodeDao.findDeviceUserAndUpdateLocation(message,deviceCustom2.getDeviceNo());
 		if(tempboolean) {
 			//构造回应消息
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();
@@ -96,14 +81,14 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 			String authJson = JSONObject.toJSONString(authCodeReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
-			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 			
 			return true;
 		}else {
