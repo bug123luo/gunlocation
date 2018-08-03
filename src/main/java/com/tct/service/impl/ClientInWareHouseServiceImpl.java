@@ -108,6 +108,8 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			clientInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 			clientInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
+			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
+			
 			
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将APP回应消息放进消息缓存队列中
@@ -142,6 +144,8 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
+			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
+			
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			

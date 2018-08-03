@@ -9,6 +9,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import com.tct.codec.MessageCodec;
 import com.tct.codec.MessageCodecSelector;
 import com.tct.service.ServiceSelector;
@@ -40,7 +41,6 @@ public class GateWayConsumerThread extends Thread{
 			destination =  session.createQueue(this.queueName);
 			consumer =  session.createConsumer(destination);
 		} catch (JMSException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -49,12 +49,17 @@ public class GateWayConsumerThread extends Thread{
 				
 				TextMessage textMessage = (TextMessage) consumer.receive();
 				
+				log.debug(textMessage.toString());
+				System.out.println(textMessage.toString());
+					
 				if(null !=textMessage) {
 					//编解码器选择器
 					MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
 					
 					MessageCodec messageCodec = null;
 					try {
+						
+						log.info(textMessage.getText());
 						messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
 					} catch (Exception e2) {
 						log.debug(e2+"消息解码器不存在");
@@ -70,89 +75,22 @@ public class GateWayConsumerThread extends Thread{
 					} catch (JMSException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}
-				}else {
-					continue;
+					}					
 				}
 			}
-						
-/*			while(true) {
-				
-				final Connection connection =  this.cf.createConnection();
-				connection.start();
-				
-				Enumeration names = connection.getMetaData().getJMSXPropertyNames();
-				
-				while(names.hasMoreElements()) {
-					String name = (String)names.nextElement();
-					System.out.println("jms name==="+name);
-				}
-				
-				final Session session =  connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-				Destination destination =  session.createQueue(this.queueName);
-				
-				MessageConsumer consumer =  session.createConsumer(destination);
-				
-				consumer.setMessageListener(new MessageListener() {
-					
-					public void onMessage(Message msg) {
-						
-						TextMessage textMessage = (TextMessage)msg;
-
-						//编解码器选择器
-						MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
-						
-						MessageCodec messageCodec = null;
-						try {
-							messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
-						} catch (Exception e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-						
-						//业务处理选择器
-						ServiceSelector serviceSelector = new ServiceSelector();
-						
-						serviceSelector.handlerService(messageCodec, textMessage);
-						
-						try {
-							session.commit();
-						} catch (JMSException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						try {
-							session.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						
-						try {
-							connection.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						
-					}
-				});					
-			}*/
 		} catch (Exception e) {
-			// TODO: handle exception
-		} finally {
-			
-			try {
-				session.close();
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				connection.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+            e.printStackTrace();
+            System.out.println("错误类名称 = " + e.getClass().getName());
+            System.out.println("错误原因 = " + e.getMessage());
+		}finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                    connection = null;
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 
 	}

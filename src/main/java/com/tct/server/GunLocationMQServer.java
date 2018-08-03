@@ -23,8 +23,9 @@ public class GunLocationMQServer {
 
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml","classpath:applicationContext-transaction.xml"});
 		
-		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
-
+		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");*/
+		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
+		
 		Hashtable<String, String> messagemap = new Hashtable<String,String>();
 		messagemap.put("sendQueue", "WebOutQueue");
 		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebOutQueue", messagemap);
@@ -32,6 +33,7 @@ public class GunLocationMQServer {
 		HashMap<String, Object> paraMap = new HashMap<>();
 		paraMap.put("connectionFactory", cf);
 		paraMap.put("queneName", "InputQueue");
+		/*paraMap.put("queneName", "ubo");*/
 		
 		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
 		producerThread.start();

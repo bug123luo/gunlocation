@@ -118,6 +118,7 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
 			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
+			clientOffLocationWarningReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String msgJson = JSONObject.toJSONString(clientOffLocationWarningReplyMessage);
 			//将APP回应消息放进消息缓存队列中

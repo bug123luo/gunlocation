@@ -81,6 +81,7 @@ public class ServerOffLocationSearchServiceImpl implements ServerOffLocationSear
 		serverOffLocationSearchToClientMessage.setSendTime(message.getSendTime());
 		serverOffLocationSearchToClientMessage.setSerialNumber(message.getSerialNumber());
 		serverOffLocationSearchToClientMessage.setServiceType(message.getServiceType());
+		serverOffLocationSearchToClientMessage.setSessionToken(message.getSessionToken());
 		
 		String searchToClienJson = JSONObject.toJSONString(serverOffLocationSearchToClientMessage);
 		

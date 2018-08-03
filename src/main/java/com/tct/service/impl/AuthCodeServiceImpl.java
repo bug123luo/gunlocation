@@ -91,6 +91,7 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 			authCodeReplyMessage.setSerialNumber(message.getSerialNumber());;
 			authCodeReplyMessage.setServiceType(message.getServiceType());
 			authCodeReplyMessage.setMessageBody(authCodeReplyBody);
+			authCodeReplyMessage.setSessionToken(message.getSessionToken());
 				
 			String authJson = JSONObject.toJSONString(authCodeReplyMessage);
 			//将回应消息放进消息缓存队列中

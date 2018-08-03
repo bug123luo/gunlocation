@@ -96,6 +96,7 @@ public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
 			clientHeartBeatReplyMessage.setSendTime(StringUtil.getDateString());
 			clientHeartBeatReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientHeartBeatReplyMessage.setServiceType(message.getServiceType());
+			clientHeartBeatReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String authJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
 			//将回应消息放进消息缓存队列中
