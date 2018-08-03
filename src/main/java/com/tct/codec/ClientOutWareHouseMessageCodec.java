@@ -4,11 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ClientOutWareHouseBody;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ClientOutWareHouseMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
+		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		ClientOutWareHouseMessage clientOutWareHouseMessage = new ClientOutWareHouseMessage();
 		clientOutWareHouseMessage.setMessageBody(json.getObject("messageBody",ClientOutWareHouseBody.class));

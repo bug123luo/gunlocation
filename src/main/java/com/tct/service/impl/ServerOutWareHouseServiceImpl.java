@@ -1,4 +1,4 @@
-package com.tct.service;
+package com.tct.service.impl;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,34 +10,35 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
-import com.tct.codec.pojo.ServerInWareHouseMessage;
-import com.tct.dao.ServerInWareHouseDao;
+import com.tct.codec.pojo.ServerOutWareHouseMessage;
+import com.tct.dao.ServerOutWareHouseDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
+import com.tct.service.ServerOutWareHouseService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service(value="serverInWareHouseService")
-public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
-
+@Service(value="serverOutWareHouseService")
+public class ServerOutWareHouseServiceImpl implements ServerOutWareHouseService {
+		
 	@Autowired
-	ServerInWareHouseDao serverInWareHouseDao;
+	ServerOutWareHouseDao serverOutWareHouseDao;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
-		ServerInWareHouseMessage message = (ServerInWareHouseMessage)msg;
+		ServerOutWareHouseMessage message = (ServerOutWareHouseMessage)msg;
 		
 		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
-		/*//数据库中获取需要通知的终端的 deviceNo信息
-		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
+		//获取需要通知的终端的 deviceNo信息
+/*		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
-		deviceGunCustom.setGunMac(message.getServerInWareHouseBody().getBluetoothMac());
+		deviceGunCustom.setGunMac(message.getServerOutWareHouseBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
-		DeviceGunCustom deviceGunCustom2 = serverInWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);*/
+		DeviceGunCustom deviceGunCustom2 = serverOutWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);*/
 		
 		//创建发送到终端队列的队列名
 		Hashtable<String , String> userQueueMap=null;
@@ -75,7 +76,7 @@ public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), outWareJson);
 		unSendReplyMessageHashMap.put(message.getMessageBody().getDeviceNo(), tempUnSendReplyMessageMap);
-
+		
 		return true;
 	}
 

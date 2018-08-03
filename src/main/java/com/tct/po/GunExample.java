@@ -165,6 +165,66 @@ public class GunExample {
             return (Criteria) this;
         }
 
+        public Criteria andWebIdIsNull() {
+            addCriterion("web_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdIsNotNull() {
+            addCriterion("web_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdEqualTo(Integer value) {
+            addCriterion("web_id =", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdNotEqualTo(Integer value) {
+            addCriterion("web_id <>", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdGreaterThan(Integer value) {
+            addCriterion("web_id >", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("web_id >=", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdLessThan(Integer value) {
+            addCriterion("web_id <", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdLessThanOrEqualTo(Integer value) {
+            addCriterion("web_id <=", value, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdIn(List<Integer> values) {
+            addCriterion("web_id in", values, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdNotIn(List<Integer> values) {
+            addCriterion("web_id not in", values, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdBetween(Integer value1, Integer value2) {
+            addCriterion("web_id between", value1, value2, "webId");
+            return (Criteria) this;
+        }
+
+        public Criteria andWebIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("web_id not between", value1, value2, "webId");
+            return (Criteria) this;
+        }
+
         public Criteria andGunTagIsNull() {
             addCriterion("gun_tag is null");
             return (Criteria) this;

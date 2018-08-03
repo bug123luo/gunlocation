@@ -1,9 +1,13 @@
 package com.tct.codec;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mysql.jdbc.log.Log;
 import com.tct.codec.pojo.ServerOutWareHouseReplyBody;
 import com.tct.codec.pojo.ServerOutWareHouseReplyMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ServerOutWareHouseReplyMessageCodec implements MessageCodec {
 
 	@Override
@@ -11,6 +15,8 @@ public class ServerOutWareHouseReplyMessageCodec implements MessageCodec {
 
 		JSONObject json= JSONObject.parseObject(inMsg);
 
+		log.info(json.toJSONString());
+		
 		ServerOutWareHouseReplyMessage serverOutWareHouseReplyMessage = new ServerOutWareHouseReplyMessage();
 		serverOutWareHouseReplyMessage.setServiceType(json.getString("serviceType"));
 		serverOutWareHouseReplyMessage.setFormatVersion(json.getString("formatVersion"));

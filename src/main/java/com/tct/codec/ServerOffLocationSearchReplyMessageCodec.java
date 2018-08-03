@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ServerOffLocationSearchBody;
 import com.tct.codec.pojo.ServerOffLocationSearchReplyMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ServerOffLocationSearchReplyMessageCodec implements MessageCodec {
 
 	@Override
@@ -12,6 +15,8 @@ public class ServerOffLocationSearchReplyMessageCodec implements MessageCodec {
 		 
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		ServerOffLocationSearchReplyMessage serverOffLocationSearchReplyMessage =  new ServerOffLocationSearchReplyMessage();
 		serverOffLocationSearchReplyMessage.setServiceType(json.getString("serviceType"));

@@ -5,12 +5,18 @@ import com.tct.codec.pojo.ServerOffLocationWarningStartStopBody;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopReplyBody;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopReplyMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
 public class ServerOffLocationWarningStartStopReplyMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		ServerOffLocationWarningStartStopReplyMessage serverOffLocationWarningStartStopReplyMessage =  new ServerOffLocationWarningStartStopReplyMessage();
 		serverOffLocationWarningStartStopReplyMessage.setServiceType(json.getString("serviceType"));

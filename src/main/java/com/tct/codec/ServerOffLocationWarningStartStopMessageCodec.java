@@ -4,11 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopBody;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
 public class ServerOffLocationWarningStartStopMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		ServerOffLocationWarningStartStopMessage serverOffLocationWarningStartStopMessage = new ServerOffLocationWarningStartStopMessage();
 		

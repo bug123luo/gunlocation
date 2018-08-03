@@ -4,11 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.DeviceVersionSynchronousBody;
 import com.tct.codec.pojo.DeviceVersionSynchronousMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class DeviceVersionSynchronousMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
+		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		DeviceVersionSynchronousMessage deviceVersionSynchronousMessage =  new DeviceVersionSynchronousMessage();
 		

@@ -3,6 +3,7 @@
 <mapper namespace="com.tct.mapper.GunMapper">
   <resultMap id="BaseResultMap" type="com.tct.po.Gun">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="web_id" jdbcType="INTEGER" property="webId" />
     <result column="gun_tag" jdbcType="VARCHAR" property="gunTag" />
     <result column="bluetooth_mac" jdbcType="VARCHAR" property="bluetoothMac" />
     <result column="warehouse_name" jdbcType="VARCHAR" property="warehouseName" />
@@ -73,8 +74,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, gun_tag, bluetooth_mac, warehouse_name, warehouse_id, bullet_number, state, real_time_state, 
-    create_time, update_time, version
+    id, web_id, gun_tag, bluetooth_mac, warehouse_name, warehouse_id, bullet_number, 
+    state, real_time_state, create_time, update_time, version
   </sql>
   <select id="selectByExample" parameterType="com.tct.po.GunExample" resultMap="BaseResultMap">
     select
@@ -107,20 +108,25 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.tct.po.Gun">
-    insert into gun (id, gun_tag, bluetooth_mac, 
-      warehouse_name, warehouse_id, bullet_number, 
-      state, real_time_state, create_time, 
-      update_time, version)
-    values (#{id,jdbcType=INTEGER}, #{gunTag,jdbcType=VARCHAR}, #{bluetoothMac,jdbcType=VARCHAR}, 
-      #{warehouseName,jdbcType=VARCHAR}, #{warehouseId,jdbcType=INTEGER}, #{bulletNumber,jdbcType=INTEGER}, 
-      #{state,jdbcType=INTEGER}, #{realTimeState,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{version,jdbcType=INTEGER})
+    insert into gun (id, web_id, gun_tag, 
+      bluetooth_mac, warehouse_name, warehouse_id, 
+      bullet_number, state, real_time_state, 
+      create_time, update_time, version
+      )
+    values (#{id,jdbcType=INTEGER}, #{webId,jdbcType=INTEGER}, #{gunTag,jdbcType=VARCHAR}, 
+      #{bluetoothMac,jdbcType=VARCHAR}, #{warehouseName,jdbcType=VARCHAR}, #{warehouseId,jdbcType=INTEGER}, 
+      #{bulletNumber,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{realTimeState,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{version,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.tct.po.Gun">
     insert into gun
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="webId != null">
+        web_id,
       </if>
       <if test="gunTag != null">
         gun_tag,
@@ -156,6 +162,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=INTEGER},
+      </if>
+      <if test="webId != null">
+        #{webId,jdbcType=INTEGER},
       </if>
       <if test="gunTag != null">
         #{gunTag,jdbcType=VARCHAR},
@@ -201,6 +210,9 @@
       <if test="record.id != null">
         id = #{record.id,jdbcType=INTEGER},
       </if>
+      <if test="record.webId != null">
+        web_id = #{record.webId,jdbcType=INTEGER},
+      </if>
       <if test="record.gunTag != null">
         gun_tag = #{record.gunTag,jdbcType=VARCHAR},
       </if>
@@ -239,6 +251,7 @@
   <update id="updateByExample" parameterType="map">
     update gun
     set id = #{record.id,jdbcType=INTEGER},
+      web_id = #{record.webId,jdbcType=INTEGER},
       gun_tag = #{record.gunTag,jdbcType=VARCHAR},
       bluetooth_mac = #{record.bluetoothMac,jdbcType=VARCHAR},
       warehouse_name = #{record.warehouseName,jdbcType=VARCHAR},
@@ -256,6 +269,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.tct.po.Gun">
     update gun
     <set>
+      <if test="webId != null">
+        web_id = #{webId,jdbcType=INTEGER},
+      </if>
       <if test="gunTag != null">
         gun_tag = #{gunTag,jdbcType=VARCHAR},
       </if>
@@ -291,7 +307,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.tct.po.Gun">
     update gun
-    set gun_tag = #{gunTag,jdbcType=VARCHAR},
+    set web_id = #{webId,jdbcType=INTEGER},
+      gun_tag = #{gunTag,jdbcType=VARCHAR},
       bluetooth_mac = #{bluetoothMac,jdbcType=VARCHAR},
       warehouse_name = #{warehouseName,jdbcType=VARCHAR},
       warehouse_id = #{warehouseId,jdbcType=INTEGER},

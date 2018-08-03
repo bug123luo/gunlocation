@@ -5,6 +5,8 @@ import java.util.Date;
 public class Gun {
     private Integer id;
 
+    private Integer webId;
+
     private String gunTag;
 
     private String bluetoothMac;
@@ -31,6 +33,14 @@ public class Gun {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getWebId() {
+        return webId;
+    }
+
+    public void setWebId(Integer webId) {
+        this.webId = webId;
     }
 
     public String getGunTag() {

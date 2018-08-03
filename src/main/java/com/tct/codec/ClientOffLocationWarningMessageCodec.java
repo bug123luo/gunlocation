@@ -4,11 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ClientOffLocationWarningBody;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ClientOffLocationWarningMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
+		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		ClientOffLocationWarningMessage clientOffLocationWarningMessage = new ClientOffLocationWarningMessage();
 		clientOffLocationWarningMessage.setMessageBody(json.getObject("messageBody",ClientOffLocationWarningBody.class));

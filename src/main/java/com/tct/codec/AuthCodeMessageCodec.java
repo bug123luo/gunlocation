@@ -4,12 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeMessageBody;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AuthCodeMessageCodec implements MessageCodec{
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		log.info(json.toJSONString());
 		
 		AuthCodeMessage authCodeMessage =  new AuthCodeMessage();
 		authCodeMessage.setServiceType(json.getString("serviceType"));

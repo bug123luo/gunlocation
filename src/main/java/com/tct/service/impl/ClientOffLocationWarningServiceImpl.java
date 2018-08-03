@@ -1,4 +1,4 @@
-package com.tct.service;
+package com.tct.service.impl;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +24,7 @@ import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.po.SosMessageCustom;
+import com.tct.service.ClientOffLocationWarningService;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
