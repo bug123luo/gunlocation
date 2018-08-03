@@ -33,49 +33,43 @@ public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
-		/*//数据库中获取需要通知的终端的 deviceNo信息
+		//数据库中获取需要通知的终端的 deviceNo信息
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
-		deviceGunCustom.setGunMac(message.getServerInWareHouseBody().getBluetoothMac());
+		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
-		DeviceGunCustom deviceGunCustom2 = serverInWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);*/
+		DeviceGunCustom deviceGunCustom2 = serverInWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);
 		
 		//创建发送到终端队列的队列名
-		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(message.getMessageBody().getDeviceNo())) {
-			userQueueMap=userOnlineQueueHashMap.get(message.getMessageBody().getDeviceNo());
+		String sessionToken = "";
+		if(userOnlineQueueHashMap.contains(deviceGunCustom2.getDeviceNo())) {
+			sessionToken = userOnlineQueueHashMap.get(deviceGunCustom2.getDeviceNo()).get("sendQueue");
 		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", message.getMessageBody().getDeviceNo());
-		
-		userOnlineQueueHashMap.put(message.getMessageBody().getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(message.getMessageBody().getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(message.getMessageBody().getDeviceNo());
+		if (unhandlerReceiveMessageHashMap.containsKey(sessionToken)) {
+			messageMap= unhandlerReceiveMessageHashMap.get(sessionToken);
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
 		messageMap.put("s"+message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(message.getMessageBody().getDeviceNo(), messageMap);
+		unhandlerReceiveMessageHashMap.put(sessionToken, messageMap);
 		
 		//发送到producer处理队列上
 		String outWareJson = JSONObject.toJSONString(message);
 
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-		if(unhandlerReceiveMessageHashMap.containsKey(message.getMessageBody().getDeviceNo())) {
-			tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getMessageBody().getDeviceNo());
+		if(unhandlerReceiveMessageHashMap.containsKey(sessionToken)) {
+			tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(sessionToken);
 		}
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), outWareJson);
-		unSendReplyMessageHashMap.put(message.getMessageBody().getDeviceNo(), tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(sessionToken, tempUnSendReplyMessageMap);
 
 		return true;
 	}

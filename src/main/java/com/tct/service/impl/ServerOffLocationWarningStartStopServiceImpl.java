@@ -44,37 +44,34 @@ public class ServerOffLocationWarningStartStopServiceImpl implements ServerOffLo
 		Hashtable<String , String> userQueueMap=null;
 		if (userOnlineQueueHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
 			userQueueMap=userOnlineQueueHashMap.get(deviceGunCustom.getDeviceNo());
+		}else {
+			log.info("需要停止用户不在线");
+			return false;
 		}
-		if(userQueueMap==null) {
-			userQueueMap=new Hashtable<String,String>();
-		}
-		userQueueMap.put("sendQueue", deviceGunCustom.getDeviceNo());
-		
-		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+		if (unhandlerReceiveMessageHashMap.containsKey(userQueueMap.get("sendQueue"))) {
+			messageMap= unhandlerReceiveMessageHashMap.get(userQueueMap.get("sendQueue"));
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
 		messageMap.put("s"+message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
+		unhandlerReceiveMessageHashMap.put(userQueueMap.get("sendQueue"), messageMap);
 				
 		String startStopJson = JSONObject.toJSONString(message);
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-		if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+		if(unhandlerReceiveMessageHashMap.containsKey(userQueueMap.get("sendQueue"))) {
+			tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(userQueueMap.get("sendQueue"));
 		}
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), startStopJson);
-		unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(userQueueMap.get("sendQueue"), tempUnSendReplyMessageMap);
 		return true;
 	}
 

@@ -64,21 +64,21 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 		if(userQueueMap==null) {
 			userQueueMap=new Hashtable<String,String>();
 		}
-		userQueueMap.put("sendQueue", deviceGunCustom.getDeviceNo());
+		userQueueMap.put("sendQueue", message.getSessionToken());
 		
 		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
 		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
+		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
 		
 		//插入device_location表，插入sos_message表，更新 gun表状态
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -120,20 +120,18 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
 			
 			String msgJson = JSONObject.toJSONString(clientOffLocationWarningReplyMessage);
-			//将回应消息放进消息缓存队列中
+			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
-			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
 			
-			
-
-			
+			//将web端回应消息放进消息缓存队列
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
 			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
@@ -162,7 +160,7 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), serverInWareHouseReplyJson);
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
 			flag = true;
 		}

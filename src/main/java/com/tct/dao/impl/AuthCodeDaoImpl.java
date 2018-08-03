@@ -1,8 +1,7 @@
 package com.tct.dao.impl;
 
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@Transactional
+
 public class AuthCodeDaoImpl implements AuthCodeDao{
 
 	@Autowired
@@ -32,6 +31,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	@Autowired
 	DeviceLocationCustomMapper deviceLocationCustomMapper;
 	
+	@Transactional
 	public Boolean findDeviceUserAndUpdateLocation(Object obj) {
 		
 		AuthCodeMessage message = (AuthCodeMessage)obj;
@@ -96,6 +96,12 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		}
 
 		return flag;
+	}
+
+	@Override
+	public DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception {
+		DeviceCustom deviceCustom = deviceCustomMapper.selectDeviceByDeviceQueryVo(deviceQueryVo);
+		return deviceCustom;
 	}
 	
 }

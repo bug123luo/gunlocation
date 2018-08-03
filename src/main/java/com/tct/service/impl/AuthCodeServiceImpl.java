@@ -12,10 +12,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
+import com.tct.codec.DeviceBulletCountMessageCodec;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
 import com.tct.codec.pojo.AuthCodeReplyMessage;
 import com.tct.dao.AuthCodeDao;
+import com.tct.mapper.DeviceCustomMapper;
+import com.tct.po.DeviceCustom;
+import com.tct.po.DeviceQueryVo;
 import com.tct.service.AuthCodeService;
 
 @Slf4j
@@ -35,29 +39,37 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
+		
+		//根据用户名查询在线队列的人的名称
+		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		DeviceCustom deviceCustom =  new DeviceCustom();
+		deviceCustom.setDeviceName(message.getMessageBody().getUsername());
+		deviceCustom.setPassword(message.getMessageBody().getCommand());
+		deviceQueryVo.setDeviceCustom(deviceCustom);
+		DeviceCustom deviceCustom2 = authcodeDao.findByDeviceQueryVo(deviceQueryVo);
 		//创建发送到终端队列的队列名
 		Hashtable<String , String> userQueueMap=null;
-		if (userOnlineQueueHashMap.containsKey(message.getMessageBody().getUsername())) {
-			userQueueMap=userOnlineQueueHashMap.get(message.getMessageBody().getUsername());
+		if (userOnlineQueueHashMap.containsKey(deviceCustom2.getDeviceNo())) {
+			userQueueMap=userOnlineQueueHashMap.get(deviceCustom2.getDeviceNo());
 		}
 		if(userQueueMap==null) {
 			userQueueMap=new Hashtable<String,String>();
 		}
-		userQueueMap.put("sendQueue", message.getMessageBody().getUsername());
+		userQueueMap.put("sendQueue", message.getSessionToken());
 		
-		userOnlineQueueHashMap.put(message.getMessageBody().getUsername(), userQueueMap);	
+		userOnlineQueueHashMap.put(deviceCustom2.getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(message.getMessageBody().getUsername())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(message.getMessageBody().getUsername());
+		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
 		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(message.getMessageBody().getUsername(), messageMap);
+		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
 
 		Boolean tempboolean = authcodeDao.findDeviceUserAndUpdateLocation(message);
 		if(tempboolean) {
@@ -83,14 +95,14 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 			String authJson = JSONObject.toJSONString(authCodeReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(message.getMessageBody().getUsername())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getMessageBody().getUsername());
+			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
-			unSendReplyMessageHashMap.put(message.getMessageBody().getUsername(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
 			
 			return true;
 		}else {

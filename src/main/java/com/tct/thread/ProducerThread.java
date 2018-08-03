@@ -51,9 +51,9 @@ public class ProducerThread extends Thread {
 				ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 				ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageCacheMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 				
-				for(String deviceNo:unSendReplyMessageCacheMap.keySet()) {	
-					Hashtable<String, Object> unSendMessageMap =unSendReplyMessageCacheMap.get(deviceNo);
-					Destination destination =  session.createQueue(deviceNo);
+				for(String sessionToken:unSendReplyMessageCacheMap.keySet()) {	
+					Hashtable<String, Object> unSendMessageMap =unSendReplyMessageCacheMap.get(sessionToken);
+					Destination destination =  session.createQueue(sessionToken);
 					MessageProducer producer =  session.createProducer(destination);
 				
 					for(String serialNumber:unSendMessageMap.keySet()) {
@@ -65,8 +65,8 @@ public class ProducerThread extends Thread {
 						session.commit();
 						
 						Hashtable<String, Object> messageMap=new Hashtable<String,Object>();
-						if (unhandlerReceiveMessageHashMap.containsKey(deviceNo)){
-							messageMap= unhandlerReceiveMessageHashMap.get(deviceNo);
+						if (unhandlerReceiveMessageHashMap.containsKey(sessionToken)){
+							messageMap= unhandlerReceiveMessageHashMap.get(sessionToken);
 							messageMap.remove(serialNumber);
 						}
 					}	

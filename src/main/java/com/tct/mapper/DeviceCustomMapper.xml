@@ -9,4 +9,16 @@
 			</if>
 		</where>
 	</select>
+	
+	  <select id="selectDeviceByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo" resultType="com.tct.po.DeviceCustom">
+ 		SELECT * FROM device
+  		<where>
+			<if test="deviceCustom !=null and deviceCustom.deviceName!=null">
+				device_name=#{deviceCustom.deviceName}
+			</if>
+			<if test="deviceCustom !=null and deviceCustom.password!=null">
+				and password=#{deviceCustom.password}
+			</if>
+		</where>
+	</select>
 </mapper>

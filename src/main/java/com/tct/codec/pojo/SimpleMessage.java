@@ -8,6 +8,7 @@ public class SimpleMessage {
 	private String serialNumber;
 	private String messageType;
 	private String sendTime;
+	private String sessionToken;
 	
 	public String getServiceType() {
 		return serviceType;
@@ -44,6 +45,12 @@ public class SimpleMessage {
 	}
 	public void setSendTime(String sendTime) {
 		this.sendTime = sendTime;
+	}
+	public String getSessionToken() {
+		return sessionToken;
+	}
+	public void setSessionToken(String sessionToken) {
+		this.sessionToken = sessionToken;
 	}
 	
 	

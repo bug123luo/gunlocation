@@ -60,21 +60,21 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 		if(userQueueMap==null) {
 			userQueueMap=new Hashtable<String,String>();
 		}
-		userQueueMap.put("sendQueue", deviceGunCustom.getDeviceNo());
+		userQueueMap.put("sendQueue", message.getSessionToken());
 		
 		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
-		messageMap.put("s"+message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
+		messageMap.put(message.getSerialNumber(), message);		
+		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
 		
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -106,15 +106,15 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			
 			String bingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
 			//将回应APP消息放进消息缓存队列中
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
+			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
 			
 			//将回应消息发送到Web前端队列
 			GunCustom gunCustom2 = new GunCustom();
@@ -138,13 +138,13 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			
 			String serverbingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
 			
-			if(unhandlerReceiveMessageHashMap.containsKey("WebOutQueue")) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get("WebOutQueue");
+			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), serverbingJson);
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
 			
 			flag = true;

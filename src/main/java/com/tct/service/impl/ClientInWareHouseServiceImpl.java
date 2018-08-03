@@ -66,21 +66,21 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 		if(userQueueMap==null) {
 			userQueueMap=new Hashtable<String,String>();
 		}
-		userQueueMap.put("sendQueue", deviceGunCustom.getDeviceNo());
+		userQueueMap.put("sendQueue", message.getSessionToken());
 		
 		userOnlineQueueHashMap.put(deviceGunCustom.getDeviceNo(), userQueueMap);	
 		
 		//将接收到的消息放在本地的接收消息队列上
 		Hashtable<String, Object> messageMap=null;
-		if (unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-			messageMap= unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+		if (unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+			messageMap= unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 		}
 		if(messageMap ==null) {
 			messageMap=new Hashtable<String,Object>();
 		}
 		
 		messageMap.put(message.getSerialNumber(), message);		
-		unhandlerReceiveMessageHashMap.put(deviceGunCustom.getDeviceNo(), messageMap);
+		unhandlerReceiveMessageHashMap.put(message.getSessionToken(), messageMap);
 		
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -110,17 +110,19 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
 			
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
-			//将回应消息放进消息缓存队列中
+			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unhandlerReceiveMessageHashMap.containsKey(deviceGunCustom.getDeviceNo())) {
-				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(deviceGunCustom.getDeviceNo());
+			if(unhandlerReceiveMessageHashMap.containsKey(message.getSessionToken())) {
+				tempUnSendReplyMessageMap = unhandlerReceiveMessageHashMap.get(message.getSessionToken());
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
-			unSendReplyMessageHashMap.put(deviceGunCustom.getDeviceNo(), tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(message.getSessionToken(), tempUnSendReplyMessageMap);
 			
+			
+			//将向服务器的发送消息放在缓存队列中
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
 			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
