@@ -1,13 +1,9 @@
 package com.tct.dao.impl;
 
-
-
 import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.mapper.DeviceCustomMapper;
@@ -22,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-
 public class AuthCodeDaoImpl implements AuthCodeDao{
 
 	@Autowired
@@ -40,7 +35,6 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		DeviceCustom deviceCustom = new DeviceCustom(); 
-		Integer deviceId = null;
 		
 		Date date=StringUtil.getDate(message.getSendTime());
 
@@ -49,13 +43,10 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		deviceQueryVo.setDeviceCustom(deviceCustom);
 		
 		try {
-			deviceId = (Integer) deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo);
-			if (deviceId==null) {
-				log.debug("用户不存在");
-				return flag;
-			}	
+			Integer deviceId = (Integer) deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo);
 		} catch (Exception e1) {
 			e1.printStackTrace();
+			log.debug("用户不存在");
 			return flag;
 			
 		}

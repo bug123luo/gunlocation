@@ -11,7 +11,6 @@ import com.tct.po.ServerMessageSerialnumberCustom;
 import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
 @Component
 @Transactional
 public class ServerMessageSerialNumberDaoImpl implements ServerMessageSerialNumberDao {

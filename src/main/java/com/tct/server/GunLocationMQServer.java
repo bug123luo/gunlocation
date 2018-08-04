@@ -21,7 +21,7 @@ public class GunLocationMQServer {
 
 	public static void main(String[] args) {
 
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml","classpath:applicationContext-transaction.xml"});
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"applicationContext-dao.xml","applicationContext-transaction.xml"});
 		
 		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");*/
 		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");

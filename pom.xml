@@ -81,6 +81,11 @@
 	</dependency>
 		<dependency>
 	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-jms</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
 	    <artifactId>spring-aop</artifactId>
 	    <version>4.3.9.RELEASE</version>
 	</dependency>
@@ -153,7 +158,6 @@
 	    <!-- <scope>test</scope> -->
 	</dependency>
   </dependencies>
-  
       <build>
       <!-- 如果不添加此节点mybatis的mapper.xml文件都会被漏掉。 -->
     	<plugins>
@@ -202,7 +206,7 @@
                     <archive>
                         <manifest>
                             <!-- 此处指定main方法入口的class -->
-                            <mainClass>com.lcclovehww.gunLocationMqServer.GunLocationMQServer</mainClass>
+                            <mainClass>com.tct.server.GunLocationMQServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

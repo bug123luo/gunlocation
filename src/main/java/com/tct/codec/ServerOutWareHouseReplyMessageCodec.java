@@ -1,7 +1,6 @@
 package com.tct.codec;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mysql.jdbc.log.Log;
 import com.tct.codec.pojo.ServerOutWareHouseReplyBody;
 import com.tct.codec.pojo.ServerOutWareHouseReplyMessage;
 
@@ -32,7 +31,6 @@ public class ServerOutWareHouseReplyMessageCodec implements MessageCodec {
 
 	@Override
 	public String encode(Object outMsg) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -12,7 +12,6 @@ import com.tct.po.DeviceGunQueryVo;
 import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
 @Component
 @Transactional
 public class ServerOutWareHouseDaoImpl implements ServerOutWareHouseDao {

@@ -1,7 +1,6 @@
 package com.tct.codec;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tct.codec.pojo.ServerOffLocationWarningStartStopBody;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopReplyBody;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopReplyMessage;
 
