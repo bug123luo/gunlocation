@@ -10,7 +10,6 @@ import com.tct.util.RandomNumber;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
@@ -19,11 +18,11 @@ import com.tct.codec.pojo.AuthCodeReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceQueryVo;
-import com.tct.service.AuthCodeService;
+import com.tct.service.SimpleService;
 
 @Slf4j
 @Service(value="authCodeService")
-public class AuthCodeServiceImpl implements AuthCodeService{
+public class AuthCodeServiceImpl implements SimpleService{
 	
 	@Autowired
 	AuthCodeDao authcodeDao;
@@ -52,10 +51,6 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 		
 		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		
-		//将接收到的消息放在本地的接收消息队列上
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-
 		Boolean tempboolean = authcodeDao.findDeviceUserAndUpdateLocation(message,deviceCustom2.getDeviceNo());
 		if(tempboolean) {
 			//构造回应消息
@@ -78,6 +73,8 @@ public class AuthCodeServiceImpl implements AuthCodeService{
 			authCodeReplyMessage.setMessageBody(authCodeReplyBody);
 			authCodeReplyMessage.setSessionToken(message.getSessionToken());
 				
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			
 			String authJson = JSONObject.toJSONString(authCodeReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;

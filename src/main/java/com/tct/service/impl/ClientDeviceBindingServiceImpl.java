@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
-import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
 import com.tct.codec.pojo.ClientDeviceBindingReplyMessage;
@@ -24,14 +22,14 @@ import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
-import com.tct.service.ClientDeviceBindingService;
+import com.tct.service.SimpleService;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="clientDeviceBindingService")
-public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingService {
+public class ClientDeviceBindingServiceImpl implements SimpleService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
@@ -51,11 +49,7 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 		
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 
-		//将接收到的消息放在本地的接收消息队列上
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
@@ -84,6 +78,8 @@ public class ClientDeviceBindingServiceImpl implements ClientDeviceBindingServic
 			clientDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			clientDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String bingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
 			//将回应APP消息放进消息缓存队列中

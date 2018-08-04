@@ -24,14 +24,14 @@ import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.po.SosMessageCustom;
-import com.tct.service.ClientOffLocationWarningService;
+import com.tct.service.SimpleService;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="clientOffLocationWarningService")
-public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWarningService {
+public class ClientOffLocationWarningServiceImpl implements SimpleService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
@@ -55,10 +55,6 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
-		
-		//创建发送到终端队列的队列名
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		//插入device_location表，插入sos_message表，更新 gun表状态
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -99,6 +95,8 @@ public class ClientOffLocationWarningServiceImpl implements ClientOffLocationWar
 			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
 			clientOffLocationWarningReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String msgJson = JSONObject.toJSONString(clientOffLocationWarningReplyMessage);
 			//将APP回应消息放进消息缓存队列中

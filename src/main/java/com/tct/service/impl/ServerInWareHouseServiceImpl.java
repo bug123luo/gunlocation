@@ -15,13 +15,13 @@ import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.dao.ServerInWareHouseDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
-import com.tct.service.ServerInWareHouseService;
+import com.tct.service.SimpleService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="serverInWareHouseService")
-public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
+public class ServerInWareHouseServiceImpl implements SimpleService {
 
 	@Autowired
 	ServerInWareHouseDao serverInWareHouseDao;
@@ -42,8 +42,6 @@ public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
 		DeviceGunCustom deviceGunCustom2 = serverInWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);
 		
 		//将接收到的消息放在本地的接收消息队列上
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		String sessionToken = userOnlineSessionCache.get(deviceGunCustom2.getDeviceNo());
 		
 		if(sessionToken==null) {
@@ -52,8 +50,8 @@ public class ServerInWareHouseServiceImpl implements ServerInWareHouseService {
 		}
 		
 		message.setSessionToken(sessionToken);
-		messageMap.put("s"+message.getSerialNumber(), message);		
-		unSendReplyMessageHashMap.put(toClientQue, messageMap);
+		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		//发送到producer处理队列上
 		String outWareJson = JSONObject.toJSONString(message);

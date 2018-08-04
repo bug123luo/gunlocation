@@ -8,28 +8,23 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationSearchMessage;
-import com.tct.codec.pojo.ServerOffLocationSearchReplyBody;
-import com.tct.codec.pojo.ServerOffLocationSearchReplyMessage;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientBody;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.mapper.GunCustomMapper;
-import com.tct.po.DeviceGunCustom;
-import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
-import com.tct.service.ServerOffLocationSearchService;
+import com.tct.service.SimpleService;
 import com.tct.util.RandomNumber;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="serverOffLocationSearchService")
-public class ServerOffLocationSearchServiceImpl implements ServerOffLocationSearchService {
+public class ServerOffLocationSearchServiceImpl implements SimpleService {
 
 	@Autowired
 	GunCustomMapper gunCustomMapper;
@@ -57,8 +52,6 @@ public class ServerOffLocationSearchServiceImpl implements ServerOffLocationSear
 			return false;
 		}
 		
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 				
 		ServerOffLocationSearchToClientMessage serverOffLocationSearchToClientMessage = new ServerOffLocationSearchToClientMessage();
 		ServerOffLocationSearchToClientBody searchToClientBody = new ServerOffLocationSearchToClientBody();
@@ -78,6 +71,9 @@ public class ServerOffLocationSearchServiceImpl implements ServerOffLocationSear
 		serverOffLocationSearchToClientMessage.setServiceType(message.getServiceType());
 		serverOffLocationSearchToClientMessage.setSessionToken(sessionToken);
 		
+		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+
 		String searchToClienJson = JSONObject.toJSONString(serverOffLocationSearchToClientMessage);
 		
 		//将回应消息放进消息缓存队列中

@@ -6,11 +6,11 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface WebUserMapper {
-    long countByExample(WebUserExample example);
+    int countByExample(WebUserExample example);
 
     int deleteByExample(WebUserExample example);
 
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(Integer id);
 
     int insert(WebUser record);
 
@@ -18,7 +18,7 @@ public interface WebUserMapper {
 
     List<WebUser> selectByExample(WebUserExample example);
 
-    WebUser selectByPrimaryKey(Long id);
+    WebUser selectByPrimaryKey(Integer id);
 
     int updateByExampleSelective(@Param("record") WebUser record, @Param("example") WebUserExample example);
 

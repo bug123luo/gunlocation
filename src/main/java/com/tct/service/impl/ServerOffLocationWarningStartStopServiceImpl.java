@@ -6,21 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
-import com.tct.service.ServerOffLocationWarningStartStopService;
+import com.tct.service.SimpleService;
 
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 @Service(value="serverOffLocationWarningStartStopService")
-public class ServerOffLocationWarningStartStopServiceImpl implements ServerOffLocationWarningStartStopService {
+public class ServerOffLocationWarningStartStopServiceImpl implements SimpleService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
@@ -47,15 +46,11 @@ public class ServerOffLocationWarningStartStopServiceImpl implements ServerOffLo
 			log.info("该用户不在线，无法发送查找启停命令");
 			return false;
 		}
-
-		//将接收到的消息放在本地的接收消息队列上
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		message.setSessionToken(sessionToken);
-		messageMap.put("s"+message.getSerialNumber(), message);		
-		unSendReplyMessageHashMap.put(toClientQue, messageMap);
 				
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+
 		String startStopJson = JSONObject.toJSONString(message);
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;

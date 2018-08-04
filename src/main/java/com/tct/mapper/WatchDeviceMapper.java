@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface WatchDeviceMapper {
-    long countByExample(WatchDeviceExample example);
+    int countByExample(WatchDeviceExample example);
 
     int deleteByExample(WatchDeviceExample example);
 

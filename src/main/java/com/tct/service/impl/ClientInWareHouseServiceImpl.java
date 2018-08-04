@@ -27,14 +27,14 @@ import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
-import com.tct.service.ClientInWareHouseService;
+import com.tct.service.SimpleService;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="clientInWareHouseService")
-public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
+public class ClientInWareHouseServiceImpl implements SimpleService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
@@ -57,11 +57,6 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 		
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
-
-		//创建发送到终端队列的队列名
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 				
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
@@ -90,6 +85,8 @@ public class ClientInWareHouseServiceImpl implements ClientInWareHouseService {
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
 			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将APP回应消息放进消息缓存队列中

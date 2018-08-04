@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
@@ -18,20 +16,16 @@ import com.tct.codec.pojo.ClientOutWareHouseReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
-import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceGunCustom;
-import com.tct.po.DeviceQueryVo;
-import com.tct.po.WatchDevice;
 import com.tct.po.WatchDeviceCustom;
 import com.tct.po.WatchDeviceQueryVo;
-import com.tct.service.ClientOutWareHouseService;
+import com.tct.service.SimpleService;
 import com.tct.util.StringUtil;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @Service(value="clientOutWareHouseService")
-public class ClientOutWareHouseServiceImpl implements ClientOutWareHouseService {
+public class ClientOutWareHouseServiceImpl implements SimpleService {
 
 	@Autowired
 	AuthCodeDao authcodeDao;
@@ -63,9 +57,6 @@ public class ClientOutWareHouseServiceImpl implements ClientOutWareHouseService 
 	
 		userOnlineSessionCache.put(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
 		
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
 		deviceGunCustom.setDeviceNo(watchDeviceCustom.getDeviceNo());
@@ -103,7 +94,9 @@ public class ClientOutWareHouseServiceImpl implements ClientOutWareHouseService 
 		clientOutWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 		clientOutWareHouseReplyMessage.setServiceType(message.getServiceType());
 		clientOutWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			
+		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+		
 		String authJson = JSONObject.toJSONString(clientOutWareHouseReplyMessage);
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;

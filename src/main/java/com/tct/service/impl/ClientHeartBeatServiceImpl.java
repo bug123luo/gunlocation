@@ -19,14 +19,14 @@ import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
-import com.tct.service.ClientHeartBeatService;
+import com.tct.service.SimpleService;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="clientHeartBeatService")
-public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
+public class ClientHeartBeatServiceImpl implements SimpleService {
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
@@ -44,13 +44,8 @@ public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
 		
 		//缓存消息
 		//AuthCodeMessage 中的username目前是警员编号
-		ConcurrentHashMap<String, Hashtable<String, Object>> unhandlerReceiveMessageHashMap = UnhandlerReceiveMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
-		//创建发送到终端队列的队列名
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
 		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -77,6 +72,8 @@ public class ClientHeartBeatServiceImpl implements ClientHeartBeatService {
 			clientHeartBeatReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientHeartBeatReplyMessage.setServiceType(message.getServiceType());
 			clientHeartBeatReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
 			//将回应消息放进消息缓存队列中

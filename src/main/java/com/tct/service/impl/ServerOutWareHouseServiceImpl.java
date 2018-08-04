@@ -15,13 +15,13 @@ import com.tct.codec.pojo.ServerOutWareHouseMessage;
 import com.tct.dao.ServerOutWareHouseDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
-import com.tct.service.ServerOutWareHouseService;
+import com.tct.service.SimpleService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value="serverOutWareHouseService")
-public class ServerOutWareHouseServiceImpl implements ServerOutWareHouseService {
+public class ServerOutWareHouseServiceImpl implements SimpleService {
 		
 	@Autowired
 	ServerOutWareHouseDao serverOutWareHouseDao;
@@ -47,12 +47,13 @@ public class ServerOutWareHouseServiceImpl implements ServerOutWareHouseService 
 			return false;
 		}
 		
-		//将接收到的消息放在本地的接收消息队列上
-		Hashtable<String, Object> messageMap=null;
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+
 		
 		//发送到producer处理队列上
 		message.setSessionToken(sessionToken);
+		
+		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+
 		String outWareJson = JSONObject.toJSONString(message);
 
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
