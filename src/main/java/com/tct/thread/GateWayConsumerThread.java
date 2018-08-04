@@ -49,8 +49,8 @@ public class GateWayConsumerThread extends Thread{
 				
 				TextMessage textMessage = (TextMessage) consumer.receive();
 				
+				log.info("接收消息");
 				log.debug(textMessage.toString());
-				System.out.println(textMessage.toString());
 					
 				if(null !=textMessage) {
 					//编解码器选择器

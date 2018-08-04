@@ -24,24 +24,25 @@ import lombok.extern.slf4j.Slf4j;
 public class QueueSender {
 
 	public static void main(String[] args) throws JMSException, InterruptedException {
-		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		/*ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");*/
+		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
 		Connection connection =  connectionFactory.createConnection();
 		connection.start();
 		
 		Session session = connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-		Destination destination = session.createQueue("WebQueue");
+		Destination destination = session.createQueue("InputQueue");
 		
 		MessageProducer producer =  session.createProducer(destination);
 		for(int i=0;i<1;i++) {
 			
-/*			AuthCodeMessage authCodeMessageBody = new AuthCodeMessage();
+			AuthCodeMessage authCodeMessageBody = new AuthCodeMessage();
 			
 			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
 			
-			authSunBody.setCommand("234223");
+			authSunBody.setCommand("A101");
 			authSunBody.setLa("234234");
 			authSunBody.setLo("234234");
-			authSunBody.setUsername("123456");
+			authSunBody.setUsername("yqh");
 			
 			authCodeMessageBody.setDeviceType(1);
 			authCodeMessageBody.setFormatVersion("1.0");
@@ -50,10 +51,12 @@ public class QueueSender {
 			authCodeMessageBody.setSendTime("20180725121212");
 			authCodeMessageBody.setSerialNumber("1234567894564621");
 			authCodeMessageBody.setServiceType("aafafasfsaffsfsfsfs");
+			authCodeMessageBody.setSessionToken("00000165053debcd");
+			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(authCodeMessageBody));
+
+			System.out.println(JSONObject.toJSONString(authCodeMessageBody));
 			
-			System.out.println(JSONObject.toJSONString(authCodeMessageBody));*/
-			
-			ServerInWareHouseMessage serverInWareHouseMessage = new ServerInWareHouseMessage();
+/*			ServerInWareHouseMessage serverInWareHouseMessage = new ServerInWareHouseMessage();
 			ServerInWareHouseBody serverInWareHouseBody = new ServerInWareHouseBody();
 			serverInWareHouseBody.setAuthCode("61368567623976934421652194399384");
 			serverInWareHouseBody.setBluetoothMac("poiuyt");
@@ -67,7 +70,7 @@ public class QueueSender {
 			serverInWareHouseMessage.setServiceType("aafafasfsaffsfsfsfs");
 			
 			log.info(JSONObject.toJSONString(serverInWareHouseMessage));			
-			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(serverInWareHouseMessage));
+			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(serverInWareHouseMessage));*/
 			Thread.sleep(1000);
 			
 			producer.send(message);
