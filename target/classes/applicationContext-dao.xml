@@ -43,8 +43,4 @@
 		<property name="basePackage" value="com.tct.mapper"></property>
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
-
-
-
-
 </beans>
