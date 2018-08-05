@@ -79,7 +79,8 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	@Transactional
 	public DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception {
 		
-		DeviceCustom deviceCustom = deviceCustomMapper.selectDeviceByDeviceQueryVo(deviceQueryVo);
+		DeviceQueryVo deviceQueryVo2 = deviceQueryVo;
+		DeviceCustom deviceCustom = deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo2);
 		if (deviceCustom==null) {
 			WatchDeviceQueryVo watchDeviceQueryVo = new WatchDeviceQueryVo();
 			WatchDeviceCustom watchDeviceCustom = new WatchDeviceCustom();

@@ -17,8 +17,6 @@
         http://activemq.apache.org/schema/core
         http://activemq.apache.org/schema/core/activemq-core-5.12.1.xsd">
 
-    <context:component-scan base-package="com.tct.jms.*" />
-
     <amq:connectionFactory id="amqConnectionFactory"
                            brokerURL="tcp://112.74.51.194:61616"
                            userName="admin"
@@ -48,7 +46,7 @@
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="defaultDestination" ref="demoQueueDestination" />
-        <property name="receiveTimeout" value="10000" />
+        <!-- <property name="receiveTimeout" value="10000" /> -->
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
         <property name="pubSubDomain" value="false" />
     </bean>

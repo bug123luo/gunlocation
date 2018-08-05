@@ -58,7 +58,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 		DeviceCustom deviceCustom = new DeviceCustom();
 		deviceCustom.setDeviceNo(deviceNo);
 		deviceQueryVo.setDeviceCustom(deviceCustom);
-		DeviceCustom deviceCustom2 = deviceCustomMapper.selectDeviceByDeviceQueryVo(deviceQueryVo);
+		DeviceCustom deviceCustom2 = deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo);
 		WatchDeviceCustom watchDeviceCustom2=null;
 		if(deviceCustom2!=null && deviceCustom2.getDeviceName()!=null) {
 

@@ -22,9 +22,7 @@ public class ConsumerMessageListener implements MessageListener {
 		if(message instanceof TextMessage) {
 	        TextMessage textMessage = (TextMessage) message;
 
-			log.info("接收消息");
-			log.debug(textMessage.toString());
-				
+			log.info("接收消息");				
 			if(null !=textMessage) {
 				//编解码器选择器
 				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			
@@ -40,6 +38,8 @@ public class ConsumerMessageListener implements MessageListener {
 				ServiceSelector serviceSelector = new ServiceSelector();
 				boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
 			}
+		}else {
+			log.info("收到非TextMessage消息类型");
 		}
 	}
 }
