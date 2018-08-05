@@ -20,7 +20,9 @@ public class GunLocationMQServer {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml",
 				"classpath:applicationContext-transaction.xml","classpath:applicationContext-jms.xml"});
 		
-		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		//ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		ConnectionFactory cf= new ActiveMQConnectionFactory("failover:(tcp://112.74.51.194:61616)?initialReconnectDelay=1000&maxReconnectDelay=30000");
+		
 		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");*/
 		
 		Hashtable<String, String> messagemap = new Hashtable<String,String>();
