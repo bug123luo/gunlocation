@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tct.util.RandomNumber;
+import com.tct.util.StringUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
@@ -16,7 +18,9 @@ import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
 import com.tct.codec.pojo.AuthCodeReplyMessage;
 import com.tct.dao.AuthCodeDao;
+import com.tct.mapper.DeviceCustomMapper;
 import com.tct.po.DeviceCustom;
+import com.tct.po.DeviceLocationCustom;
 import com.tct.po.DeviceQueryVo;
 import com.tct.service.SimpleService;
 
@@ -42,16 +46,29 @@ public class AuthCodeServiceImpl implements SimpleService{
 		deviceCustom.setDeviceName(message.getMessageBody().getUsername());
 		deviceCustom.setPassword(message.getMessageBody().getCommand());
 		deviceQueryVo.setDeviceCustom(deviceCustom);
-		DeviceCustom deviceCustom2 = authcodeDao.findByDeviceQueryVo(deviceQueryVo);
 		
-		if(deviceCustom2.getDeviceNo()==null) {
+		DeviceCustom deviceCustom2 = null;
+		try {
+			deviceCustom2 = authcodeDao.findByDeviceQueryVo(deviceQueryVo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("---用户不存在请重新注册或者在数据库中添加----");
+			return false;
+		}
+		
+		if(deviceCustom2==null || deviceCustom2.getDeviceNo()==null) {
 			log.info("用户不存在请重新注册或者在数据库中添加");
 			return false;
 		}
 		
 		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		
-		Boolean tempboolean = authcodeDao.findDeviceUserAndUpdateLocation(message,deviceCustom2.getDeviceNo());
+		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+		deviceLocationCustom.setDeviceNo(deviceCustom2.getDeviceNo());
+		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+		Boolean tempboolean = authcodeDao.updateDeviceLocation(deviceLocationCustom);
 		if(tempboolean) {
 			//构造回应消息
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();

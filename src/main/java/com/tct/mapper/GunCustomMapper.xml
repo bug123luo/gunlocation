@@ -48,7 +48,7 @@
 	</select>
 	
 	<select id="selectByGunTag" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
-		select * from gun
+		select id,web_id webId,gun_tag gunTag,bluetooth_mac bluetoothMac,warehouse_name warehouseName,warehouse_id warehouseId,bullet_number bulletNumber,state,real_time_state realTimeState,create_time createTime,update_time updateTime,version  from gun
 		<where>
 			<if test="gunCustom!=null and gunCustom.gunTag!=null">
 				gun_tag=#{gunCustom.gunTag}

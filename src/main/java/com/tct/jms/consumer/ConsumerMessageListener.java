@@ -7,20 +7,39 @@ import javax.jms.TextMessage;
 
 import org.springframework.stereotype.Service;
 
-@Service(value="consumerMessageListener")
+import com.tct.codec.MessageCodec;
+import com.tct.codec.MessageCodecSelector;
+import com.tct.service.ServiceSelector;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
 public class ConsumerMessageListener implements MessageListener {
 
 	@Override
 	public void onMessage(Message message) {
 		if(message instanceof TextMessage) {
 	        TextMessage textMessage = (TextMessage) message;
-	        try {
-	            System.out.println("接收message: " + textMessage.getText());
-	        } catch (JMSException e) {
-	            e.printStackTrace();
-	        }
+
+			log.info("接收消息");
+			log.debug(textMessage.toString());
+				
+			if(null !=textMessage) {
+				//编解码器选择器
+				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			
+				MessageCodec messageCodec = null;
+				try {
+					log.info(textMessage.getText());
+					messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
+				} catch (Exception e2) {
+					log.debug(e2+"消息解码器不存在");
+				}
+				
+				//业务处理选择器
+				ServiceSelector serviceSelector = new ServiceSelector();
+				boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
+			}
 		}
-
 	}
-
 }

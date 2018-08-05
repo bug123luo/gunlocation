@@ -19,6 +19,7 @@
 	</select>
 	
 	<update id="updateByDeviceGunCustom" parameterType="com.tct.po.DeviceGunCustom">
+		update device_gun
 	 <set>
       <if test="id != null">
         id = #{id,jdbcType=INTEGER},

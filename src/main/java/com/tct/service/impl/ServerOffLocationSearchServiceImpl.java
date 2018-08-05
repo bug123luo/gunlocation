@@ -14,7 +14,10 @@ import com.tct.codec.pojo.ServerOffLocationSearchMessage;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientBody;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientMessage;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.GunCustomMapper;
+import com.tct.po.DeviceCustom;
+import com.tct.po.DeviceQueryVo;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
@@ -31,6 +34,9 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
+	
+	@Autowired
+	DeviceCustomMapper deviceCustomMapper;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -52,7 +58,14 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 			return false;
 		}
 		
-				
+		//将离位查找人员状态改为3表示正在协助查找
+		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		DeviceCustom deviceCustom = new DeviceCustom();
+		deviceCustom.setDeviceNo(message.getMessageBody().getAssDeviceNo());
+		deviceCustom.setState(3);
+		deviceQueryVo.setDeviceCustom(deviceCustom);
+		deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
+		
 		ServerOffLocationSearchToClientMessage serverOffLocationSearchToClientMessage = new ServerOffLocationSearchToClientMessage();
 		ServerOffLocationSearchToClientBody searchToClientBody = new ServerOffLocationSearchToClientBody();
 		searchToClientBody.setAuthCode(RandomNumber.getRandomNumber());

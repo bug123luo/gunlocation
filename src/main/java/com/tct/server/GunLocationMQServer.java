@@ -16,11 +16,12 @@ import com.tct.thread.WebConsumerThread;
 public class GunLocationMQServer {
 
 	public static void main(String[] args) {
-
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml","classpath:applicationContext-transaction.xml"});
 		
-		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");*/
-		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml",
+				"classpath:applicationContext-transaction.xml","classpath:applicationContext-jms.xml"});
+		
+		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");*/
 		
 		Hashtable<String, String> messagemap = new Hashtable<String,String>();
 		messagemap.put("sendQueue", "WebOutQueue");
@@ -39,12 +40,12 @@ public class GunLocationMQServer {
 		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
 		producerThread.start();
 		
-		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
-		gateWayConsumerThread.start();
+/*		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
+		gateWayConsumerThread.start();*/
 		
-		paraMap.put("queneName","WebInQueue");
+/*		paraMap.put("queneName","WebInQueue");
 		WebConsumerThread webConsumerThread=new WebConsumerThread(paraMap,"webConsumer");
-		webConsumerThread.start();
+		webConsumerThread.start();*/
 	}
 
 }

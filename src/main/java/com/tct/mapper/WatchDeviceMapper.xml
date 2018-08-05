@@ -10,6 +10,10 @@
     <result column="gun_mac" property="gunMac" jdbcType="VARCHAR" />
     <result column="gun_tag" property="gunTag" jdbcType="VARCHAR" />
     <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,7 +74,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, device_no, device_name, password, state, gun_mac, gun_tag, version
+    id, device_no, device_name, password, state, gun_mac, gun_tag, version, phone, email, 
+    create_time, update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.tct.po.WatchDeviceExample" >
     select
@@ -105,10 +110,14 @@
   <insert id="insert" parameterType="com.tct.po.WatchDevice" >
     insert into watch_device (id, device_no, device_name, 
       password, state, gun_mac, 
-      gun_tag, version)
+      gun_tag, version, phone, 
+      email, create_time, update_time
+      )
     values (#{id,jdbcType=INTEGER}, #{deviceNo,jdbcType=VARCHAR}, #{deviceName,jdbcType=VARCHAR}, 
       #{password,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{gunMac,jdbcType=VARCHAR}, 
-      #{gunTag,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER})
+      #{gunTag,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.tct.po.WatchDevice" >
     insert into watch_device
@@ -137,6 +146,18 @@
       <if test="version != null" >
         version,
       </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -162,6 +183,18 @@
       </if>
       <if test="version != null" >
         #{version,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -198,6 +231,18 @@
       <if test="record.version != null" >
         version = #{record.version,jdbcType=INTEGER},
       </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -212,7 +257,11 @@
       state = #{record.state,jdbcType=INTEGER},
       gun_mac = #{record.gunMac,jdbcType=VARCHAR},
       gun_tag = #{record.gunTag,jdbcType=VARCHAR},
-      version = #{record.version,jdbcType=INTEGER}
+      version = #{record.version,jdbcType=INTEGER},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -241,6 +290,18 @@
       <if test="version != null" >
         version = #{version,jdbcType=INTEGER},
       </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -252,7 +313,11 @@
       state = #{state,jdbcType=INTEGER},
       gun_mac = #{gunMac,jdbcType=VARCHAR},
       gun_tag = #{gunTag,jdbcType=VARCHAR},
-      version = #{version,jdbcType=INTEGER}
+      version = #{version,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

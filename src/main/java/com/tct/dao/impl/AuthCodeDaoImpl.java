@@ -1,6 +1,8 @@
 package com.tct.dao.impl;
 
 import java.util.Date;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,10 +10,13 @@ import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.DeviceLocationCustomMapper;
+import com.tct.mapper.WatchDeviceCustomMapper;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.DeviceLocationQueryVo;
 import com.tct.po.DeviceQueryVo;
+import com.tct.po.WatchDeviceCustom;
+import com.tct.po.WatchDeviceQueryVo;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,40 +31,19 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	@Autowired
 	DeviceLocationCustomMapper deviceLocationCustomMapper;
 	
+	@Autowired
+	WatchDeviceCustomMapper watchDeviceCustomMapper;
+	
 	@Transactional
-	public Boolean findDeviceUserAndUpdateLocation(Object obj,String deviceNo) {
+	public Boolean updateDeviceLocation(DeviceLocationCustom deviceLocationCustom) {
 		
-		AuthCodeMessage message = (AuthCodeMessage)obj;
-		String tempDeviceNo = deviceNo;
 		Boolean flag=false;
-		
-		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
-		DeviceCustom deviceCustom = new DeviceCustom(); 
-		
-		Date date=StringUtil.getDate(message.getSendTime());
-
-		deviceCustom.setDeviceNo(tempDeviceNo);
-		//deviceCustom.setDeviceName(message.getMessageBody().getUsername());
-		deviceQueryVo.setDeviceCustom(deviceCustom);
-		
-		try {
-			Integer deviceId = (Integer) deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			log.debug("用户不存在");
-			return flag;
 			
-		}
-		
-		
 		DeviceLocationQueryVo deviceLocationQueryVo = new DeviceLocationQueryVo();
-		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+		DeviceLocationCustom deviceLocationCustom3 = new DeviceLocationCustom();
 		DeviceLocationCustom deviceLocationCustom2= null;
-		deviceLocationCustom.setDeviceNo(deviceCustom.getDeviceNo());
-		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
-		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
-		deviceLocationCustom.setCreateTime(date);
-		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom);
+		BeanUtils.copyProperties(deviceLocationCustom, deviceLocationCustom3);
+		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom3);
 			
 		try {
 			deviceLocationCustom2 = deviceLocationCustomMapper.selectByDeviceLocationQueryVo(deviceLocationQueryVo);
@@ -92,8 +76,23 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	}
 
 	@Override
+	@Transactional
 	public DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception {
+		
 		DeviceCustom deviceCustom = deviceCustomMapper.selectDeviceByDeviceQueryVo(deviceQueryVo);
+		if (deviceCustom==null) {
+			WatchDeviceQueryVo watchDeviceQueryVo = new WatchDeviceQueryVo();
+			WatchDeviceCustom watchDeviceCustom = new WatchDeviceCustom();
+			watchDeviceCustom.setDeviceNo(deviceQueryVo.getDeviceCustom().getDeviceNo());
+			watchDeviceCustom.setPassword(deviceQueryVo.getDeviceCustom().getPassword());
+			WatchDeviceCustom watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
+			if (watchDeviceCustom2!=null) {
+				deviceCustom = new DeviceCustom();
+				BeanUtils.copyProperties(watchDeviceCustom2, deviceCustom);
+				deviceCustomMapper.insertSelective(deviceCustom);
+			}
+		}
+		
 		return deviceCustom;
 	}
 	
