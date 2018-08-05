@@ -16,32 +16,32 @@
 		update device
 		<set>
 			<if test="deviceCustom!=null and deviceCustom.deviceNo!=null">
-				device_no=#{deviceCustom.deviceNo}
+				device_no=#{deviceCustom.deviceNo},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.deviceName!=null">
-				device_name=#{deviceCustom.deviceName}
+				device_name=#{deviceCustom.deviceName},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.password!=null">
-				password=#{deviceCustom.password}
+				password=#{deviceCustom.password},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.phone!=null">
-				phone=#{deviceCustom.phone}
+				phone=#{deviceCustom.phone},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.email!=null">
-				email=#{deviceCustom.email}
+				email=#{deviceCustom.email},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.state!=null">
-				state=#{deviceCustom.state}
+				state=#{deviceCustom.state},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.createTime!=null">
-				create_time=#{deviceCustom.createTime}
+				create_time=#{deviceCustom.createTime},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.updateTime!=null">
-				update_time=#{deviceCustom.updateTime}
+				update_time=#{deviceCustom.updateTime},
 			</if>
 			<if test="deviceCustom!=null and deviceCustom.version!=null">
-				version=#{deviceCustom.version}
-			</if>			
+				version=#{deviceCustom.version},
+			</if>	
 		</set>
 		where device_no=#{deviceCustom.deviceNo}
 	</update>

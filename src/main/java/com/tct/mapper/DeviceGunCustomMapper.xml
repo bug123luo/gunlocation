@@ -52,6 +52,6 @@
         version = #{version,jdbcType=INTEGER},
       </if>
     </set>
-    where device_no =#{gunMac} and state=0
+    where gun_mac =#{gunMac} and state=0
 	</update>
 </mapper>
