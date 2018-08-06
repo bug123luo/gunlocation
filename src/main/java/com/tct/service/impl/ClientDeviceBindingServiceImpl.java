@@ -61,6 +61,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
 		gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+		gunCustom.setState(Integer.valueOf(0));
 		gunCustom.setRealTimeState(Integer.valueOf(0));
 		boolean flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 		
@@ -114,16 +115,17 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverbingJson = JSONObject.toJSONString(clientDeviceBindingReplyMessage);
+			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingBody);
 			
+			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
+				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			if(webUnSendReplyMessageMap==null) {
+				webUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
+			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);
 			
 			flag = true;
 		}else {

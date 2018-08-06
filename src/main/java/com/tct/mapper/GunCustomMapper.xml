@@ -8,7 +8,7 @@
 				gun_tag=#{gunTag},
 			</if>
 			<if test="bluetoothMac !=null">
-				bluetooth_Mac=#{bluetoothMac},
+				bluetooth_mac=#{bluetoothMac},
 			</if>
 			<if test="warehouseName!=null">
 				warehouse_name=#{warehouseName},
@@ -35,14 +35,14 @@
 				version=#{version},
 			</if>
 		</set>
-		where bluetooth_Mac=#{bluetoothMac} and real_time_state=0
+		where bluetooth_mac=#{bluetoothMac}
 	</update>
 	
 	<select id="selectBybluetoothMac" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
 				select id,web_id webId,gun_tag gunTag,bluetooth_mac bluetoothMac,warehouse_name warehouseName,warehouse_id warehouseId,bullet_number bulletNumber,state,real_time_state realTimeState,create_time createTime,update_time updateTime,version from gun
 		<where>
 			<if test="gunCustom!=null and gunCustom.bluetoothMac!=null">
-				bluetooth_Mac=#{gunCustom.bluetoothMac} and state=0
+				bluetooth_mac=#{gunCustom.bluetoothMac}
 			</if>
 		</where>
 	</select>

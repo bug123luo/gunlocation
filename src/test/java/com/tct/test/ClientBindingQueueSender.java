@@ -11,8 +11,11 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeMessageBody;
+import com.tct.codec.pojo.ClientDeviceBindingBody;
+import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientInWareHouseBody;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ServerInWareHouseBody;
@@ -24,7 +27,7 @@ import com.tct.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class QueueSender {
+public class ClientBindingQueueSender {
 
 	public static void main(String[] args) throws JMSException, InterruptedException {
 		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
@@ -38,26 +41,26 @@ public class QueueSender {
 		MessageProducer producer =  session.createProducer(destination);
 		for(int i=0;i<1;i++) {
 			
-			AuthCodeMessage authCodeMessageBody = new AuthCodeMessage();
+			ClientDeviceBindingMessage clientDeviceBindingMessage =  new ClientDeviceBindingMessage();
+			ClientDeviceBindingBody clientDeviceBindingBody = new ClientDeviceBindingBody();
+			clientDeviceBindingBody.setAuthCode("1212");
+			clientDeviceBindingBody.setBindTime(StringUtil.getDateString());
+			clientDeviceBindingBody.setBluetoothMac("23:34:3e:5f:33:3d");
+			clientDeviceBindingBody.setLa("23.232323");
+			clientDeviceBindingBody.setLo("113.23232");
+			clientDeviceBindingMessage.setMessageBody(clientDeviceBindingBody);
+			clientDeviceBindingMessage.setDeviceType(1);
+			clientDeviceBindingMessage.setFormatVersion("1.0");
+			clientDeviceBindingMessage.setMessageType("07");
+			clientDeviceBindingMessage.setSendTime(StringUtil.getDateString());
+			clientDeviceBindingMessage.setSerialNumber(StringUtil.getDateString()+"0001");
+			clientDeviceBindingMessage.setServiceType("abcabcabc");
+			clientDeviceBindingMessage.setSessionToken("00000165053debcd");
 			
-			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
 			
-			authSunBody.setCommand("1a1bf9685b0ea109719f211c1b9d8c31");
-			authSunBody.setLa("234234");
-			authSunBody.setLo("234234");
-			authSunBody.setUsername("云景");
-			
-			authCodeMessageBody.setDeviceType(1);
-			authCodeMessageBody.setFormatVersion("1.0");
-			authCodeMessageBody.setMessageBody(authSunBody);
-			authCodeMessageBody.setMessageType("01");
-			authCodeMessageBody.setSendTime("20180725121212");
-			authCodeMessageBody.setSerialNumber(StringUtil.getDateString());
-			authCodeMessageBody.setServiceType("aafafasfsaffsfsfsfs");
-			authCodeMessageBody.setSessionToken("00000165053debcd");
-			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(authCodeMessageBody));
+			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(clientDeviceBindingMessage));
 
-			System.out.println(JSONObject.toJSONString(authCodeMessageBody));
+			System.out.println(JSONObject.toJSONString(clientDeviceBindingMessage));
 			
 /*			ServerInWareHouseMessage serverInWareHouseMessage = new ServerInWareHouseMessage();
 			ServerInWareHouseBody serverInWareHouseBody = new ServerInWareHouseBody();

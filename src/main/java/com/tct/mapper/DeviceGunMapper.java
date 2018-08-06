@@ -27,4 +27,6 @@ public interface DeviceGunMapper {
     int updateByPrimaryKeySelective(DeviceGun record);
 
     int updateByPrimaryKey(DeviceGun record);
+    
+    DeviceGun qwer(String gunMac) throws Exception;
 }

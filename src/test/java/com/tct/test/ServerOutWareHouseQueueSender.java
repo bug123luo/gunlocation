@@ -11,6 +11,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeMessageBody;
 import com.tct.codec.pojo.ClientInWareHouseBody;
@@ -24,7 +25,7 @@ import com.tct.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class QueueSender {
+public class ServerOutWareHouseQueueSender {
 
 	public static void main(String[] args) throws JMSException, InterruptedException {
 		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
@@ -38,26 +39,20 @@ public class QueueSender {
 		MessageProducer producer =  session.createProducer(destination);
 		for(int i=0;i<1;i++) {
 			
-			AuthCodeMessage authCodeMessageBody = new AuthCodeMessage();
+/*			ServerOutWareHouseMessage serverOutWareHouseMessage = new ServerOutWareHouseMessage()
+			ServerOutWareHouseBody serverOutWareHouseBody = new ServerOutWareHouseBody();
+			serverOutWareHouseBody.setApplyTime(applyTime);
+			serverOutWareHouseBody.setBluetoothMac(bluetoothMac);
+			serverOutWareHouseBody.setApplyTime(applyTime);
+			serverOutWareHouseBody.setBroadcastInterval(broadcastInterval);
+			serverOutWareHouseBody.setConnectionTimeout(connectionTimeout);
+			serverOutWareHouseBody.setDeadlineTime(deadlineTime);
+			serverOutWareHouseBody.setDeviceNo(deviceNo);
+			serverOutWareHouseBody.setGunTag(gunTag);*/
 			
-			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
-			
-			authSunBody.setCommand("1a1bf9685b0ea109719f211c1b9d8c31");
-			authSunBody.setLa("234234");
-			authSunBody.setLo("234234");
-			authSunBody.setUsername("云景");
-			
-			authCodeMessageBody.setDeviceType(1);
-			authCodeMessageBody.setFormatVersion("1.0");
-			authCodeMessageBody.setMessageBody(authSunBody);
-			authCodeMessageBody.setMessageType("01");
-			authCodeMessageBody.setSendTime("20180725121212");
-			authCodeMessageBody.setSerialNumber(StringUtil.getDateString());
-			authCodeMessageBody.setServiceType("aafafasfsaffsfsfsfs");
-			authCodeMessageBody.setSessionToken("00000165053debcd");
-			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(authCodeMessageBody));
+/*			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(authCodeMessageBody));
 
-			System.out.println(JSONObject.toJSONString(authCodeMessageBody));
+			System.out.println(JSONObject.toJSONString(authCodeMessageBody));*/
 			
 /*			ServerInWareHouseMessage serverInWareHouseMessage = new ServerInWareHouseMessage();
 			ServerInWareHouseBody serverInWareHouseBody = new ServerInWareHouseBody();
@@ -93,7 +88,7 @@ public class QueueSender {
 			
 			Thread.sleep(1000);
 			
-			producer.send(message);
+			/*producer.send(message);*/
 		}
 		
 		session.commit();

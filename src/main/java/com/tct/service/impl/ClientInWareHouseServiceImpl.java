@@ -69,7 +69,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 		deviceGunCustom2.setInWarehouseTime(new Date());
 		deviceGunCustom2.setState(1);
 		
-		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom);
+		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2);
 		if (flag) {
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
 			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
@@ -112,7 +112,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			ServerInWareHouseReplyBody serverInWareHouseReplyBody = new ServerInWareHouseReplyBody();
 			serverInWareHouseReplyBody.setDeviceNo(deviceGunCustom.getDeviceNo());
 			serverInWareHouseReplyBody.setGunTag(gunCustom2.getGunTag());
-			serverInWareHouseReplyBody.setState(Integer.toString(0));
+			serverInWareHouseReplyBody.setState(Integer.toString(1));
 			
 			serverInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
@@ -123,7 +123,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
+			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyBody);
 			
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");

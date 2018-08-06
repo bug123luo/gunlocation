@@ -288,4 +288,8 @@
       version = #{version,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="qwer" parameterType="java.lang.String" resultMap="BaseResultMap">
+  select * from device_gun where gun_mac= #{gunMac,jdbcType=VARCHAR} and state=0
+  </select>
 </mapper>

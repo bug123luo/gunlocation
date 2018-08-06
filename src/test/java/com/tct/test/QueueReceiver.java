@@ -20,7 +20,7 @@ public class QueueReceiver {
 		connection.start();
 		
 		final Session session =  connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-		Destination destination =  session.createQueue("my-queue");
+		Destination destination =  session.createQueue("WebOutQueue");
 		
 		MessageConsumer consumer =  session.createConsumer(destination);
 		int i=0;

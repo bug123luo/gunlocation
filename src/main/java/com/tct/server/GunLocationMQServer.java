@@ -29,7 +29,6 @@ public class GunLocationMQServer {
 		messagemap.put("sendQueue", "WebOutQueue");
 		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebOutQueue", messagemap);
 		
-	
 		HashMap<String, Object> paraMap = new HashMap<>();
 		paraMap.put("connectionFactory", cf);
 		paraMap.put("nettyRecQue", "InputQueue");

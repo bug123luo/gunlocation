@@ -10,7 +10,7 @@
 		</where>
 	</select>
 	<select id="selectDeviceNoByDeviceGunQueryVo" parameterType="com.tct.po.DeviceGunQueryVo" resultType="com.tct.po.DeviceGunCustom">
-		SELECT id,gun_mac gunMac,out_warehouse_time outWarehouseTime,in_warehouse_time inWarehouseTime,state,create_time createTime,update_time updateTime,temperance_time temperanceTime,version FROM device_gun
+		SELECT id,device_no deviceNo,gun_mac gunMac,out_warehouse_time outWarehouseTime,in_warehouse_time inWarehouseTime,state,create_time createTime,update_time updateTime,temperance_time temperanceTime,version FROM device_gun
 		<where>
 			<if test="deviceGunCustom!=null and deviceGunCustom.gunMac !=null">
 				gun_mac=#{deviceGunCustom.gunMac} AND state=0

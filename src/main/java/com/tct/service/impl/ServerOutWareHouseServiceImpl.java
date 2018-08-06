@@ -13,6 +13,7 @@ import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
 import com.tct.dao.ServerOutWareHouseDao;
+import com.tct.mapper.DeviceGunMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
@@ -38,10 +39,22 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
+		deviceGunCustom.setState(0);
+		deviceGunCustom.setDeviceNo(message.getMessageBody().getDeviceNo());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
-		DeviceGunCustom deviceGunCustom2 = serverOutWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);
+		
+		log.info("蓝牙枪支信息是:"+deviceGunCustom.getGunMac());
+		
+/*		DeviceGunCustom deviceGunCustom2 = null;
+		deviceGunCustom2 = serverOutWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);*/
 			
-		String sessionToken = userOnlineSessionCache.get(deviceGunCustom2.getDeviceNo());
+		
+		if (deviceGunCustom.getDeviceNo()==null) {
+			log.info("枪支不存在");
+			return false;
+		}
+		
+		String sessionToken = userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
 		if(sessionToken == null) {
 			log.info("申请人员不在线，请选择另外一个人来发送");
 			return false;

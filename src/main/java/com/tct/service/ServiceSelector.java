@@ -104,7 +104,7 @@ public class ServiceSelector {
 			}
 		}else if(messageCodec instanceof ClientHeartBeatMessageCodec) {
 			try {
-				ClientHeartBeatMessage clientHeartBeatMessage = new ClientHeartBeatMessage();
+				ClientHeartBeatMessage clientHeartBeatMessage = (ClientHeartBeatMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientHeartBeatService =  SpringContextUtil.getBean("clientHeartBeatService");
 				clientHeartBeatService.handleCodeMsg(clientHeartBeatMessage);
 				flag = true;
@@ -114,7 +114,7 @@ public class ServiceSelector {
 			}
 		}else if(messageCodec instanceof ClientOffLocationWarningMessageCodec) {
 			try {
-				ClientOffLocationWarningMessage clientOffLocationWarningMessage = new ClientOffLocationWarningMessage();
+				ClientOffLocationWarningMessage clientOffLocationWarningMessage = (ClientOffLocationWarningMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientOffLocationWarningService = SpringContextUtil.getBean("clientOffLocationWarningService");
 				clientOffLocationWarningService.handleCodeMsg(clientOffLocationWarningMessage);
 				flag = true;
@@ -124,7 +124,7 @@ public class ServiceSelector {
 			}
 		}else if (messageCodec instanceof ClientDeviceBindingMessageCodec) {
 			try {
-				ClientDeviceBindingMessage clientDeviceBindingMessage = new ClientDeviceBindingMessage();
+				ClientDeviceBindingMessage clientDeviceBindingMessage = (ClientDeviceBindingMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientDeviceBindingService = SpringContextUtil.getBean("clientDeviceBindingService");
 				clientDeviceBindingService.handleCodeMsg(clientDeviceBindingMessage);
 				flag = true;
@@ -134,7 +134,7 @@ public class ServiceSelector {
 			}
 		}else if (messageCodec instanceof ClientOutWareHouseMessageCodec) {
 			try {
-				ClientOutWareHouseMessage clientOutWareHouseMessage =  new ClientOutWareHouseMessage();
+				ClientOutWareHouseMessage clientOutWareHouseMessage =  (ClientOutWareHouseMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientOutWareHouseService =  SpringContextUtil.getBean("clientOutWareHouseService");
 				clientOutWareHouseService.handleCodeMsg(clientOutWareHouseMessage);
 				flag = true;
@@ -145,7 +145,7 @@ public class ServiceSelector {
 			
 		}else if (messageCodec instanceof DeviceBulletCountMessageCodec) {
 			try {
-				DeviceBulletCountMessage deviceBulletCountMessage =  new DeviceBulletCountMessage();
+				DeviceBulletCountMessage deviceBulletCountMessage = (DeviceBulletCountMessage)messageCodec.decode(textMessage.getText());
 				SimpleService deviceBulletCountService =  SpringContextUtil.getBean("deviceBulletCountService");
 				deviceBulletCountService.handleCodeMsg(deviceBulletCountMessage);
 				flag = true;
@@ -155,7 +155,7 @@ public class ServiceSelector {
 			}
 		}else if(messageCodec instanceof ClientInWareHouseMessageCodec){
 			try {
-				ClientInWareHouseMessage clientInWareHouseMessage = new ClientInWareHouseMessage();
+				ClientInWareHouseMessage clientInWareHouseMessage = (ClientInWareHouseMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientInWareHouseService =  SpringContextUtil.getBean("clientInWareHouseService");
 				clientInWareHouseService.handleCodeMsg(clientInWareHouseMessage);
 				flag = true;
@@ -165,7 +165,7 @@ public class ServiceSelector {
 			}
 		}else if(messageCodec instanceof ServerOffLocationSearchMessageCodec) {
 			try {
-				ServerOffLocationSearchMessage serverOffLocationSearchMessage = new ServerOffLocationSearchMessage();
+				ServerOffLocationSearchMessage serverOffLocationSearchMessage = (ServerOffLocationSearchMessage)messageCodec.decode(textMessage.getText());
 				SimpleService serverOffLocationSearchService = SpringContextUtil.getBean("serverOffLocationSearchService");
 				serverOffLocationSearchService.handleCodeMsg(serverOffLocationSearchMessage);
 				flag = true;
@@ -175,7 +175,7 @@ public class ServiceSelector {
 			}
 		}else if (messageCodec instanceof ServerOffLocationSearchReplyMessageCodec) {
 			try {
-				ServerOffLocationSearchReplyMessage serverOffLocationSearchReplyMessage =new ServerOffLocationSearchReplyMessage();
+				ServerOffLocationSearchReplyMessage serverOffLocationSearchReplyMessage =(ServerOffLocationSearchReplyMessage)messageCodec.decode(textMessage.getText());
 				SimpleService serverOffLocationSearchService = SpringContextUtil.getBean("serverOffLocationSearchService");
 				serverOffLocationSearchService.handleCodeMsg(serverOffLocationSearchReplyMessage);
 				flag = true;
@@ -186,7 +186,7 @@ public class ServiceSelector {
 		}
 		else if (messageCodec instanceof ServerOffLocationWarningStartStopReplyMessageCodec) {
 			try {
-				ServerOffLocationWarningStartStopReplyMessage serverOffLocationWarningStartStopReplyMessage = new ServerOffLocationWarningStartStopReplyMessage();
+				ServerOffLocationWarningStartStopReplyMessage serverOffLocationWarningStartStopReplyMessage = (ServerOffLocationWarningStartStopReplyMessage)messageCodec.decode(textMessage.getText());
 				SimpleService serverOffLocationWarningStartStopService = SpringContextUtil.getBean("serverOffLocationWarningStartStopService");
 				serverOffLocationWarningStartStopService.handleCodeMsg(serverOffLocationWarningStartStopReplyMessage);
 				flag = true;
@@ -197,7 +197,7 @@ public class ServiceSelector {
 		}
 		else if(messageCodec instanceof ServerOffLocationWarningStartStopMessageCodec) {
 			try {
-				ServerOffLocationWarningStartStopMessage serverOffLocationWarningStartStopMessage = new ServerOffLocationWarningStartStopMessage();
+				ServerOffLocationWarningStartStopMessage serverOffLocationWarningStartStopMessage = (ServerOffLocationWarningStartStopMessage)messageCodec.decode(textMessage.getText());
 				SimpleService serverOffLocationWarningStartStopService = SpringContextUtil.getBean("serverOffLocationWarningStartStopService");
 				serverOffLocationWarningStartStopService.handleCodeMsg(serverOffLocationWarningStartStopMessage);
 				flag = true;
@@ -207,7 +207,7 @@ public class ServiceSelector {
 			}
 		}else if (messageCodec instanceof ClientVersionSyncMessageCodec) {
 			try {
-				ClientVersionSyncMessage clientVersionSyncMessage =  new ClientVersionSyncMessage();
+				ClientVersionSyncMessage clientVersionSyncMessage =  (ClientVersionSyncMessage)messageCodec.decode(textMessage.getText());
 				SimpleService clientVersionSyncService = SpringContextUtil.getBean("clientVersionSyncService");
 				clientVersionSyncService.handleCodeMsg(clientVersionSyncMessage);
 				flag = true;
