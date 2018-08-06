@@ -26,7 +26,7 @@ public class ServerOutWareHouseMessageCodec implements MessageCodec {
 		serverOutWareHouseMessage.setMessageBody(json.getObject("messageBody",ServerOutWareHouseBody.class));
 		serverOutWareHouseMessage.setSessionToken(json.getString("sessionToken"));
 
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		return serverOutWareHouseMessage;
 	
 	}

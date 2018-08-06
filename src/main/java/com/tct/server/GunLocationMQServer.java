@@ -43,9 +43,9 @@ public class GunLocationMQServer {
 		producerThread.start();
 		
 /*		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
-		gateWayConsumerThread.start();*/
+		gateWayConsumerThread.start();
 		
-/*		paraMap.put("queneName","WebInQueue");
+		paraMap.put("queneName","WebInQueue");
 		WebConsumerThread webConsumerThread=new WebConsumerThread(paraMap,"webConsumer");
 		webConsumerThread.start();*/
 	}

@@ -6,6 +6,7 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -47,32 +48,41 @@ public class WebConsumerThread extends Thread {
 		try {			
 			while(true) {
 				
-				TextMessage textMessage = (TextMessage) consumer.receive();
-				
-				if(null !=textMessage) {
-					//编解码器选择器
-					MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
+				while(true) {
 					
-					MessageCodec messageCodec = null;
-					try {
-						messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
-					} catch (Exception e2) {
-						log.debug(e2+"消息解码器不存在");
+					Message message = consumer.receive();
+					
+					if(message instanceof TextMessage) {
+						TextMessage textMessage = (TextMessage) message;
+						
+						log.info("接收消息");
+						//log.debug(textMessage.toString());
+						log.info(textMessage.getText().toString());	
+						
+						if(null !=textMessage) {
+							//编解码器选择器
+							MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
+							
+							MessageCodec messageCodec = null;
+							try {
+								messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
+							} catch (Exception e2) {
+								log.debug(e2+"消息解码器不存在");
+								session.commit();
+							}
+							
+							//业务处理选择器
+							ServiceSelector serviceSelector = new ServiceSelector();
+							boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
+					
+							try {
+								session.commit();
+							} catch (JMSException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}					
+						}
 					}
-					
-					//业务处理选择器
-					ServiceSelector serviceSelector = new ServiceSelector();
-					
-					serviceSelector.handlerService(messageCodec, textMessage);
-			
-					try {
-						session.commit();
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}else {
-					continue;
 				}
 			}
 		} catch (Exception e) {

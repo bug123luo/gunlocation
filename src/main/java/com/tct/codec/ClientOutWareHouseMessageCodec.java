@@ -14,7 +14,7 @@ public class ClientOutWareHouseMessageCodec implements MessageCodec {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ClientOutWareHouseMessage clientOutWareHouseMessage = new ClientOutWareHouseMessage();
 		clientOutWareHouseMessage.setMessageBody(json.getObject("messageBody",ClientOutWareHouseBody.class));

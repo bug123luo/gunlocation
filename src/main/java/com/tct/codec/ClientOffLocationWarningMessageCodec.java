@@ -14,7 +14,7 @@ public class ClientOffLocationWarningMessageCodec implements MessageCodec {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ClientOffLocationWarningMessage clientOffLocationWarningMessage = new ClientOffLocationWarningMessage();
 		clientOffLocationWarningMessage.setMessageBody(json.getObject("messageBody",ClientOffLocationWarningBody.class));

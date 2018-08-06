@@ -43,11 +43,9 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 			
 		String sessionToken = userOnlineSessionCache.get(deviceGunCustom2.getDeviceNo());
 		if(sessionToken == null) {
-			log.info("协助查找人员不在线，请选择另外一个人来发送");
+			log.info("申请人员不在线，请选择另外一个人来发送");
 			return false;
 		}
-		
-
 		
 		//发送到producer处理队列上
 		message.setSessionToken(sessionToken);

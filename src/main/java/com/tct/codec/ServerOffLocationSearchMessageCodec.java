@@ -14,7 +14,7 @@ public class ServerOffLocationSearchMessageCodec implements MessageCodec {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ServerOffLocationSearchMessage serverOffLocationSearchMessage = new ServerOffLocationSearchMessage();
 		serverOffLocationSearchMessage.setMessageBody(json.getObject("messageBody",ServerOffLocationSearchBody.class));

@@ -22,7 +22,7 @@ public class ServerInWareHouseMessageCodec implements MessageCodec {
 		serverInWareHouseMessage.setMessageBody(json.getObject("messageBody",ServerInWareHouseBody.class));
 		serverInWareHouseMessage.setSessionToken(json.getString("sessionToken"));
 		
-		log.info(json.toJSONString());
+		//slog.info(json.toJSONString());
 		return serverInWareHouseMessage;
 	}
 

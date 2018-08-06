@@ -14,7 +14,7 @@ public class ServerOffLocationWarningStartStopMessageCodec implements MessageCod
 	public Object decode(String inMsg) throws Exception {
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ServerOffLocationWarningStartStopMessage serverOffLocationWarningStartStopMessage = new ServerOffLocationWarningStartStopMessage();
 		

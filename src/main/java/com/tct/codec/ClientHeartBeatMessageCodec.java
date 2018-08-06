@@ -14,7 +14,7 @@ public class ClientHeartBeatMessageCodec implements MessageCodec {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ClientHeartBeatMessage clientHeartBeatMessage = new ClientHeartBeatMessage();
 		clientHeartBeatMessage.setMessageBody(json.getObject("messageBody",ClientInWareHouseBody.class));

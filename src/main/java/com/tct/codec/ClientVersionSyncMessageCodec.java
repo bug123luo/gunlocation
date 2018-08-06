@@ -14,7 +14,7 @@ public class ClientVersionSyncMessageCodec implements MessageCodec {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ClientVersionSyncMessage clientVersionSyncMessage =  new ClientVersionSyncMessage();
 		clientVersionSyncMessage.setServiceType(json.getString("serviceType"));

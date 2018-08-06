@@ -8,8 +8,8 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Message;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import com.tct.codec.MessageCodec;
 import com.tct.codec.MessageCodecSelector;
 import com.tct.service.ServiceSelector;
@@ -47,36 +47,41 @@ public class GateWayConsumerThread extends Thread{
 		try {			
 			while(true) {
 				
-				TextMessage textMessage = (TextMessage) consumer.receive();
+				Message message = consumer.receive();
 				
-				log.info("接收消息");
-				log.debug(textMessage.toString());
+				if(message instanceof TextMessage) {
+					TextMessage textMessage = (TextMessage) message;
 					
-				if(null !=textMessage) {
-					//编解码器选择器
-					MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
+					log.info("接收消息");
+					//log.debug(textMessage.toString());
+					log.info(textMessage.getText().toString());	
 					
-					MessageCodec messageCodec = null;
-					try {
+					if(null !=textMessage) {
+						//编解码器选择器
+						MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
 						
-						log.info(textMessage.getText());
-						messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
-					} catch (Exception e2) {
-						log.debug(e2+"消息解码器不存在");
-						session.commit();
+						MessageCodec messageCodec = null;
+						try {
+							messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
+						} catch (Exception e2) {
+							log.debug(e2+"消息解码器不存在");
+							session.commit();
+						}
+						
+						//业务处理选择器
+						ServiceSelector serviceSelector = new ServiceSelector();
+						boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
+				
+						try {
+							session.commit();
+						} catch (JMSException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}					
 					}
-					
-					//业务处理选择器
-					ServiceSelector serviceSelector = new ServiceSelector();
-					boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
-			
-					try {
-						session.commit();
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}					
 				}
+				
+
 			}
 		} catch (Exception e) {
             e.printStackTrace();

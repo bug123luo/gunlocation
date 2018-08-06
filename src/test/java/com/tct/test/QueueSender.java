@@ -39,10 +39,10 @@ public class QueueSender {
 			
 			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
 			
-			authSunBody.setCommand("1a1bf9685b0ea109719f211c1b9d8c31");
+			authSunBody.setCommand("A101");
 			authSunBody.setLa("234234");
 			authSunBody.setLo("234234");
-			authSunBody.setUsername("云景");
+			authSunBody.setUsername("yqh");
 			
 			authCodeMessageBody.setDeviceType(1);
 			authCodeMessageBody.setFormatVersion("1.0");

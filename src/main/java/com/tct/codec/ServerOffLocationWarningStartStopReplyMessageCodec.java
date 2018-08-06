@@ -15,7 +15,7 @@ public class ServerOffLocationWarningStartStopReplyMessageCodec implements Messa
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ServerOffLocationWarningStartStopReplyMessage serverOffLocationWarningStartStopReplyMessage =  new ServerOffLocationWarningStartStopReplyMessage();
 		serverOffLocationWarningStartStopReplyMessage.setServiceType(json.getString("serviceType"));

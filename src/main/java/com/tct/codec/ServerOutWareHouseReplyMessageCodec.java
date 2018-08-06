@@ -14,7 +14,7 @@ public class ServerOutWareHouseReplyMessageCodec implements MessageCodec {
 
 		JSONObject json= JSONObject.parseObject(inMsg);
 
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		ServerOutWareHouseReplyMessage serverOutWareHouseReplyMessage = new ServerOutWareHouseReplyMessage();
 		serverOutWareHouseReplyMessage.setServiceType(json.getString("serviceType"));

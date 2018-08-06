@@ -5,7 +5,7 @@ import com.tct.po.DeviceQueryVo;
 
 public interface DeviceCustomMapper {
 	
-    DeviceCustom selectByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception;
+	DeviceCustom selectByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception;
     
     int updateByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception;
     

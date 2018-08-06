@@ -77,20 +77,37 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 
 	@Override
 	@Transactional
-	public DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception {
+	public DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) {
 		
 		DeviceQueryVo deviceQueryVo2 = deviceQueryVo;
-		DeviceCustom deviceCustom = deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo2);
+		DeviceCustom deviceCustom=null;
+		try {
+			deviceCustom = deviceCustomMapper.selectByDeviceQueryVo(deviceQueryVo2);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (deviceCustom==null) {
 			WatchDeviceQueryVo watchDeviceQueryVo = new WatchDeviceQueryVo();
 			WatchDeviceCustom watchDeviceCustom = new WatchDeviceCustom();
 			watchDeviceCustom.setDeviceNo(deviceQueryVo.getDeviceCustom().getDeviceNo());
 			watchDeviceCustom.setPassword(deviceQueryVo.getDeviceCustom().getPassword());
-			WatchDeviceCustom watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
+			WatchDeviceCustom watchDeviceCustom2=null;
+			try {
+				watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (watchDeviceCustom2!=null) {
 				deviceCustom = new DeviceCustom();
 				BeanUtils.copyProperties(watchDeviceCustom2, deviceCustom);
-				deviceCustomMapper.insertSelective(deviceCustom);
+				try {
+					deviceCustomMapper.insertSelective(deviceCustom);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		

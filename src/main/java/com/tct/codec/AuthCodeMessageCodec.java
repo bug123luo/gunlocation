@@ -14,7 +14,7 @@ public class AuthCodeMessageCodec implements MessageCodec{
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
 		
-		log.info(json.toJSONString());
+		//log.info(json.toJSONString());
 		
 		AuthCodeMessage authCodeMessage =  new AuthCodeMessage();
 		authCodeMessage.setServiceType(json.getString("serviceType"));
