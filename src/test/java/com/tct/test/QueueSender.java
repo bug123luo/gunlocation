@@ -13,10 +13,13 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeMessageBody;
+import com.tct.codec.pojo.ClientInWareHouseBody;
+import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ServerInWareHouseBody;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.ServerOutWareHouseBody;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
+import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,10 +42,10 @@ public class QueueSender {
 			
 			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
 			
-			authSunBody.setCommand("A101");
+/*			authSunBody.setCommand("fe9e8891bdf86cd1c11765a5f5c1000d");
 			authSunBody.setLa("234234");
 			authSunBody.setLo("234234");
-			authSunBody.setUsername("yqh");
+			authSunBody.setUsername("云宝");
 			
 			authCodeMessageBody.setDeviceType(1);
 			authCodeMessageBody.setFormatVersion("1.0");
@@ -54,7 +57,7 @@ public class QueueSender {
 			authCodeMessageBody.setSessionToken("00000165053debcd");
 			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(authCodeMessageBody));
 
-			System.out.println(JSONObject.toJSONString(authCodeMessageBody));
+			System.out.println(JSONObject.toJSONString(authCodeMessageBody));*/
 			
 /*			ServerInWareHouseMessage serverInWareHouseMessage = new ServerInWareHouseMessage();
 			ServerInWareHouseBody serverInWareHouseBody = new ServerInWareHouseBody();
@@ -71,6 +74,23 @@ public class QueueSender {
 			
 			log.info(JSONObject.toJSONString(serverInWareHouseMessage));			
 			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(serverInWareHouseMessage));*/
+			ClientInWareHouseMessage clientInWareHouseMessage = new ClientInWareHouseMessage();
+			ClientInWareHouseBody clientInWareHouseBody = new ClientInWareHouseBody();
+			
+			clientInWareHouseBody.setAuthCode("sdfsfluouoojll");
+			clientInWareHouseBody.setBluetoothMac("25:23:3t:6g:55:8c");
+			clientInWareHouseBody.setWarehousingTime(StringUtil.getDateString());
+			clientInWareHouseBody.setLa("23");
+			clientInWareHouseBody.setLo("123");
+			clientInWareHouseMessage.setMessageBody(clientInWareHouseBody);
+			clientInWareHouseMessage.setDeviceType(1);
+			clientInWareHouseMessage.setFormatVersion("1.0");
+			clientInWareHouseMessage.setMessageType("09");
+			clientInWareHouseMessage.setSendTime("20180725121212");
+			clientInWareHouseMessage.setSerialNumber("1234567894564621");
+			clientInWareHouseMessage.setServiceType("aafafasfsaffsfsfsfs");
+			TextMessage message =  session.createTextMessage(JSONObject.toJSONString(clientInWareHouseMessage));
+			
 			Thread.sleep(1000);
 			
 			producer.send(message);

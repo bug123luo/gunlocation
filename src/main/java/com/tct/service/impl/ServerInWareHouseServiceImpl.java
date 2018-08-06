@@ -41,6 +41,11 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		DeviceGunCustom deviceGunCustom2 = serverInWareHouseDao.selectByDeviceGunQueryVo(deviceGunQueryVo);
 		
+		if (deviceGunCustom2==null) {
+			log.info("系统device_gun表中没有用户的出库信息");
+			return false;
+		}
+		
 		//将接收到的消息放在本地的接收消息队列上
 		String sessionToken = userOnlineSessionCache.get(deviceGunCustom2.getDeviceNo());
 		
