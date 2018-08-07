@@ -55,9 +55,8 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 				
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
-				+StringConstant.MSG_BODY_SUFFIX;
+		String replyBody = message.getMessageBody().getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac();
 		simpleReplyMessage.setMessageBody(replyBody);
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 

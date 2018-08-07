@@ -94,14 +94,13 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = StringConstant.MSG_BODY_PREFIX+searchToClientBody.getReserve()
+		String replyBody = searchToClientBody.getReserve()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getBluetoothMac()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getId()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLo()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLa()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostTime()
-		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getAuthCode()
-		  +StringConstant.MSG_BODY_SUFFIX;
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getAuthCode();
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String searchToClienJson = JSONObject.toJSONString(simpleReplyMessage);

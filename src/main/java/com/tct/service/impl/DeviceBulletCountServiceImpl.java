@@ -89,9 +89,8 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(message, simpleReplyMessage);
-			String replyBody = StringConstant.MSG_BODY_PREFIX+deviceBulletCountReplyBody.getReserve()
-					+StringConstant.MSG_BODY_SEPARATOR+deviceBulletCountReplyBody.getAuthCode()
-					+StringConstant.MSG_BODY_SUFFIX;
+			String replyBody = deviceBulletCountReplyBody.getReserve()
+					+StringConstant.MSG_BODY_SEPARATOR+deviceBulletCountReplyBody.getAuthCode();
 			simpleReplyMessage.setSendTime(StringUtil.getDateString());
 			simpleReplyMessage.setMessageBody(replyBody);
 			

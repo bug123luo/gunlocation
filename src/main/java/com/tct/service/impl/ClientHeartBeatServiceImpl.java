@@ -80,9 +80,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(message, simpleReplyMessage);
-			String replyBody =StringConstant.MSG_BODY_PREFIX+clientHeartBeatReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+			String replyBody =clientHeartBeatReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode();
 			simpleReplyMessage.setMessageBody(replyBody);
 			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
 			//将回应消息放进消息缓存队列中

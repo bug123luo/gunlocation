@@ -64,9 +64,8 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		//修改为[]格式返回到客户端
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getBluetoothMac()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getAuthCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+		String replyBody = message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getAuthCode();
 		simpleReplyMessage.setMessageBody(replyBody);
 		//发送到producer处理队列上
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);

@@ -2,13 +2,20 @@ package com.tct.codec.pojo;
 
 public class ClientDeviceBindingBody{
 
+	private String reserve;
 	private String bluetoothMac;
 	private String bindTime;
 	private String lo;
 	private String la;
+	private String failReason;
 	private String authCode;
-	private String id;
 	
+	public String getReserve() {
+		return reserve;
+	}
+	public void setReserve(String reserve) {
+		this.reserve = reserve;
+	}
 	public String getBluetoothMac() {
 		return bluetoothMac;
 	}
@@ -39,12 +46,13 @@ public class ClientDeviceBindingBody{
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
 	}
-	public String getId() {
-		return id;
+	public String getFailReason() {
+		return failReason;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setFailReason(String failReason) {
+		this.failReason = failReason;
 	}
+
 	
 	
 	

@@ -102,7 +102,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(clientOutWareHouseReplyMessage, simpleReplyMessage);
-		String replyBody=StringConstant.MSG_BODY_PREFIX+clientOutWareHouseReplyMessage.getMessageBody().getReserve()
+		String replyBody=clientOutWareHouseReplyMessage.getMessageBody().getReserve()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getBluetoothMac()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getGunTag()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getApplyTime()
@@ -117,8 +117,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getPowerSampling()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSystemTime()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getMatchTime()
-				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSafeCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSafeCode();
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);

@@ -93,12 +93,11 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientVersionSyncReplyMessage, simpleReplyMessage);
-			String replyBody=StringConstant.MSG_BODY_PREFIX+clientVersionSyncReplyMessage.getMessageBody().getReserve()
+			String replyBody=clientVersionSyncReplyMessage.getMessageBody().getReserve()
 					+StringConstant.MSG_BODY_SEPARATOR+clientVersionSyncReplyMessage.getMessageBody().getLastVersion()
 					+StringConstant.MSG_BODY_SEPARATOR+clientVersionSyncReplyMessage.getMessageBody().getDownloadUrl()
 					+StringConstant.MSG_BODY_SEPARATOR+clientVersionSyncReplyMessage.getMessageBody().getUsername()
-					+StringConstant.MSG_BODY_SEPARATOR+clientVersionSyncReplyMessage.getMessageBody().getCommand()
-					+StringConstant.MSG_BODY_SUFFIX;
+					+StringConstant.MSG_BODY_SEPARATOR+clientVersionSyncReplyMessage.getMessageBody().getCommand();
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String clientsyncJson = JSONObject.toJSONString(simpleReplyMessage);

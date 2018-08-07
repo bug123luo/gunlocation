@@ -160,9 +160,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
-			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+			String replyBody =clientInWareHouseReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode();
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将APP回应消息放进消息缓存队列中

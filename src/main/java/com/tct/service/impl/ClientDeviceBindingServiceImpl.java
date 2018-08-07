@@ -68,7 +68,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		gunCustom.setRealTimeState(Integer.valueOf(0));
 		boolean flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 		
-		if (flag) {
+		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
 			ClientDeviceBindingReplyBody clientDeviceBindingReplyBody = new ClientDeviceBindingReplyBody();
@@ -87,9 +87,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientDeviceBindingReplyMessage, simpleReplyMessage);
-			String replyBody = StringConstant.MSG_BODY_PREFIX+clientDeviceBindingReplyBody.getReserve()
-					+StringConstant.MSG_BODY_SEPARATOR+clientDeviceBindingReplyBody.getAuthCode()
-					+StringConstant.MSG_BODY_SUFFIX;
+			String replyBody = clientDeviceBindingReplyBody.getReserve()
+					+StringConstant.MSG_BODY_SEPARATOR+clientDeviceBindingReplyBody.getAuthCode();
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);

@@ -68,7 +68,7 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
+		String replyBody = message.getMessageBody().getReserve()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getGunTag()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getApplyTime()
@@ -83,8 +83,7 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getPowerSampling()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSystemTime()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getMatchTime()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSafeCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSafeCode();
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");

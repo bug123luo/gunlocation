@@ -103,9 +103,8 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
-			String replyBody=StringConstant.MSG_BODY_PREFIX+clientOffLocationWarningReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode()
-				+StringConstant.MSG_BODY_SUFFIX;
+			String replyBody=clientOffLocationWarningReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode();
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
