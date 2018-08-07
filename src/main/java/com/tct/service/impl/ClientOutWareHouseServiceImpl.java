@@ -3,6 +3,7 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.ClientOutWareHouseReplyBody;
 import com.tct.codec.pojo.ClientOutWareHouseReplyMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
@@ -20,6 +22,7 @@ import com.tct.po.DeviceGunCustom;
 import com.tct.po.WatchDeviceCustom;
 import com.tct.po.WatchDeviceQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 
@@ -90,14 +93,35 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		clientOutWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 		clientOutWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
 		clientOutWareHouseReplyMessage.setMessageType("06");
-		clientOutWareHouseReplyMessage.setSendTime(message.getSendTime());
+		clientOutWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
 		clientOutWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
 		clientOutWareHouseReplyMessage.setServiceType(message.getServiceType());
 		clientOutWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		
-		String authJson = JSONObject.toJSONString(clientOutWareHouseReplyMessage);
+		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+		BeanUtils.copyProperties(clientOutWareHouseReplyMessage, simpleReplyMessage);
+		String replyBody=StringConstant.MSG_BODY_PREFIX+clientOutWareHouseReplyMessage.getMessageBody().getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getGunTag()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getApplyTime()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getDeadlineTime()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getPowerAlarmLevel()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getTransmittingPower()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getBroadcastInterval()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getConncetionInterval()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getConnectionTimeout()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSoftwareversion()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getHeartbeat()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getPowerSampling()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSystemTime()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getMatchTime()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getSafeCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+		simpleReplyMessage.setMessageBody(replyBody);
+		
+		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -106,7 +130,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
-		tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
+		tempUnSendReplyMessageMap.put(message.getSerialNumber(), strJson);
 		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 		
 		return true;

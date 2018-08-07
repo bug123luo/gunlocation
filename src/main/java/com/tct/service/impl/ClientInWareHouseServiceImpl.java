@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.aspectj.weaver.NewConstructorTypeMunger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import com.tct.codec.pojo.ClientInWareHouseReplyMessage;
 import com.tct.codec.pojo.ServerInWareHouseBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientInWareHouseDao;
@@ -28,6 +30,7 @@ import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +77,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
 			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
 			clientInWareHouseReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
-			clientInWareHouseReplyBody.setReserve(Integer.toString(0));
+			clientInWareHouseReplyBody.setReserve(Integer.toString(1));
 			
 			clientInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 			clientInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
@@ -85,8 +88,12 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
 			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
 			
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
 			//将APP回应消息放进消息缓存队列中
@@ -136,7 +143,39 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			flag = true;
 		}else {
-			flag = false;
+			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
+			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
+			clientInWareHouseReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
+			clientInWareHouseReplyBody.setReserve(Integer.toString(0));
+			
+			clientInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
+			clientInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
+			clientInWareHouseReplyMessage.setMessageType("12");
+			clientInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
+			clientInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
+			clientInWareHouseReplyMessage.setServiceType(message.getServiceType());
+			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
+			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
+			//将APP回应消息放进消息缓存队列中
+			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			flag = true;
 		}
 		
 		return false;

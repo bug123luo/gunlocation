@@ -3,6 +3,7 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +13,13 @@ import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ServerOutWareHouseDao;
 import com.tct.mapper.DeviceGunMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,9 +66,30 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		//发送到producer处理队列上
 		message.setSessionToken(sessionToken);
 		
+		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+		BeanUtils.copyProperties(message, simpleReplyMessage);
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getGunTag()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getApplyTime()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getDeadlineTime()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getPowerAlarmLevel()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getTransmittingPower()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBroadcastInterval()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getConnectionInterval()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getConnectionTimeout()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSoftwareversion()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getHeartbeat()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getPowerSampling()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSystemTime()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getMatchTime()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSafeCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+		simpleReplyMessage.setMessageBody(replyBody);
+		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-
-		String outWareJson = JSONObject.toJSONString(message);
+		
+		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -74,7 +98,7 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
-		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), outWareJson);
+		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
 		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 		
 		return true;

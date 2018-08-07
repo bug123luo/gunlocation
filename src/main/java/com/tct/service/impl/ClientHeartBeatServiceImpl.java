@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,14 @@ import com.tct.cache.UserOnlineQueueCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyBody;
 import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +78,12 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(message, simpleReplyMessage);
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientHeartBeatReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
 			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
@@ -88,6 +97,39 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 			
 			return true;
+		}else {
+			ClientHeartBeatReplyMessage clientHeartBeatReplyMessage = new ClientHeartBeatReplyMessage();
+			ClientHeartBeatReplyBody clientHeartBeatReplyBody = new ClientHeartBeatReplyBody();
+			clientHeartBeatReplyBody.setReserve("0");
+			clientHeartBeatReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
+			clientHeartBeatReplyMessage.setDeviceType(message.getDeviceType());
+			clientHeartBeatReplyMessage.setFormatVersion(message.getFormatVersion());
+			clientHeartBeatReplyMessage.setMessageType("14");
+			clientHeartBeatReplyMessage.setMessageBody(clientHeartBeatReplyBody);
+			clientHeartBeatReplyMessage.setSendTime(StringUtil.getDateString());
+			clientHeartBeatReplyMessage.setSerialNumber(message.getSerialNumber());
+			clientHeartBeatReplyMessage.setServiceType(message.getServiceType());
+			clientHeartBeatReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(message, simpleReplyMessage);
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientHeartBeatReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
+			//将回应消息放进消息缓存队列中
+			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), heartBeatJson);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 		}
 		
 		return false;

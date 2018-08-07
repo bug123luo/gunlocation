@@ -3,6 +3,7 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import com.tct.codec.pojo.ClientOffLocationWarningReplyBody;
 import com.tct.codec.pojo.ClientOffLocationWarningReplyMessage;
 import com.tct.codec.pojo.ServerInWareHouseReplyBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientOffLocationWarningDao;
@@ -25,6 +27,7 @@ import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.po.SosMessageCustom;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -98,7 +101,14 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
-			String msgJson = JSONObject.toJSONString(clientOffLocationWarningReplyMessage);
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
+			String replyBody=StringConstant.MSG_BODY_PREFIX+clientOffLocationWarningReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			
+			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
 			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -142,6 +152,40 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
 			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
 			flag = true;
+		}else {
+			ClientOffLocationWarningReplyMessage clientOffLocationWarningReplyMessage = new ClientOffLocationWarningReplyMessage();
+			ClientOffLocationWarningReplyBody clientOffLocationWarningReplyBody = new ClientOffLocationWarningReplyBody();
+			clientOffLocationWarningReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
+			clientOffLocationWarningReplyBody.setReserve(Integer.toString(1));
+			clientOffLocationWarningReplyMessage.setDeviceType(message.getDeviceType());
+			clientOffLocationWarningReplyMessage.setFormatVersion(message.getFormatVersion());
+			clientOffLocationWarningReplyMessage.setMessageBody(clientOffLocationWarningReplyBody);
+			clientOffLocationWarningReplyMessage.setMessageType("18");
+			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
+			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
+			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
+			clientOffLocationWarningReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
+			String replyBody=StringConstant.MSG_BODY_PREFIX+clientOffLocationWarningReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			
+			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
+			//将APP回应消息放进消息缓存队列中
+			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
+			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 		}
 		
 		

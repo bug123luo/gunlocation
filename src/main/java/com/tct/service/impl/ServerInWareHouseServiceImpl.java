@@ -3,6 +3,7 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,12 @@ import com.tct.cache.UnhandlerReceiveMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ServerInWareHouseDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,9 +61,15 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		message.setSessionToken(sessionToken);
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-		
+		//修改为[]格式返回到客户端
+		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+		BeanUtils.copyProperties(message, simpleReplyMessage);
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+		simpleReplyMessage.setMessageBody(replyBody);
 		//发送到producer处理队列上
-		String outWareJson = JSONObject.toJSONString(message);
+		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -69,7 +78,7 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		if(tempUnSendReplyMessageMap==null) {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
-		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), outWareJson);
+		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
 		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
 
 		return true;

@@ -2,6 +2,8 @@ package com.tct.service.impl;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
@@ -9,10 +11,12 @@ import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,9 +53,15 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 		
 		message.setSessionToken(sessionToken);
 				
+		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+		BeanUtils.copyProperties(message, simpleReplyMessage);
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SUFFIX;
+		simpleReplyMessage.setMessageBody(replyBody);
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 
-		String startStopJson = JSONObject.toJSONString(message);
+		String startStopJson = JSONObject.toJSONString(simpleReplyMessage);
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {

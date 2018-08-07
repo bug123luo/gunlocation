@@ -3,6 +3,7 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationSearchMessage;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientBody;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.GunCustomMapper;
@@ -22,6 +24,7 @@ import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
 import com.tct.util.RandomNumber;
+import com.tct.util.StringConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,7 +76,8 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		searchToClientBody.setLa(message.getMessageBody().getLa());
 		searchToClientBody.setLo(message.getMessageBody().getLo());
 		searchToClientBody.setLostTime(message.getMessageBody().getLostTime());
-		searchToClientBody.setReserve("");
+		searchToClientBody.setReserve("0");
+		searchToClientBody.setId(message.getMessageBody().getId());
 		
 		serverOffLocationSearchToClientMessage.setDeviceType(message.getDeviceType());
 		serverOffLocationSearchToClientMessage.setFormatVersion(message.getFormatVersion());
@@ -87,7 +91,20 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 
-		String searchToClienJson = JSONObject.toJSONString(serverOffLocationSearchToClientMessage);
+		
+		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+		BeanUtils.copyProperties(message, simpleReplyMessage);
+		String replyBody = StringConstant.MSG_BODY_PREFIX+searchToClientBody.getReserve()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getBluetoothMac()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getId()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLo()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLa()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostTime()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getAuthCode()
+		  +StringConstant.MSG_BODY_SUFFIX;
+		simpleReplyMessage.setMessageBody(replyBody);
+		
+		String searchToClienJson = JSONObject.toJSONString(simpleReplyMessage);
 		
 		//将回应消息放进消息缓存队列中
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;

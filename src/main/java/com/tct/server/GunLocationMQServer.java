@@ -25,17 +25,22 @@ public class GunLocationMQServer {
 		
 		/*ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");*/
 		
-		Hashtable<String, String> messagemap = new Hashtable<String,String>();
-		messagemap.put("sendQueue", "WebOutQueue");
-		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebOutQueue", messagemap);
+		//messagemap.put("webSendQueue", "WebOutQueue");
 		
 		HashMap<String, Object> paraMap = new HashMap<>();
 		paraMap.put("connectionFactory", cf);
-		paraMap.put("nettyRecQue", "InputQueue");
+/*		paraMap.put("webSendQueue", "WebOutQueue");
+		paraMap.put("webRecQueue","WebInQueue");*/
 		
-		messagemap.put("nettyRecQue", "InputQueue");
-		messagemap.put("nettySendQue", "OutQueue");
-		UserOnlineQueueCache.getOnlineUserQueueMap().put("NettyServer", messagemap);
+		Hashtable<String, String> webQueueMap = new Hashtable<String,String>();
+		webQueueMap.put("webSendQueue", "WebOutQueue");
+		webQueueMap.put("webRecQueue","WebInQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebServer", webQueueMap);
+		
+		Hashtable<String, String> nettyQueuemap = new Hashtable<String,String>();
+		nettyQueuemap.put("nettyRecQue", "InputQueue");
+		nettyQueuemap.put("nettySendQue", "OutQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("NettyServer", nettyQueuemap);
 		/*paraMap.put("queneName", "ubo");*/
 		
 		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
