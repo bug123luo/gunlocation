@@ -8,4 +8,6 @@ public interface AuthCodeDao {
 	Boolean updateDeviceLocation(DeviceLocationCustom deviceLocationCustom) throws Exception;
 	
 	DeviceCustom findByDeviceQueryVo(DeviceQueryVo deviceQueryVo) throws Exception;
+	
+	Boolean updateDevice(DeviceCustom deviceCustom) throws Exception;
 }

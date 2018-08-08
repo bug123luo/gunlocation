@@ -69,6 +69,9 @@ public class AuthCodeServiceImpl implements SimpleService{
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
 		Boolean tempboolean = authcodeDao.updateDeviceLocation(deviceLocationCustom);
+		
+		deviceCustom2.setState(0);
+		boolean flag = authcodeDao.updateDevice(deviceCustom2);
 		if(tempboolean) {
 			//构造回应消息
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();

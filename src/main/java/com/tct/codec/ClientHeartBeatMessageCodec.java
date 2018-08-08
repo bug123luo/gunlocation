@@ -1,8 +1,8 @@
 package com.tct.codec;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tct.codec.pojo.ClientHeartBeatBody;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
-import com.tct.codec.pojo.ClientInWareHouseBody;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +17,7 @@ public class ClientHeartBeatMessageCodec implements MessageCodec {
 		//log.info(json.toJSONString());
 		
 		ClientHeartBeatMessage clientHeartBeatMessage = new ClientHeartBeatMessage();
-		clientHeartBeatMessage.setMessageBody(json.getObject("messageBody",ClientInWareHouseBody.class));
+		clientHeartBeatMessage.setMessageBody(json.getObject("messageBody",ClientHeartBeatBody.class));
 		clientHeartBeatMessage.setDeviceType(json.getInteger("deviceType"));
 		clientHeartBeatMessage.setServiceType(json.getString("serviceType"));
 		clientHeartBeatMessage.setFormatVersion(json.getString("formatVersion"));

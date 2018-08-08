@@ -6,7 +6,7 @@ import lombok.Data;
 public class ServerOffLocationSearchBody {
 	
 	private String assDeviceNo;
-	private String id;
+	private String lostGunTag;
 	private String lo;
 	private String la;
 	private String lostDeviceNo;

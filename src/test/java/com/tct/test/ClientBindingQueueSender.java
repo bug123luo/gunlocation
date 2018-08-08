@@ -45,9 +45,10 @@ public class ClientBindingQueueSender {
 			ClientDeviceBindingBody clientDeviceBindingBody = new ClientDeviceBindingBody();
 			clientDeviceBindingBody.setAuthCode("1212");
 			clientDeviceBindingBody.setBindTime(StringUtil.getDateString());
-			clientDeviceBindingBody.setBluetoothMac("23:34:3e:5f:33:3d");
+			clientDeviceBindingBody.setBluetoothMac("25:23:3t:6g:66:8i");
 			clientDeviceBindingBody.setLa("23.232323");
 			clientDeviceBindingBody.setLo("113.23232");
+			clientDeviceBindingBody.setReserve(Integer.toString(1));
 			clientDeviceBindingMessage.setMessageBody(clientDeviceBindingBody);
 			clientDeviceBindingMessage.setDeviceType(1);
 			clientDeviceBindingMessage.setFormatVersion("1.0");

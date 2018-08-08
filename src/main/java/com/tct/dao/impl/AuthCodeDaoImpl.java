@@ -33,7 +33,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 	
 	@Autowired
 	WatchDeviceCustomMapper watchDeviceCustomMapper;
-	
+		
 	@Transactional
 	public Boolean updateDeviceLocation(DeviceLocationCustom deviceLocationCustom) {
 		
@@ -112,6 +112,22 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		}
 		
 		return deviceCustom;
+	}
+
+	/**   
+	 * <p>Title: updateDevice</p>   
+	 * <p>Description: </p>   
+	 * @param deviceCustom
+	 * @return
+	 * @throws Exception   
+	 * @see com.tct.dao.AuthCodeDao#updateDevice(com.tct.po.DeviceCustom)   
+	 */
+	@Override
+	public Boolean updateDevice(DeviceCustom deviceCustom) throws Exception {
+		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		deviceQueryVo.setDeviceCustom(deviceCustom);
+		deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
+		return true;
 	}
 	
 }

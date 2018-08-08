@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tct.dao.ClientInWareHouseDao;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.DeviceLocationCustomMapper;
+import com.tct.mapper.GunCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceLocationCustom;
+import com.tct.po.GunCustom;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,9 @@ public class ClientInWareHouseDaoImpl implements ClientInWareHouseDao {
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
 	
+	@Autowired
+	GunCustomMapper gunCustomMapper;
+	
 	@Override
 	@Transactional
 	public boolean updateDeviceInWareHouseState(DeviceLocationCustom deviceLocationCustom,
@@ -29,6 +34,11 @@ public class ClientInWareHouseDaoImpl implements ClientInWareHouseDao {
 		try {
 			deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
 			deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
+			GunCustom gunCustom =  new GunCustom();
+			gunCustom.setBluetoothMac(deviceGunCustom.getGunMac());
+			gunCustom.setState(1);
+			gunCustom.setRealTimeState(1);
+			gunCustomMapper.updateSelective(gunCustom);
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

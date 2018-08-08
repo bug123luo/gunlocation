@@ -52,7 +52,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		
 		GunQueryVo gunQueryVo = new GunQueryVo();
 		GunCustom gunCustom = new GunCustom();
-		gunCustom.setGunTag(message.getMessageBody().getId());
+		gunCustom.setGunTag(message.getMessageBody().getLostGunTag());
 		gunCustom=gunCustomMapper.selectByGunTag(gunQueryVo);
 				
 		String sessionToken = userOnlineSessionCache.get(message.getMessageBody().getAssDeviceNo());
@@ -77,7 +77,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		searchToClientBody.setLo(message.getMessageBody().getLo());
 		searchToClientBody.setLostTime(message.getMessageBody().getLostTime());
 		searchToClientBody.setReserve("0");
-		searchToClientBody.setId(message.getMessageBody().getId());
+		searchToClientBody.setLostGunTag(message.getMessageBody().getLostGunTag());
 		
 		serverOffLocationSearchToClientMessage.setDeviceType(message.getDeviceType());
 		serverOffLocationSearchToClientMessage.setFormatVersion(message.getFormatVersion());
@@ -96,7 +96,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		BeanUtils.copyProperties(message, simpleReplyMessage);
 		String replyBody = searchToClientBody.getReserve()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getBluetoothMac()
-		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getId()
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostGunTag()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLo()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLa()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostTime()

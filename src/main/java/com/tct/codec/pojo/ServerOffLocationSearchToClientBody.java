@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ServerOffLocationSearchToClientBody {
 	private String reserve;
-	private String id;
+	private String lostGunTag;
 	private String bluetoothMac;
 	private String lo;
 	private String la;
