@@ -125,7 +125,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingBody);
+			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			
 			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
@@ -194,7 +194,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingBody);
+			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			
 			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {

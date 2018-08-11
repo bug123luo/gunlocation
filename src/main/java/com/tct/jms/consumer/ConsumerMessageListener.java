@@ -22,7 +22,7 @@ public class ConsumerMessageListener implements MessageListener {
 		if(message instanceof TextMessage) {
 	        TextMessage textMessage = (TextMessage) message;
 
-			log.info("接收消息");				
+			log.info("RECE MESSAGE");				
 			if(null !=textMessage) {
 				//编解码器选择器
 				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			

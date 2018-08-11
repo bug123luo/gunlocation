@@ -58,7 +58,7 @@ public class ProducerThread extends Thread {
 					for(String serialNumber:unSendMessageMap.keySet()) {
 						String jsonMsg = (String) unSendMessageMap.get(serialNumber);
 						TextMessage message = session.createTextMessage(jsonMsg);
-						log.info("producer 发送消息   到队列" + queueName);
+						log.info("producer SEND MESSAGE TO QUEUE:" + queueName);
 						log.info(message.getText());
 						producer.send(message);
 						unSendMessageMap.remove(serialNumber);
