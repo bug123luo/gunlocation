@@ -11,6 +11,8 @@
  */
 package com.tct.util;
 
+import org.apache.camel.impl.cloud.StaticServiceDiscoveryFactory;
+
 /**   
  * @ClassName:  StringConstant   
  * @Description:TODO(这里用一句话描述这个类的作用)   
@@ -24,4 +26,6 @@ public class StringConstant {
 	public static final String MSG_BODY_PREFIX="[";
 	public static final String MSG_BODY_SUFFIX="]";
 	public static final String MSG_BODY_SEPARATOR=";";
+	public static final String IP="120.76.156.120";
+	public static final String PORT="9876";
 }

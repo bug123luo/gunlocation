@@ -1,7 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/main/java=UTF-8
+encoding//src/main/java/com/tct/cache/SessionMessageCache.java=UTF-8
 encoding//src/main/java/com/tct/cache/UnSendReplyMessageCache.java=UTF-8
-encoding//src/main/java/com/tct/cache/UnhandlerReceiveMessageCache.java=UTF-8
 encoding//src/main/java/com/tct/cache/UserOnlineQueueCache.java=UTF-8
 encoding//src/main/java/com/tct/cache/UserOnlineSessionCache.java=UTF-8
 encoding//src/main/java/com/tct/codec/AuthCodeMessageCodec.java=UTF-8

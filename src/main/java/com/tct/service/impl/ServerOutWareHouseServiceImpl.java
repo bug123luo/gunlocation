@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOutWareHouseMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ServerOutWareHouseDao;
 import com.tct.mapper.DeviceGunMapper;
@@ -34,6 +35,7 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ServerOutWareHouseMessage message = (ServerOutWareHouseMessage)msg;
 		
+		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
@@ -67,8 +69,13 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		message.setSessionToken(sessionToken);
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
-		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = message.getMessageBody().getReserve()
+		//BeanUtils.copyProperties(message, simpleReplyMessage);
+		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);
+		simpleReplyMessage.setSerialNumber(message.getSerialNumber());
+		simpleReplyMessage.setSendTime(message.getSendTime());
+		simpleReplyMessage.setMessageType(message.getMessageType());
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getGunTag()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getApplyTime()
@@ -83,7 +90,8 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getPowerSampling()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSystemTime()
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getMatchTime()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSafeCode();
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getSafeCode()
+				+StringConstant.MSG_BODY_SUFFIX;
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");

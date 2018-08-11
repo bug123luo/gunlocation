@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.activemq.console.command.store.proto.MapEntryPB.Bean;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
@@ -20,6 +21,7 @@ import com.tct.codec.pojo.ClientInWareHouseReplyMessage;
 import com.tct.codec.pojo.ServerInWareHouseBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyBody;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
@@ -73,7 +75,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 		deviceGunCustom2.setState(1);
 		
 		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2);
-		if (flag) {
+		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
 			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
 			clientInWareHouseReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
@@ -94,8 +96,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
 				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode()
 				+StringConstant.MSG_BODY_SUFFIX;
-			
-			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
+			simpleReplyMessage.setMessageBody(replyBody);
+			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
 			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -160,10 +162,12 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
-			String replyBody =clientInWareHouseReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode();
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientInWareHouseReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
+			
 			simpleReplyMessage.setMessageBody(replyBody);
-			String clientInWareHouseReplyjson = JSONObject.toJSONString(clientInWareHouseReplyMessage);
+			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
 			//将APP回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -174,6 +178,40 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
 			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			
+			//将向服务器的发送消息放在缓存队列中
+			GunCustom gunCustom2 = new GunCustom();
+			GunQueryVo gunQueryVo = new GunQueryVo();
+			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunQueryVo.setGunCustom(gunCustom2);
+			gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
+			
+			ServerInWareHouseReplyMessage serverInWareHouseReplyMessage =  new ServerInWareHouseReplyMessage();
+			ServerInWareHouseReplyBody serverInWareHouseReplyBody = new ServerInWareHouseReplyBody();
+			serverInWareHouseReplyBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverInWareHouseReplyBody.setGunTag(gunCustom2.getGunTag());
+			serverInWareHouseReplyBody.setState(Integer.toString(0));
+			
+			serverInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
+			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
+			serverInWareHouseReplyMessage.setMessageType("12");
+			serverInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
+			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
+			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
+			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
+			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyBody);
+			
+			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			
 			flag = true;
 		}
 		

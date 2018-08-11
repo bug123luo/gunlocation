@@ -7,10 +7,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.po.DeviceGunCustom;
@@ -33,6 +35,7 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 		
 		ServerOffLocationWarningStartStopMessage message = (ServerOffLocationWarningStartStopMessage)msg;
 		
+		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
@@ -53,10 +56,17 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 		
 		message.setSessionToken(sessionToken);
 				
+		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
-		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = message.getMessageBody().getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac();
+		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);
+		simpleReplyMessage.setMessageType(message.getMessageType());
+		simpleReplyMessage.setSerialNumber(message.getSerialNumber());
+		simpleReplyMessage.setSendTime(message.getSendTime());
+		
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SUFFIX;
 		simpleReplyMessage.setMessageBody(replyBody);
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 

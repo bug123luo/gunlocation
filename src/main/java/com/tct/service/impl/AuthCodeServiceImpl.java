@@ -3,20 +3,26 @@ package com.tct.service.impl;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tct.util.RandomNumber;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
 import com.tct.codec.pojo.AuthCodeReplyMessage;
+import com.tct.codec.pojo.SimpleMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.po.DeviceCustom;
@@ -37,6 +43,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 		AuthCodeMessage message=(AuthCodeMessage)msg;
 		//缓存消息
 		//AuthCodeMessage 中的username目前是警员编号
+		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
@@ -61,7 +68,10 @@ public class AuthCodeServiceImpl implements SimpleService{
 			return false;
 		}
 		
+		SimpleMessage simpleMessage = new SimpleMessage();
+		BeanUtils.copyProperties(message, simpleMessage);
 		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
+		sessionMessageMap.put(message.getSessionToken(), simpleMessage);
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceCustom2.getDeviceNo());
@@ -95,7 +105,16 @@ public class AuthCodeServiceImpl implements SimpleService{
 				
 			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
-			String authJson = JSONObject.toJSONString(authCodeReplyMessage);
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(authCodeReplyMessage, simpleReplyMessage);
+			String replyBody = StringConstant.MSG_BODY_PREFIX+authCodeReplyBody.getReserve()
+					+StringConstant.MSG_BODY_SEPARATOR+authCodeReplyBody.getAuthCode()
+					+StringConstant.MSG_BODY_SEPARATOR+StringConstant.IP
+					+StringConstant.MSG_BODY_SEPARATOR+StringConstant.PORT
+					+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			
+			String authJson = JSONObject.toJSONString(simpleReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {

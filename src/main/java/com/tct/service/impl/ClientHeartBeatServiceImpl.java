@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyBody;
@@ -62,7 +62,7 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		gunCustom.setBluetoothMac(deviceGunCustom.getGunMac());
 		boolean flag=clientHeartBeatDao.updateDeviceLocation(deviceLocationCustom, gunCustom);
 		
-		if(flag) {
+/*		if(flag) {
 			ClientHeartBeatReplyMessage clientHeartBeatReplyMessage = new ClientHeartBeatReplyMessage();
 			ClientHeartBeatReplyBody clientHeartBeatReplyBody = new ClientHeartBeatReplyBody();
 			clientHeartBeatReplyBody.setReserve("1");
@@ -80,10 +80,11 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(message, simpleReplyMessage);
-			String replyBody =clientHeartBeatReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode();
+			String replyBody =StringConstant.MSG_BODY_PREFIX+clientHeartBeatReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
-			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
+			String heartBeatJson = JSONObject.toJSONString(simpleReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -118,7 +119,7 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SEPARATOR+clientHeartBeatReplyBody.getAuthCode()
 				+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
-			String heartBeatJson = JSONObject.toJSONString(clientHeartBeatReplyMessage);
+			String heartBeatJson = JSONObject.toJSONString(simpleReplyMessage);
 			//将回应消息放进消息缓存队列中
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
@@ -129,7 +130,7 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), heartBeatJson);
 			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
-		}
+		}*/
 		
 		return false;
 	}

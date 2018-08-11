@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 import com.tct.codec.pojo.ClientOffLocationWarningReplyBody;
@@ -69,7 +69,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 		
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
-		gunCustom.setRealTimeState(0);
+		gunCustom.setRealTimeState(2);
 		gunCustom.setWarehouseId(Integer.valueOf(message.getMessageBody().getAreaCode()));
 		
 		SosMessageCustom sosMessageCustom =  new SosMessageCustom();
@@ -81,7 +81,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 		sosMessageCustom.setSosTime(StringUtil.getDate(message.getSendTime()));
 		sosMessageCustom.setFinallyTime(StringUtil.getDate(message.getSendTime()));
 		sosMessageCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
-		sosMessageCustom.setState(0);
+		sosMessageCustom.setState(1);
 		
 		boolean flag=clientOffLocationWarningDao.updateClientOffLocationWaring(deviceLocationCustom, gunCustom, sosMessageCustom);
 		
@@ -93,7 +93,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			clientOffLocationWarningReplyMessage.setDeviceType(message.getDeviceType());
 			clientOffLocationWarningReplyMessage.setFormatVersion(message.getFormatVersion());
 			clientOffLocationWarningReplyMessage.setMessageBody(clientOffLocationWarningReplyBody);
-			clientOffLocationWarningReplyMessage.setMessageType("18");
+			clientOffLocationWarningReplyMessage.setMessageType("16");
 			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
 			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
@@ -103,8 +103,9 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
-			String replyBody=clientOffLocationWarningReplyBody.getReserve()
-				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode();
+			String replyBody=StringConstant.MSG_BODY_PREFIX+clientOffLocationWarningReplyBody.getReserve()
+				+StringConstant.MSG_BODY_SEPARATOR+clientOffLocationWarningReplyBody.getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
@@ -135,7 +136,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
 			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
-			serverInWareHouseReplyMessage.setMessageType("18");
+			serverInWareHouseReplyMessage.setMessageType("16");
 			serverInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
 			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
@@ -159,7 +160,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			clientOffLocationWarningReplyMessage.setDeviceType(message.getDeviceType());
 			clientOffLocationWarningReplyMessage.setFormatVersion(message.getFormatVersion());
 			clientOffLocationWarningReplyMessage.setMessageBody(clientOffLocationWarningReplyBody);
-			clientOffLocationWarningReplyMessage.setMessageType("18");
+			clientOffLocationWarningReplyMessage.setMessageType("16");
 			clientOffLocationWarningReplyMessage.setSendTime(StringUtil.getDateString());
 			clientOffLocationWarningReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
@@ -185,9 +186,39 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
 			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			
+			//将web端回应消息放进消息缓存队列
+/*			GunCustom gunCustom2 = new GunCustom();
+			GunQueryVo gunQueryVo = new GunQueryVo();
+			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunQueryVo.setGunCustom(gunCustom2);
+			gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
+			
+			ServerInWareHouseReplyMessage serverInWareHouseReplyMessage = new ServerInWareHouseReplyMessage();
+			ServerInWareHouseReplyBody serverInWareHouseReplyBody =  new ServerInWareHouseReplyBody();
+			serverInWareHouseReplyBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverInWareHouseReplyBody.setGunTag(gunCustom2.getGunTag());
+			serverInWareHouseReplyBody.setState(Integer.toString(2));
+
+			serverInWareHouseReplyMessage.setDeviceType(message.getDeviceType());
+			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
+			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
+			serverInWareHouseReplyMessage.setMessageType("16");
+			serverInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
+			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());
+			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
+			
+			String serverInWareHouseReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
+						
+			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
+			}
+			if(tempUnSendReplyMessageMap==null) {
+				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
 		}
-		
-		
 		return false;
 	}
 

@@ -8,7 +8,6 @@ public class ClientOffLocationWarningBody{
 	private String la;
 	private String areaCode;
 	private String authCode;
-	private String id;
 	
 	public String getReserve() {
 		return reserve;
@@ -46,12 +45,5 @@ public class ClientOffLocationWarningBody{
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
 	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	
+
 }

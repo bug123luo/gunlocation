@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerOffLocationSearchMessage;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientBody;
 import com.tct.codec.pojo.ServerOffLocationSearchToClientMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.mapper.DeviceCustomMapper;
@@ -46,6 +48,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		
 		ServerOffLocationSearchMessage message= (ServerOffLocationSearchMessage)msg;
 		
+		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
@@ -91,16 +94,23 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 
+		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
 		
+		//修改为[]格式返回到客户端
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
-		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = searchToClientBody.getReserve()
+		
+		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);
+		simpleReplyMessage.setMessageType(message.getMessageType());
+		simpleReplyMessage.setSerialNumber(message.getSerialNumber());
+		simpleReplyMessage.setSendTime(message.getSendTime());
+		String replyBody = StringConstant.MSG_BODY_PREFIX+searchToClientBody.getReserve()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getBluetoothMac()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostGunTag()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLo()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLa()
 		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getLostTime()
-		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getAuthCode();
+		  +StringConstant.MSG_BODY_SEPARATOR+searchToClientBody.getAuthCode()
+		  +StringConstant.MSG_BODY_SUFFIX;
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String searchToClienJson = JSONObject.toJSONString(simpleReplyMessage);

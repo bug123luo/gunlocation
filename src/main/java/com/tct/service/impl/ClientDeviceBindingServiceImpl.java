@@ -87,8 +87,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientDeviceBindingReplyMessage, simpleReplyMessage);
-			String replyBody = clientDeviceBindingReplyBody.getReserve()
-					+StringConstant.MSG_BODY_SEPARATOR+clientDeviceBindingReplyBody.getAuthCode();
+			String replyBody = StringConstant.MSG_BODY_PREFIX+clientDeviceBindingReplyBody.getReserve()
+					+StringConstant.MSG_BODY_SEPARATOR+clientDeviceBindingReplyBody.getAuthCode()
+					+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
@@ -114,7 +115,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
 			serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
 			serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
-			serverDeviceBindingBody.setState(Integer.toString(0));
+			serverDeviceBindingBody.setState(Integer.toString(1));
 			serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
 			serverDeviceBindingReplyMessage.setFormatVersion(message.getFormatVersion());
 			serverDeviceBindingReplyMessage.setMessageBody(serverDeviceBindingBody);
@@ -172,6 +173,38 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
 			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			
+			GunCustom gunCustom2 = new GunCustom();
+			GunQueryVo gunQueryVo = new GunQueryVo();
+			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunQueryVo.setGunCustom(gunCustom2);
+			gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
+			
+			ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
+			ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
+			serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
+			serverDeviceBindingBody.setState(Integer.toString(0));
+			serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
+			serverDeviceBindingReplyMessage.setFormatVersion(message.getFormatVersion());
+			serverDeviceBindingReplyMessage.setMessageBody(serverDeviceBindingBody);
+			serverDeviceBindingReplyMessage.setMessageType("08");
+			serverDeviceBindingReplyMessage.setSendTime(message.getSendTime());
+			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
+			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
+			
+			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingBody);
+			
+			Hashtable<String, Object> webUnSendReplyMessageMap = null;
+			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
+			}
+			if(webUnSendReplyMessageMap==null) {
+				webUnSendReplyMessageMap = new Hashtable<String, Object>();
+			}
+			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
+			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);
 		}
 		return flag;
 	}

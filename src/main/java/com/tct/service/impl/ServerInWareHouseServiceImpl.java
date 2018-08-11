@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UnhandlerReceiveMessageCache;
+import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ServerInWareHouseDao;
 import com.tct.po.DeviceGunCustom;
@@ -33,6 +35,7 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ServerInWareHouseMessage message = (ServerInWareHouseMessage)msg;
 		
+		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
@@ -61,11 +64,17 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		message.setSessionToken(sessionToken);
 		
 		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		
 		//修改为[]格式返回到客户端
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
-		BeanUtils.copyProperties(message, simpleReplyMessage);
-		String replyBody = message.getMessageBody().getBluetoothMac()
-				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getAuthCode();
+		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);
+		simpleReplyMessage.setMessageType(message.getMessageType());
+		simpleReplyMessage.setSerialNumber(message.getSerialNumber());
+		simpleReplyMessage.setSendTime(message.getSendTime());
+		String replyBody = StringConstant.MSG_BODY_PREFIX+message.getMessageBody().getBluetoothMac()
+				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getAuthCode()
+				+StringConstant.MSG_BODY_SUFFIX;
 		simpleReplyMessage.setMessageBody(replyBody);
 		//发送到producer处理队列上
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
