@@ -39,10 +39,11 @@ public class StringUtil {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 
 		String tempdate=simpleDateFormat.format(new Date());
-		String pString = tempdate.substring(0, 4)+tempdate.substring(4,6)+tempdate.substring(6, 8)+
-						tempdate.substring(8, 10)+tempdate.substring(10,12)+tempdate.substring(12, 14);
+		String pString = tempdate.replaceAll("-", "");
+		String bString = pString.replaceAll(":", "");
+		String tString = bString.replaceAll(" ", "");
 		
-		return pString;
+		return tString;
 	}
 	
 	public static synchronized Object getKey(Map map, Object value){

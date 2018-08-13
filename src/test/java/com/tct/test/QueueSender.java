@@ -27,8 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 public class QueueSender {
 
 	public static void main(String[] args) throws JMSException, InterruptedException {
-		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
-		/*ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");*/
+		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
 		Connection connection =  connectionFactory.createConnection();
 		connection.start();
 		

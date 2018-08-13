@@ -21,12 +21,18 @@
                            brokerURL="tcp://112.74.51.194:61616"
                            userName="admin"
                            password="admin" /> -->
-     <amq:connectionFactory id="amqConnectionFactory"
-                           brokerURL="tcp://120.76.156.120:6160"
+     <!-- <amq:connectionFactory id="amqConnectionFactory"
+                           brokerURL="failover:(tcp://120.76.156.120:6160)?transport.useKeepAlive=true"
                            userName="admin"
-                           password="admin" />                      
-                           
-
+                           password="admin" /> -->                      
+    
+    <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL">
+      <value>failover:(tcp://120.76.156.120:6160?transport.useInactivityMonitor=true&amp;transport.useKeepAlive=true)</value>
+    </property>
+  </bean>
+    
+                             
     <!-- 配置JMS连接工长 -->
     <bean id="connectionFactory"
           class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -48,7 +54,7 @@
         <property name="defaultDestination" ref="demoQueueDestination" />
         <!-- <property name="receiveTimeout" value="30000" /> -->
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
-        <!-- <property name="pubSubDomain" value="false" /> -->
+        <property name="pubSubDomain" value="false" />
     </bean>
 
 
