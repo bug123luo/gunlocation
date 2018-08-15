@@ -22,17 +22,15 @@
                            userName="admin"
                            password="admin" /> -->
      <!-- <amq:connectionFactory id="amqConnectionFactory"
-                           brokerURL="failover:(tcp://120.76.156.120:6160)?transport.useKeepAlive=true"
+                           brokerURL="failover:(tcp://120.76.156.120:6160?transport.useInactivityMonitor=true&amp;transport.useKeepAlive=true)"
                            userName="admin"
-                           password="admin" /> -->                      
-    
-    <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL">
-      <value>failover:(tcp://120.76.156.120:6160?transport.useInactivityMonitor=true&amp;transport.useKeepAlive=true)</value>
-    </property>
-  </bean>
-    
-                             
+                           password="admin" />    -->  
+                           
+                     	<amq:connectionFactory id="amqConnectionFactory"
+                           brokerURL="tcp://120.76.156.120:6160"
+                           userName="admin"
+                           password="admin" />                 
+                                
     <!-- 配置JMS连接工长 -->
     <bean id="connectionFactory"
           class="org.springframework.jms.connection.CachingConnectionFactory">

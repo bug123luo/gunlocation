@@ -21,7 +21,10 @@ public class GunLocationMQServer {
 				"classpath:applicationContext-transaction.xml","classpath:applicationContext-jms.xml"});
 		
 		//ConnectionFactory cf= new ActiveMQConnectionFactory("failover:(tcp://112.74.51.194:61616)?initialReconnectDelay=1000&maxReconnectDelay=30000");
-		ConnectionFactory cf= new ActiveMQConnectionFactory("failover:(tcp://120.76.156.120:6160?transport.useInactivityMonitor=true&transport.useKeepAlive=true)");
+		
+		//ConnectionFactory cf= new ActiveMQConnectionFactory("faileover:(tcp://120.76.156.120:6160?transport.useInactivityMonitor=true&transport.useKeepAlive=true)");
+
+		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
 		
 			
 		HashMap<String, Object> paraMap = new HashMap<>();
