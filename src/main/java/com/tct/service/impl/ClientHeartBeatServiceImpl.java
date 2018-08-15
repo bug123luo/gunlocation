@@ -45,6 +45,11 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
+		if(deviceGunCustom==null) {
+			log.info("There is no record in device gun!");
+			return false;
+		}
+		
 		//缓存消息
 		//AuthCodeMessage 中的username目前是警员编号
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();

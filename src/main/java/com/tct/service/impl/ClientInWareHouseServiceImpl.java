@@ -60,6 +60,11 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
+		if (deviceGunCustom==null) {
+			log.info("上传入库消息中，无法在device gun表中找到相应的记录");
+			return false;
+		}
+		
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 				
@@ -127,12 +132,12 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setFormatVersion(message.getFormatVersion());
 			serverInWareHouseReplyMessage.setMessageType("12");
 			serverInWareHouseReplyMessage.setSendTime(StringUtil.getDateString());
-			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());;
+			serverInWareHouseReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyBody);
+			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
@@ -201,7 +206,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyBody);
+			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");

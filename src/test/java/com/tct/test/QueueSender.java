@@ -29,6 +29,7 @@ public class QueueSender {
 	public static void main(String[] args) throws JMSException, InterruptedException {
 		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
 		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
+		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://14.116.149.237:6160");
 		Connection connection =  connectionFactory.createConnection();
 		connection.start();
 		
@@ -42,7 +43,7 @@ public class QueueSender {
 			
 			AuthCodeMessageBody authSunBody = new AuthCodeMessageBody();
 			
-			authSunBody.setCommand("d6dceab7a1837869d96d2d6b65e89d0e");
+			authSunBody.setCommand("admin123");
 			authSunBody.setLa("234234");
 			authSunBody.setLo("234234");
 			authSunBody.setUsername("yunbao20");

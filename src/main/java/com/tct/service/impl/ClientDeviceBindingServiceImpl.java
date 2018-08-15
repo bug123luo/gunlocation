@@ -50,6 +50,11 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
+		if(deviceGunCustom ==null) {
+			log.info("上传绑定消息在deviceGun中无法找到对应的记录！");
+			return false;
+		}
+		
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 
