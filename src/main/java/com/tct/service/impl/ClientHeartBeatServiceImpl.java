@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -16,7 +20,10 @@ import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyBody;
 import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
+import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -34,6 +41,9 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
+	@Autowired
+	ClientDeviceBindingDao clientDeviceBindingDao;
+		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientHeartBeatMessage message = (ClientHeartBeatMessage)msg;

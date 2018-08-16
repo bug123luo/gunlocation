@@ -4,10 +4,14 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.apache.activemq.console.command.store.proto.MapEntryPB.Bean;
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -26,9 +30,13 @@ import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientInWareHouseDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
+import com.tct.po.DeviceQueryVo;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
@@ -49,6 +57,20 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 	
 	@Autowired
 	ClientDeviceBindingDao clientDeviceBindingDao;
+		
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -78,8 +100,13 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 		deviceGunCustom2.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunCustom2.setInWarehouseTime(new Date());
 		deviceGunCustom2.setState(1);
+		DeviceCustom deviceCustom =  new DeviceCustom();
+		deviceCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+		deviceCustom.setState(1);
+		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		deviceQueryVo.setDeviceCustom(deviceCustom);
 		
-		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2);
+		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2,deviceQueryVo);
 		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
 			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
@@ -95,7 +122,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
 			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
+			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
 			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
@@ -103,7 +130,10 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
+			
+			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);
 			//将APP回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -112,7 +142,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			
 			//将向服务器的发送消息放在缓存队列中
@@ -139,14 +169,15 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
-			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+			webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
+/*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
 			
 			flag = true;
 		}else {
@@ -164,7 +195,6 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			clientInWareHouseReplyMessage.setMessageBody(clientInWareHouseReplyBody);
 			clientInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientInWareHouseReplyMessage, simpleReplyMessage);
 			String replyBody =StringConstant.MSG_BODY_PREFIX+clientInWareHouseReplyBody.getReserve()
@@ -173,7 +203,10 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
+			
+			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);
 			//将APP回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -182,7 +215,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			//将向服务器的发送消息放在缓存队列中
 			GunCustom gunCustom2 = new GunCustom();
@@ -208,14 +241,16 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			
-			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+			webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
+			
+/*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
 			
 			flag = true;
 		}

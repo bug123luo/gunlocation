@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -15,6 +19,8 @@ import com.tct.codec.pojo.ClientVersionSyncMessage;
 import com.tct.codec.pojo.ClientVersionSyncReplyBody;
 import com.tct.codec.pojo.ClientVersionSyncReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.SoftwareVersionCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
@@ -39,6 +45,20 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 	
 	@Autowired
 	WatchDeviceCustomMapper watchDeviceCustomMapper;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -88,9 +108,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			clientVersionSyncReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientVersionSyncReplyMessage.setServiceType(message.getServiceType());
 			clientVersionSyncReplyMessage.setSessionToken(message.getSessionToken());
-			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			
+						
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientVersionSyncReplyMessage, simpleReplyMessage);
 			String replyBody=StringConstant.MSG_BODY_PREFIX+clientVersionSyncReplyMessage.getMessageBody().getReserve()
@@ -102,7 +120,9 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String clientsyncJson = JSONObject.toJSONString(simpleReplyMessage);
+			outQueueSender.sendMessage(outQueueDestination, clientsyncJson);
 			//将回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -111,7 +131,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientsyncJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		}else {
 			ClientVersionSyncReplyMessage clientVersionSyncReplyMessage = new ClientVersionSyncReplyMessage();
 			ClientVersionSyncReplyBody clientVersionSyncReplyBody =  new ClientVersionSyncReplyBody();
@@ -127,9 +147,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			clientVersionSyncReplyMessage.setSerialNumber(message.getSerialNumber());
 			clientVersionSyncReplyMessage.setServiceType(message.getServiceType());
 			clientVersionSyncReplyMessage.setSessionToken(message.getSessionToken());
-			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			
+						
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientVersionSyncReplyMessage, simpleReplyMessage);
 			String replyBody=StringConstant.MSG_BODY_PREFIX+clientVersionSyncReplyMessage.getMessageBody().getReserve()
@@ -141,7 +159,9 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String clientsyncJson = JSONObject.toJSONString(simpleReplyMessage);
+			outQueueSender.sendMessage(outQueueDestination, clientsyncJson);
 			//将回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -150,7 +170,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientsyncJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		}
 		
 		

@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +18,8 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.DeviceBulletCountMessage;
 import com.tct.codec.pojo.DeviceBulletCountReplyBody;
 import com.tct.codec.pojo.SimpleReplyMessage;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.DeviceLocationCustomMapper;
 import com.tct.mapper.GunCustomMapper;
@@ -41,6 +47,20 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 	
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -95,10 +115,10 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 			simpleReplyMessage.setSendTime(StringUtil.getDateString());
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String strJson = JSONObject.toJSONString(simpleReplyMessage);
-
+			outQueueSender.sendMessage(outQueueDestination, strJson);
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -107,7 +127,7 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 		}else {
 			DeviceBulletCountReplyBody deviceBulletCountReplyBody = new DeviceBulletCountReplyBody();
@@ -122,10 +142,10 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 			simpleReplyMessage.setSendTime(StringUtil.getDateString());
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			String strJson = JSONObject.toJSONString(simpleReplyMessage);
-
+			outQueueSender.sendMessage(outQueueDestination, strJson);
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -134,7 +154,7 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		}
 		
 		

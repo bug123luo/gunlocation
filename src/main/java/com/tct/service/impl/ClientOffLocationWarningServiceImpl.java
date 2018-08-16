@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -20,6 +24,8 @@ import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientOffLocationWarningDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -44,6 +50,20 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 	
 	@Autowired
 	ClientDeviceBindingDao clientDeviceBindingDao;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -99,7 +119,6 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
 			clientOffLocationWarningReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
@@ -109,7 +128,9 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
+			outQueueSender.sendMessage(outQueueDestination, msgJson);
 			//将APP回应消息放进消息缓存队列中
+			/*String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -118,7 +139,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			//将web端回应消息放进消息缓存队列
 			GunCustom gunCustom2 = new GunCustom();
@@ -142,15 +163,15 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			
 			String serverInWareHouseReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
-			
-			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
+			webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareHouseReplyJson);
+/*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
 			if(tempUnSendReplyMessageMap==null) {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareHouseReplyJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
 			flag = true;
 		}else {
 			ClientOffLocationWarningReplyMessage clientOffLocationWarningReplyMessage = new ClientOffLocationWarningReplyMessage();
@@ -166,7 +187,6 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			clientOffLocationWarningReplyMessage.setServiceType(message.getServiceType());
 			clientOffLocationWarningReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientOffLocationWarningReplyMessage, simpleReplyMessage);
@@ -176,7 +196,9 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
+			outQueueSender.sendMessage(outQueueDestination, msgJson);
 			//将APP回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -185,7 +207,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), msgJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			//将web端回应消息放进消息缓存队列
 /*			GunCustom gunCustom2 = new GunCustom();

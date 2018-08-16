@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -17,6 +21,8 @@ import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ServerInWareHouseDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
@@ -30,6 +36,20 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 
 	@Autowired
 	ServerInWareHouseDao serverInWareHouseDao;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -63,7 +83,6 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		
 		message.setSessionToken(sessionToken);
 		
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
 		
 		//修改为[]格式返回到客户端
@@ -78,7 +97,8 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		simpleReplyMessage.setMessageBody(replyBody);
 		//发送到producer处理队列上
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
-
+		outQueueSender.sendMessage(outQueueDestination, strJson);
+/*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -87,7 +107,7 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
-		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 
 		return true;
 	}

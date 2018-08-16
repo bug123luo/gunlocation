@@ -50,11 +50,20 @@ public class ProducerThread extends Thread {
 				//从未发消息缓存队列中获取消息，并且构造json消息，将消息发送出去
 				ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageCacheMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 				
+/*				if (unSendReplyMessageCacheMap.isEmpty()) {
+					continue;
+				}*/
+				
 				for(String queueName:unSendReplyMessageCacheMap.keySet()) {	
 					Hashtable<String, Object> unSendMessageMap =unSendReplyMessageCacheMap.get(queueName);
+					
+					if (unSendMessageMap.isEmpty()) {
+						continue;
+					}
+					
 					Destination destination =  session.createQueue(queueName);
 					MessageProducer producer =  session.createProducer(destination);
-				
+									
 					for(String serialNumber:unSendMessageMap.keySet()) {
 						String jsonMsg = (String) unSendMessageMap.get(serialNumber);
 						TextMessage message = session.createTextMessage(jsonMsg);
@@ -64,7 +73,11 @@ public class ProducerThread extends Thread {
 						unSendMessageMap.remove(serialNumber);
 						
 						session.commit();
-					}	
+						
+					}
+					
+					//unSendReplyMessageCacheMap.remove(queueName);
+					
 				}	
 			}
 					
