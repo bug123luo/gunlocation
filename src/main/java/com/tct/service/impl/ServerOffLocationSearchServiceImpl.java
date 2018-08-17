@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -18,6 +22,8 @@ import com.tct.codec.pojo.ServerOffLocationSearchToClientMessage;
 import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.GunCustomMapper;
 import com.tct.po.DeviceCustom;
@@ -42,6 +48,20 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 	
 	@Autowired
 	DeviceCustomMapper deviceCustomMapper;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -91,9 +111,6 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		serverOffLocationSearchToClientMessage.setServiceType(message.getServiceType());
 		serverOffLocationSearchToClientMessage.setSessionToken(sessionToken);
 		
-		
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-
 		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
 		
 		//修改为[]格式返回到客户端
@@ -114,8 +131,9 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String searchToClienJson = JSONObject.toJSONString(simpleReplyMessage);
-		
+		outQueueSender.sendMessage(outQueueDestination, searchToClienJson);
 		//将回应消息放进消息缓存队列中
+/*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -124,7 +142,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), searchToClienJson);
-		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		
 		return true;
 	}

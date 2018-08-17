@@ -3,8 +3,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.SessionMessageCache;
@@ -15,6 +19,8 @@ import com.tct.codec.pojo.ServerOffLocationWarningStartStopMessage;
 import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
@@ -29,6 +35,20 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -68,10 +88,11 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 				+StringConstant.MSG_BODY_SEPARATOR+message.getMessageBody().getBluetoothMac()
 				+StringConstant.MSG_BODY_SUFFIX;
 		simpleReplyMessage.setMessageBody(replyBody);
-		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 
 		String startStopJson = JSONObject.toJSONString(simpleReplyMessage);
+		outQueueSender.sendMessage(outQueueDestination, startStopJson);
 		//将回应消息放进消息缓存队列中
+/*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -80,7 +101,7 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 		}
 		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), startStopJson);
-		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		return true;
 	}
 

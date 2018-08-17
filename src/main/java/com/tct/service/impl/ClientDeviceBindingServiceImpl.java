@@ -4,8 +4,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -19,6 +23,8 @@ import com.tct.codec.pojo.ServerDeviceBindingReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -40,6 +46,20 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 	@Autowired
 	ClientDeviceBindingDao clientDeviceBindingDao;
 	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
+	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientDeviceBindingMessage message = (ClientDeviceBindingMessage)msg;
@@ -49,6 +69,11 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
+		
+		if(deviceGunCustom ==null) {
+			log.info("上传绑定消息在deviceGun中无法找到对应的记录！");
+			return false;
+		}
 		
 		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
 		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
@@ -83,8 +108,6 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			clientDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			clientDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientDeviceBindingReplyMessage, simpleReplyMessage);
 			String replyBody = StringConstant.MSG_BODY_PREFIX+clientDeviceBindingReplyBody.getReserve()
@@ -93,7 +116,10 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
+			
+			outQueueSender.sendMessage(outQueueDestination, bingJson);
 			//将回应APP消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -102,7 +128,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			//将回应消息发送到Web前端队列
 			GunCustom gunCustom2 = new GunCustom();
@@ -127,7 +153,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			
-			Hashtable<String, Object> webUnSendReplyMessageMap = null;
+			webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
+			
+/*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
@@ -135,7 +163,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 				webUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);*/
 			
 			flag = true;
 		}else {
@@ -153,7 +181,6 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			clientDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			clientDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(clientDeviceBindingReplyMessage, simpleReplyMessage);
@@ -163,7 +190,11 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
+			
+			outQueueSender.sendMessage(outQueueDestination, bingJson);
+
 			//将回应APP消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -172,7 +203,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
@@ -195,8 +226,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
+			webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
-			Hashtable<String, Object> webUnSendReplyMessageMap = null;
+/*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
@@ -204,7 +236,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 				webUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);*/
 		}
 		return flag;
 	}

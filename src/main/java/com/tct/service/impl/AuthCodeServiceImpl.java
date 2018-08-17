@@ -4,8 +4,12 @@ package com.tct.service.impl;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.tct.util.RandomNumber;
@@ -24,6 +28,7 @@ import com.tct.codec.pojo.AuthCodeReplyMessage;
 import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
+import com.tct.jms.producer.OutQueueSender;
 import com.tct.mapper.DeviceCustomMapper;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceLocationCustom;
@@ -37,6 +42,13 @@ public class AuthCodeServiceImpl implements SimpleService{
 	@Autowired
 	AuthCodeDao authcodeDao;
 	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
 			
@@ -102,9 +114,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 			authCodeReplyMessage.setServiceType(message.getServiceType());
 			authCodeReplyMessage.setMessageBody(authCodeReplyBody);
 			authCodeReplyMessage.setSessionToken(message.getSessionToken());
-				
-			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			
+							
 			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 			BeanUtils.copyProperties(authCodeReplyMessage, simpleReplyMessage);
 			String replyBody = StringConstant.MSG_BODY_PREFIX+authCodeReplyBody.getReserve()
@@ -116,6 +126,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 			
 			String authJson = JSONObject.toJSONString(simpleReplyMessage);
 			//将回应消息放进消息缓存队列中
+/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
@@ -124,8 +135,9 @@ public class AuthCodeServiceImpl implements SimpleService{
 				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
 			}
 			tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);
+			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 			
+			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return true;
 		}else {
 			log.debug("数据库更新数据失败");
