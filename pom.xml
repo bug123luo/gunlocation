@@ -167,6 +167,14 @@
               		 <include>**/*.xml</include>
            		</includes>
        		</resource>
+       		<!-- 在本地调试添加一下资源文件，部署时候可以去掉 -->
+       		<resource>
+       			<directory>src/main/resources</directory>
+       			<includes>
+       				<include>**/*.xml</include>
+       				<include>**/*.properties</include>
+       			</includes>
+       		</resource>
         </resources>
         <plugins>
         	<!-- 解决资源文件的编码问题 -->

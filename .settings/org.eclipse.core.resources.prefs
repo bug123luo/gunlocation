@@ -189,6 +189,7 @@ encoding//src/main/java/com/tct/util/MyBatisUtil.java=UTF-8
 encoding//src/main/java/com/tct/util/RandomNumber.java=UTF-8
 encoding//src/main/java/com/tct/util/ServerMessageSerialNumberGen.java=UTF-8
 encoding//src/main/java/com/tct/util/StringUtil.java=UTF-8
+encoding//src/main/resources=UTF-8
 encoding//src/test/java=UTF-8
 encoding//src/test/java/com/tct/test/ClientBindingQueueSender.java=UTF-8
 encoding//src/test/java/com/tct/test/ClientInWareHouseQueueSender.java=UTF-8
