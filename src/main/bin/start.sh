@@ -1,12 +1,22 @@
-#/bin/bash
-
-gunlocation_id=`ps -ef | grep gunLocationMqServer-0.0.1-SNAPSHOT.jar | grep -v "grep" | awk '{print $2}'`
-echo $gunlocation_id
-
-for id in $gunlocation_id
-do
-    kill -9 $id  
-    echo "killed $id"  
+#!/bin/bash
+  
+if [ "$JAVA_HOME" = "" ]; then
+  echo "Error: JAVA_HOME is not set."
+  exit 1
+fi
+ 
+bin=`dirname "$1"`
+ 
+export MYJETTY_HOME=`cd $bin/../; pwd`
+ 
+MYJETTY_CONF_DIR=$MYJETTY_HOME/conf
+CLASSPATH="${MYJETTY_CONF_DIR}"
+ 
+for f in $MYJETTY_HOME/lib/*.jar; do
+  CLASSPATH=${CLASSPATH}:$f;
 done
-
-nohup java -jar gunLocationMqServer-0.0.1-SNAPSHOT.jar >./log/first.log & 
+ 
+LOG_DIR=${MYJETTY_HOME}/logs
+ 
+CLASS=com.tct.server.GunLocationMQServer
+nohup ${JAVA_HOME}/bin/java -classpath "$CLASSPATH" $CLASS > ${LOG_DIR}/myjetty.out 2>&1 < /dev/null &

@@ -167,13 +167,6 @@
               		 <include>**/*.xml</include>
            		</includes>
        		</resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
         </resources>
         <plugins>
         	<!-- 解决资源文件的编码问题 -->
@@ -198,44 +191,27 @@
                 </configuration>
             </plugin>
 
-            <!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <!-- 清单文件 -->
-                        <manifest>
-                            <mainClass>com.tct.server.GunLocationMQServer</mainClass>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest>
-                        <!-- 给清单文件添加键值对(配置文件外置) -->
-                        <manifestEntries>
-                            <Class-Path>config/</Class-Path>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <!-- 拷贝依赖的jar包到lib目录 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/lib
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assemble/assembly.xml</descriptor>
+					</descriptors>
+					<executions>
+				      <execution>
+				        <id>make-assembly</id>
+				        <phase>package</phase>
+				        <goals>
+				          <goal>single</goal>
+				        </goals>
+				      </execution>
+				    </executions>
+				</configuration>
+			</plugin>
             
             <!-- 打包source文件为jar文件 -->
             <plugin>
