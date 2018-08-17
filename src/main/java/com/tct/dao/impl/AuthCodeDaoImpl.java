@@ -45,7 +45,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 		BeanUtils.copyProperties(deviceLocationCustom, deviceLocationCustom3);
 		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom3);
 			
-		try {
+/*		try {
 			deviceLocationCustom2 = deviceLocationCustomMapper.selectByDeviceLocationQueryVo(deviceLocationQueryVo);
 		} catch (Exception e2) { 
 			log.debug("device_location表中没有该用户的记录");
@@ -70,8 +70,14 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 				flag = false;
 			}
 			flag = true;
-		}
+		}*/
 		
+		try {
+			deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
+			flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return flag;
 	}
 

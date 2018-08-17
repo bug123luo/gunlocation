@@ -28,8 +28,10 @@ public class QueueSender {
 
 	public static void main(String[] args) throws JMSException, InterruptedException {
 		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
-		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
+		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://120.76.156.120:6160");
 		//ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://14.116.149.237:6160");
+		ConnectionFactory connectionFactory =  new ActiveMQConnectionFactory("tcp://192.168.0.103:61616");
+		
 		Connection connection =  connectionFactory.createConnection();
 		connection.start();
 		
