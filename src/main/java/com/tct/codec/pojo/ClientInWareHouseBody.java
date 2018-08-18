@@ -2,11 +2,14 @@ package com.tct.codec.pojo;
 
 public class ClientInWareHouseBody {
 
+	private String reserve;
 	private String bluetoothMac;
 	private String warehousingTime;
 	private String lo;
 	private String la;
+	private String failReason;
 	private String authCode;
+	
 	public String getBluetoothMac() {
 		return bluetoothMac;
 	}
@@ -37,6 +40,19 @@ public class ClientInWareHouseBody {
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
 	}
+	public String getReserve() {
+		return reserve;
+	}
+	public void setReserve(String reserve) {
+		this.reserve = reserve;
+	}
+	public String getFailReason() {
+		return failReason;
+	}
+	public void setFailReason(String failReason) {
+		this.failReason = failReason;
+	}
+
 	
 	
 }

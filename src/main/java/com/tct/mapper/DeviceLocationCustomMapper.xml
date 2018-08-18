@@ -52,7 +52,7 @@
   	</insert>
   	
   	<select id="selectByDeviceLocationQueryVo" parameterType="com.tct.po.DeviceLocationQueryVo" resultType="com.tct.po.DeviceLocationCustom">
-  		SELECT id,device_no as deviceNo,latitude,longitude,create_time as createTime,update_time as updateTime,version FROM device_location
+  		SELECT MAX(id) id,device_no deviceNo,latitude,longitude,create_time createTime,update_time updateTime,version FROM device_location
   		<where>
   			<if test="deviceLocationCustom.deviceNo !=null">
   				device_no=#{deviceLocationCustom.deviceNo}

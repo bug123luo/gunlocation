@@ -70,7 +70,6 @@ public class ConsumerThread extends Thread{
 					try {
 						session.commit();
 					} catch (JMSException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}else {

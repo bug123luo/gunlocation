@@ -11,7 +11,7 @@ public class ClientOutWareHouseReplyBody {
 	private String broadcastInterval;
 	private String conncetionInterval;
 	private String connectionTimeout;
-	private String softwareversiion;
+	private String softwareversion;
 	private String heartbeat;
 	private String powerSampling;
 	private String systemTime;
@@ -77,11 +77,12 @@ public class ClientOutWareHouseReplyBody {
 	public void setConnectionTimeout(String connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
-	public String getSoftwareversiion() {
-		return softwareversiion;
+
+	public String getSoftwareversion() {
+		return softwareversion;
 	}
-	public void setSoftwareversiion(String softwareversiion) {
-		this.softwareversiion = softwareversiion;
+	public void setSoftwareversion(String softwareversion) {
+		this.softwareversion = softwareversion;
 	}
 	public String getHeartbeat() {
 		return heartbeat;

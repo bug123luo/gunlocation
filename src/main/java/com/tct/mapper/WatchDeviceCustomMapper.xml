@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tct.mapper.WatchDeviceCustomMapper">
+	<sql id="roleColes">
+		id,device_no deviceNo,device_name deviceName,password,email,state,version,create_time createTime,update_time updateTime,gun_tag gunTag,gun_mac gunMac
+	</sql>
+
+	<select id="selectByWatchDeviceQueryVo" parameterType="com.tct.po.WatchDeviceQueryVo" resultType="com.tct.po.WatchDeviceCustom">
+		SELECT <include refid="roleColes"/> FROM watch_device
+		<where>
+			<if test="watchDeviceCustom!=null and watchDeviceCustom.deviceName!=null">
+				device_name=#{watchDeviceCustom.deviceName}
+			</if>
+			<if test="watchDeviceCustom!=null and watchDeviceCustom.password!=null">
+				and password=#{watchDeviceCustom.password}
+			</if>
+		</where>
+	</select>
+
+</mapper>

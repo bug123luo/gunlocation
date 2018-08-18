@@ -3,23 +3,29 @@ package com.tct.codec.pojo;
 
 public class ServerInWareHouseReplyBody {
 	
-	private String reserve;
-	private String authCode;
+	private String gunTag;
+	private String deviceNo;
+	private String state;
 	
-	public String getReserve() {
-		return reserve;
+	public String getGunTag() {
+		return gunTag;
 	}
-	public void setReserve(String reserve) {
-		this.reserve = reserve;
+	public void setGunTag(String gunTag) {
+		this.gunTag = gunTag;
 	}
-	public String getAuthCode() {
-		return authCode;
+	public String getDeviceNo() {
+		return deviceNo;
 	}
-	public void setAuthCode(String authCode) {
-		this.authCode = authCode;
+	public void setDeviceNo(String deviceNo) {
+		this.deviceNo = deviceNo;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 	
-	
-	
+
 	
 }

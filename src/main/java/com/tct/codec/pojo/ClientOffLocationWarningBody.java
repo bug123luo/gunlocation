@@ -45,6 +45,5 @@ public class ClientOffLocationWarningBody{
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
 	}
-	
-	
+
 }

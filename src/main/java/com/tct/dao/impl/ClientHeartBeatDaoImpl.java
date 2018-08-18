@@ -16,7 +16,6 @@ import com.tct.po.GunCustom;
 import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
 @Component
 @Transactional
 public class ClientHeartBeatDaoImpl implements ClientHeartBeatDao {

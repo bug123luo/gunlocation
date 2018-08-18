@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Message;
 
 import com.tct.codec.MessageCodec;
 import com.tct.codec.MessageCodecSelector;
@@ -23,7 +24,7 @@ public class GateWayConsumerThread extends Thread{
 	public GateWayConsumerThread(HashMap<String, Object> paraMap,String threadName) {
 		super(threadName);
 		this.cf = (ConnectionFactory) paraMap.get("connectionFactory");
-		this.queueName = (String) paraMap.get("queneName");
+		this.queueName = (String) paraMap.get("nettyRecQue");
 	}
 	
 	public void run() {
@@ -40,65 +41,22 @@ public class GateWayConsumerThread extends Thread{
 			destination =  session.createQueue(this.queueName);
 			consumer =  session.createConsumer(destination);
 		} catch (JMSException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		try {			
 			while(true) {
 				
-				TextMessage textMessage = (TextMessage) consumer.receive();
+				Message message = consumer.receive();
 				
-				if(null !=textMessage) {
-					//编解码器选择器
-					MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
+				if(message instanceof TextMessage) {
+					TextMessage textMessage = (TextMessage) message;
 					
-					MessageCodec messageCodec = null;
-					try {
-						messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
-					} catch (Exception e2) {
-						log.debug(e2+"消息解码器不存在");
-						session.commit();
-					}
+					log.info("接收消息");
+					//log.debug(textMessage.toString());
+					log.info(textMessage.getText().toString());	
 					
-					//业务处理选择器
-					ServiceSelector serviceSelector = new ServiceSelector();
-					boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
-			
-					try {
-						session.commit();
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}else {
-					continue;
-				}
-			}
-						
-/*			while(true) {
-				
-				final Connection connection =  this.cf.createConnection();
-				connection.start();
-				
-				Enumeration names = connection.getMetaData().getJMSXPropertyNames();
-				
-				while(names.hasMoreElements()) {
-					String name = (String)names.nextElement();
-					System.out.println("jms name==="+name);
-				}
-				
-				final Session session =  connection.createSession(Boolean.TRUE, Session.AUTO_ACKNOWLEDGE);
-				Destination destination =  session.createQueue(this.queueName);
-				
-				MessageConsumer consumer =  session.createConsumer(destination);
-				
-				consumer.setMessageListener(new MessageListener() {
-					
-					public void onMessage(Message msg) {
-						
-						TextMessage textMessage = (TextMessage)msg;
-
+					if(null !=textMessage) {
 						//编解码器选择器
 						MessageCodecSelector messageCodecSelector = new MessageCodecSelector();
 						
@@ -106,53 +64,38 @@ public class GateWayConsumerThread extends Thread{
 						try {
 							messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
 						} catch (Exception e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
+							log.debug(e2+"消息解码器不存在");
+							session.commit();
 						}
 						
 						//业务处理选择器
 						ServiceSelector serviceSelector = new ServiceSelector();
-						
-						serviceSelector.handlerService(messageCodec, textMessage);
-						
+						boolean flag = serviceSelector.handlerService(messageCodec, textMessage);
+				
 						try {
 							session.commit();
 						} catch (JMSException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
-						
-						try {
-							session.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						
-						try {
-							connection.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						
+						}					
 					}
-				});					
-			}*/
+				}
+				
+
+			}
 		} catch (Exception e) {
-			// TODO: handle exception
-		} finally {
-			
-			try {
-				session.close();
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				connection.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+            e.printStackTrace();
+            System.out.println("错误类名称 = " + e.getClass().getName());
+            System.out.println("错误原因 = " + e.getMessage());
+		}finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                    connection = null;
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 
 	}

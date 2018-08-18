@@ -3,7 +3,7 @@ package com.tct.po;
 import java.util.Date;
 
 public class WebUser {
-    private Long id;
+    private Integer id;
 
     private String userName;
 
@@ -27,11 +27,11 @@ public class WebUser {
 
     private Integer version;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

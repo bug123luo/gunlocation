@@ -4,12 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ClientDeviceBindingBody;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 public class ClientDeviceBindingMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		//log.info(json.toJSONString());
+		
 		ClientDeviceBindingMessage clientDeviceBindingMessage = new ClientDeviceBindingMessage();
 		clientDeviceBindingMessage.setDeviceType(json.getInteger("deviceType"));
 		clientDeviceBindingMessage.setFormatVersion(json.getString("formatVersion"));
@@ -18,6 +23,8 @@ public class ClientDeviceBindingMessageCodec implements MessageCodec {
 		clientDeviceBindingMessage.setSerialNumber(json.getString("serialNumber"));
 		clientDeviceBindingMessage.setServiceType(json.getString("serviceType"));
 		clientDeviceBindingMessage.setMessageBody(json.getObject("messageBody",ClientDeviceBindingBody.class));
+		clientDeviceBindingMessage.setSessionToken(json.getString("sessionToken"));
+		
 		return clientDeviceBindingMessage;
 	}
 

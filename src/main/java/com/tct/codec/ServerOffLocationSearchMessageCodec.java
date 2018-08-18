@@ -4,12 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ServerOffLocationSearchBody;
 import com.tct.codec.pojo.ServerOffLocationSearchMessage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ServerOffLocationSearchMessageCodec implements MessageCodec {
 
 	@Override
 	public Object decode(String inMsg) throws Exception {
 		
 		JSONObject json= JSONObject.parseObject(inMsg);
+		
+		//log.info(json.toJSONString());
 		
 		ServerOffLocationSearchMessage serverOffLocationSearchMessage = new ServerOffLocationSearchMessage();
 		serverOffLocationSearchMessage.setMessageBody(json.getObject("messageBody",ServerOffLocationSearchBody.class));
@@ -19,6 +24,7 @@ public class ServerOffLocationSearchMessageCodec implements MessageCodec {
 		serverOffLocationSearchMessage.setSerialNumber(json.getString("serialNumber"));
 		serverOffLocationSearchMessage.setMessageType(json.getString("messageType"));
 		serverOffLocationSearchMessage.setSendTime(json.getString("sendTime"));
+		serverOffLocationSearchMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return serverOffLocationSearchMessage;
 	}

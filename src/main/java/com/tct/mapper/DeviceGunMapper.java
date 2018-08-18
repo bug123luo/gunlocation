@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceGunMapper {
-    long countByExample(DeviceGunExample example);
+    int countByExample(DeviceGunExample example);
 
     int deleteByExample(DeviceGunExample example);
 
@@ -27,4 +27,6 @@ public interface DeviceGunMapper {
     int updateByPrimaryKeySelective(DeviceGun record);
 
     int updateByPrimaryKey(DeviceGun record);
+    
+    DeviceGun qwer(String gunMac) throws Exception;
 }

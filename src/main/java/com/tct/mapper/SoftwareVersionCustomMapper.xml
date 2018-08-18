@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tct.mapper.SoftwareVersionCustomMapper" >
+	<select id="selectBySoftwareVersionQueryVo" parameterType="com.tct.po.SoftwareVersionQueryVo" resultType="com.tct.po.SoftwareVersionCustom">
+	 SELECT id,softwarename,lastversion,downloadurl FROM software_version where softwarename="device"
+	</select>
+</mapper>

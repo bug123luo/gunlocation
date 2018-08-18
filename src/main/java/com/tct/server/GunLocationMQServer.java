@@ -2,10 +2,6 @@ package com.tct.server;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -20,24 +16,36 @@ import com.tct.thread.WebConsumerThread;
 public class GunLocationMQServer {
 
 	public static void main(String[] args) {
+		
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml",
+				"classpath:applicationContext-transaction.xml","classpath:applicationContext-jms.xml"});
+		
+		//ConnectionFactory cf= new ActiveMQConnectionFactory("failover:(tcp://112.74.51.194:61616)?initialReconnectDelay=1000&maxReconnectDelay=30000");
+		//ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160?useInactivityMonitor=true&useKeepAlive=true");
+		//ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://120.76.156.120:6160?useKeepAlive=true");
+			
+		/*HashMap<String, Object> paraMap = new HashMap<>();*/
+		//paraMap.put("connectionFactory", cf);
 
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext-dao.xml","classpath:applicationContext-transaction.xml"});
+/*		Hashtable<String, String> webQueueMap = new Hashtable<String,String>();
+		webQueueMap.put("webSendQueue", "WebOutQueue");
+		webQueueMap.put("webRecQueue","WebInQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebServer", webQueueMap);
 		
-		ConnectionFactory cf= new ActiveMQConnectionFactory("tcp://112.74.51.194:61616");
+		Hashtable<String, String> nettyQueuemap = new Hashtable<String,String>();
+		nettyQueuemap.put("nettyRecQue", "InputQueue");
+		nettyQueuemap.put("nettySendQue", "OutQueue");
+		UserOnlineQueueCache.getOnlineUserQueueMap().put("NettyServer", nettyQueuemap);*/
 		
-		HashMap<String, Object> paraMap = new HashMap<>();
-		paraMap.put("connectionFactory", cf);
-		paraMap.put("queneName", "InputQueue");
+/*		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
+		producerThread.start();*/
 		
-		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
-		producerThread.start();
-		
-		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
+/*		GateWayConsumerThread gateWayConsumerThread=new GateWayConsumerThread(paraMap,"gateWayConsumer");
 		gateWayConsumerThread.start();
 		
-		paraMap.put("queneName","WebQueue");
+		paraMap.put("queneName","WebInQueue");
 		WebConsumerThread webConsumerThread=new WebConsumerThread(paraMap,"webConsumer");
-		webConsumerThread.start();
+		webConsumerThread.start();*/
 	}
 
 }

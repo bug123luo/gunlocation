@@ -1,12 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tct.mapper.DeviceCustomMapper">  
-  <select id="selectByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo" resultType="int">
- 		SELECT id FROM device
+<mapper namespace="com.tct.mapper.DeviceCustomMapper">  	
+	 <select id="selectByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo" resultType="com.tct.po.DeviceCustom">
+ 		select id,device_no deviceNo,device_name deviceName,password,phone,email,state,create_time createTime,update_time updateTime,version from device
   		<where>
-			<if test="deviceCustom !=null and deviceCustom.deviceNo!=null and deviceCustom.deviceNo.length()>0">
-				device_no=#{deviceCustom.deviceNo}
+			<if test="deviceCustom !=null and deviceCustom.deviceName!=null">
+				device_name=#{deviceCustom.deviceName}
+			</if>
+			<if test="deviceCustom !=null and deviceCustom.password!=null">
+				and password=#{deviceCustom.password}
 			</if>
 		</where>
 	</select>
+	<update id="updateByDeviceQueryVo" parameterType="com.tct.po.DeviceQueryVo">
+		update device
+		<set>
+			<if test="deviceCustom!=null and deviceCustom.deviceNo!=null">
+				device_no=#{deviceCustom.deviceNo},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.deviceName!=null">
+				device_name=#{deviceCustom.deviceName},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.password!=null">
+				password=#{deviceCustom.password},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.phone!=null">
+				phone=#{deviceCustom.phone},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.email!=null">
+				email=#{deviceCustom.email},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.state!=null">
+				state=#{deviceCustom.state},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.createTime!=null">
+				create_time=#{deviceCustom.createTime},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.updateTime!=null">
+				update_time=#{deviceCustom.updateTime},
+			</if>
+			<if test="deviceCustom!=null and deviceCustom.version!=null">
+				version=#{deviceCustom.version},
+			</if>	
+		</set>
+		where device_no=#{deviceCustom.deviceNo}
+	</update>
+	<insert id="insertSelective" parameterType="com.tct.po.DeviceCustom">
+		    insert into device
+		        <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="deviceNo != null" >
+        device_no,
+      </if>
+      <if test="deviceName != null" >
+        device_name,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="deviceNo != null" >
+        #{deviceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceName != null" >
+        #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>		
 </mapper>

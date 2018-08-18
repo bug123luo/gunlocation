@@ -81,6 +81,11 @@
 	</dependency>
 		<dependency>
 	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-jms</artifactId>
+	    <version>4.3.9.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
 	    <artifactId>spring-aop</artifactId>
 	    <version>4.3.9.RELEASE</version>
 	</dependency>
@@ -153,69 +158,88 @@
 	    <!-- <scope>test</scope> -->
 	</dependency>
   </dependencies>
-  
-      <build>
-      <!-- 如果不添加此节点mybatis的mapper.xml文件都会被漏掉。 -->
-    	<plugins>
-    		<plugin>
-	        	<groupId>org.apache.maven.plugins</groupId>
-	        	<artifactId>maven-resources-plugin</artifactId>
-	        	<version>3.1.0</version>
-	        	<configuration>
-		        	<resources>
-						<resource>
-							<directory>src/main/java</directory>
-							<includes>
-								<include>**/*.properties</include>
-								<include>**/*.xml</include>
-							</includes>
-							<filtering>false</filtering>
-						</resource>
-						<resource>
-						<directory>src/main/resources</directory>
-						<includes>
-							<include>**/*.properties</include>
-							<include>**/*.xml</include>
-						</includes>
-						<filtering>false</filtering>
-						</resource>
-					</resources>
-	        	</configuration>
-    		</plugin>
-     		<plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-compiler-plugin</artifactId>
-	            <version>3.5</version>
-	            <configuration>
-	                <source>1.8</source>
-	                <target>1.8</target>
-	                <encoding>UTF-8</encoding>
-	            </configuration>
+  <build>
+        <resources>
+            <!-- 控制资源文件的拷贝 -->
+           	<resource>
+           		<directory>src/main/java</directory>
+           		<includes>
+              		 <include>**/*.xml</include>
+           		</includes>
+       		</resource>
+       		<!-- 在本地调试添加一下资源文件，部署时候可以去掉 -->
+       		<resource>
+       			<directory>src/main/resources</directory>
+       			<includes>
+       				<include>**/*.xml</include>
+       				<include>**/*.properties</include>
+       			</includes>
+       		</resource>
+        </resources>
+        <plugins>
+        	<!-- 解决资源文件的编码问题 -->
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
         	</plugin>
+        
+            <!-- 设置编译版本 -->
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <!-- 此处指定main方法入口的class -->
-                            <mainClass>com.lcclovehww.gunLocationMqServer.GunLocationMQServer</mainClass>
-                        </manifest>
-                    </archive>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assemble/assembly.xml</descriptor>
+					</descriptors>
+					<executions>
+				      <execution>
+				        <id>make-assembly</id>
+				        <phase>package</phase>
+				        <goals>
+				          <goal>single</goal>
+				        </goals>
+				      </execution>
+				    </executions>
+				</configuration>
+			</plugin>
+            
+            <!-- 打包source文件为jar文件 -->
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
+                    	<id>attach-sources</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-    	</plugins>
+        </plugins>
+
     </build>
 </project>
