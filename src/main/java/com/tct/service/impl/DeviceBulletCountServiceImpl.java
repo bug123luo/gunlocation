@@ -29,6 +29,7 @@ import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.DeviceLocationQueryVo;
 import com.tct.po.GunCustom;
+import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
 import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
@@ -98,9 +99,13 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 		
 		if(deviceGunCustom2!=null) {
 			GunCustom gunCustom = new GunCustom();
-			gunCustom.setBulletNumber(Integer.getInteger(message.getMessageBody().getBulletNumber()));
 			gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getOccurTime()));
 			gunCustom.setBluetoothMac(deviceGunCustom2.getGunMac());
+			
+			GunQueryVo gunQueryVo =  new GunQueryVo();
+			gunQueryVo.setGunCustom(gunCustom);
+			GunCustom gunCustom2 =  gunCustomMapper.selectBybluetoothMac(gunQueryVo);
+			gunCustom.setBulletNumber(gunCustom2.getBulletNumber()+Integer.getInteger(message.getMessageBody().getBulletNumber()));
 			gunCustomMapper.updateSelective(gunCustom);
 			
 			DeviceBulletCountReplyBody deviceBulletCountReplyBody = new DeviceBulletCountReplyBody();

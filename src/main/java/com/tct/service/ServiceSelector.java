@@ -11,6 +11,8 @@ import com.tct.codec.ClientOffLocationWarningMessageCodec;
 import com.tct.codec.ClientOutWareHouseMessageCodec;
 import com.tct.codec.ClientVersionSyncMessageCodec;
 import com.tct.codec.DeviceBulletCountMessageCodec;
+import com.tct.codec.DeviceBulletNumGetMessageCodec;
+import com.tct.codec.DeviceBulletNumGetReplyMessageCodec;
 import com.tct.codec.MessageCodec;
 import com.tct.codec.ServerInWareHouseMessageCodec;
 import com.tct.codec.ServerInWareHouseMessageReplyCodec;
@@ -28,6 +30,8 @@ import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.ClientVersionSyncMessage;
 import com.tct.codec.pojo.DeviceBulletCountMessage;
+import com.tct.codec.pojo.DeviceBulletNumGetMessage;
+import com.tct.codec.pojo.DeviceBulletNumGetReplyMessage;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.ServerInWareHouseReplyMessage;
 import com.tct.codec.pojo.ServerOffLocationSearchMessage;
@@ -215,6 +219,27 @@ public class ServiceSelector {
 				e.printStackTrace();
 				flag = false;
 			}
+		}else if (messageCodec instanceof DeviceBulletNumGetMessageCodec) {
+			try {
+				DeviceBulletNumGetMessage deviceBulletNumGetMessage = (DeviceBulletNumGetMessage)messageCodec.decode(textMessage.getText());
+				SimpleService deviceBulletNumGetService = SpringContextUtil.getBean("deviceBulletNumGetService");
+				deviceBulletNumGetService.handleCodeMsg(deviceBulletNumGetMessage);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}else if (messageCodec instanceof DeviceBulletNumGetReplyMessageCodec) {
+			try {
+				DeviceBulletNumGetReplyMessage deviceBulletNumGetReplyMessage = (DeviceBulletNumGetReplyMessage)messageCodec.decode(textMessage.getText());
+				SimpleService deviceBulletNumGetReplyService = SpringContextUtil.getBean("deviceBulletNumGetReplyService");
+				deviceBulletNumGetReplyService.handleCodeMsg(deviceBulletNumGetReplyMessage);
+				flag= true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				flag = false;
+			}
+			
 		}
 		return flag;
 	}

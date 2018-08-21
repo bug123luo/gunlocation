@@ -37,6 +37,10 @@ public class MessageCodecSelector {
 			msgCodec = new ClientVersionSyncMessageCodec();
 		}else if(json.getString("messageType").equals("23")) {
 			msgCodec = new DeviceBulletCountMessageCodec();
+		}else if (json.getString("messageType").equals("25")) {
+			msgCodec = new DeviceBulletNumGetMessageCodec();
+		}else if (json.getString("messageType").equals("26")) {
+			msgCodec = new DeviceBulletNumGetMessageCodec();
 		}else {
 			
 		}
