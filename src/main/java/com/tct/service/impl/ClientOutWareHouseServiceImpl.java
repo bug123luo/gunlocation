@@ -20,11 +20,14 @@ import com.tct.codec.pojo.ClientOutWareHouseReplyBody;
 import com.tct.codec.pojo.ClientOutWareHouseReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
+import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
 import com.tct.po.DeviceGunCustom;
+import com.tct.po.DeviceLocationCustom;
+import com.tct.po.GunCustom;
 import com.tct.po.WatchDeviceCustom;
 import com.tct.po.WatchDeviceQueryVo;
 import com.tct.service.SimpleService;
@@ -44,6 +47,9 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 	
 	@Autowired
 	WatchDeviceCustomMapper watchDeviceCustomMapper;
+	
+	@Autowired
+	ClientDeviceBindingDao clientDeviceBindingDao;
 	
 	@Resource
 	private OutQueueSender outQueueSender;
@@ -90,6 +96,22 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		deviceGunCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
 		deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
 		
+		//腕表直接绑定出库后直接执行绑定命令业务操作
+		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+		
+		GunCustom gunCustom = new GunCustom();
+		gunCustom.setBluetoothMac(watchDeviceCustom2.getGunMac());
+		gunCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+		gunCustom.setState(Integer.valueOf(0));
+		gunCustom.setRealTimeState(Integer.valueOf(0));
+		clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
+		
+		//
 		ClientOutWareHouseReplyBody clientOutWareHouseReplyBody =  new ClientOutWareHouseReplyBody();
 		clientOutWareHouseReplyBody.setApplyTime(StringUtil.getDateString());
 		clientOutWareHouseReplyBody.setBluetoothMac(watchDeviceCustom2.getGunMac());
