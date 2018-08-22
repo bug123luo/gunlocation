@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface GunMapper {
-    int countByExample(GunExample example);
+    long countByExample(GunExample example);
 
     int deleteByExample(GunExample example);
 

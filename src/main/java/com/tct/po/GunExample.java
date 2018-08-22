@@ -295,6 +295,76 @@ public class GunExample {
             return (Criteria) this;
         }
 
+        public Criteria andGunModelIsNull() {
+            addCriterion("gun_model is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelIsNotNull() {
+            addCriterion("gun_model is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelEqualTo(String value) {
+            addCriterion("gun_model =", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelNotEqualTo(String value) {
+            addCriterion("gun_model <>", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelGreaterThan(String value) {
+            addCriterion("gun_model >", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelGreaterThanOrEqualTo(String value) {
+            addCriterion("gun_model >=", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelLessThan(String value) {
+            addCriterion("gun_model <", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelLessThanOrEqualTo(String value) {
+            addCriterion("gun_model <=", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelLike(String value) {
+            addCriterion("gun_model like", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelNotLike(String value) {
+            addCriterion("gun_model not like", value, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelIn(List<String> values) {
+            addCriterion("gun_model in", values, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelNotIn(List<String> values) {
+            addCriterion("gun_model not in", values, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelBetween(String value1, String value2) {
+            addCriterion("gun_model between", value1, value2, "gunModel");
+            return (Criteria) this;
+        }
+
+        public Criteria andGunModelNotBetween(String value1, String value2) {
+            addCriterion("gun_model not between", value1, value2, "gunModel");
+            return (Criteria) this;
+        }
+
         public Criteria andBluetoothMacIsNull() {
             addCriterion("bluetooth_mac is null");
             return (Criteria) this;
@@ -852,6 +922,66 @@ public class GunExample {
 
         public Criteria andVersionNotBetween(Integer value1, Integer value2) {
             addCriterion("version not between", value1, value2, "version");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberIsNull() {
+            addCriterion("total_bullet_number is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberIsNotNull() {
+            addCriterion("total_bullet_number is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberEqualTo(Integer value) {
+            addCriterion("total_bullet_number =", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberNotEqualTo(Integer value) {
+            addCriterion("total_bullet_number <>", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberGreaterThan(Integer value) {
+            addCriterion("total_bullet_number >", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberGreaterThanOrEqualTo(Integer value) {
+            addCriterion("total_bullet_number >=", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberLessThan(Integer value) {
+            addCriterion("total_bullet_number <", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberLessThanOrEqualTo(Integer value) {
+            addCriterion("total_bullet_number <=", value, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberIn(List<Integer> values) {
+            addCriterion("total_bullet_number in", values, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberNotIn(List<Integer> values) {
+            addCriterion("total_bullet_number not in", values, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberBetween(Integer value1, Integer value2) {
+            addCriterion("total_bullet_number between", value1, value2, "totalBulletNumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalBulletNumberNotBetween(Integer value1, Integer value2) {
+            addCriterion("total_bullet_number not between", value1, value2, "totalBulletNumber");
             return (Criteria) this;
         }
     }

@@ -13,11 +13,21 @@ package com.tct.service.impl;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+
+import org.apache.ibatis.type.IntegerTypeHandler;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.DeviceBulletNumGetReplyMessage;
+import com.tct.codec.pojo.SimpleReplyMessage;
+import com.tct.jms.producer.OutQueueSender;
+import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.DeviceLocationCustomMapper;
 import com.tct.mapper.GunCustomMapper;
@@ -28,6 +38,7 @@ import com.tct.po.DeviceLocationQueryVo;
 import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.service.SimpleService;
+import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +65,20 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 	
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
+	
+	@Resource
+	private OutQueueSender outQueueSender;
+	
+	@Resource
+	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	@Qualifier("outQueueDestination")
+	private Destination outQueueDestination;
+	
+	@Resource
+	@Qualifier("webOutQueueDestination")
+	private Destination webOutQueueDestination;
 	
 	/**   
 	 * <p>Title: handleCodeMsg</p>   
@@ -98,12 +123,11 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 			GunCustom gunCustom = new GunCustom();
 			gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getNowTime()));
 			gunCustom.setBluetoothMac(deviceGunCustom2.getGunMac());
-			
-			GunQueryVo gunQueryVo =  new GunQueryVo();
-			gunQueryVo.setGunCustom(gunCustom);
-			GunCustom gunCustom2 =  gunCustomMapper.selectBybluetoothMac(gunQueryVo);
-			gunCustom.setBulletNumber(gunCustom2.getBulletNumber()+Integer.getInteger(message.getMessageBody().getBulletNumber()));
+			gunCustom.setTotalBulletNumber(Integer.valueOf(message.getMessageBody().getBulletNumber()));
 			gunCustomMapper.updateSelective(gunCustom);
+				
+			String searchToClienJson = JSONObject.toJSONString(message);
+			webOutQueueSender.sendMessage(webOutQueueDestination, searchToClienJson);
 		}else {
 			return false;
 		}

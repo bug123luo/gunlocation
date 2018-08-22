@@ -9,6 +9,8 @@ public class Gun {
 
     private String gunTag;
 
+    private String gunModel;
+
     private String bluetoothMac;
 
     private String warehouseName;
@@ -26,6 +28,8 @@ public class Gun {
     private Date updateTime;
 
     private Integer version;
+
+    private Integer totalBulletNumber;
 
     public Integer getId() {
         return id;
@@ -49,6 +53,14 @@ public class Gun {
 
     public void setGunTag(String gunTag) {
         this.gunTag = gunTag == null ? null : gunTag.trim();
+    }
+
+    public String getGunModel() {
+        return gunModel;
+    }
+
+    public void setGunModel(String gunModel) {
+        this.gunModel = gunModel == null ? null : gunModel.trim();
     }
 
     public String getBluetoothMac() {
@@ -121,5 +133,13 @@ public class Gun {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Integer getTotalBulletNumber() {
+        return totalBulletNumber;
+    }
+
+    public void setTotalBulletNumber(Integer totalBulletNumber) {
+        this.totalBulletNumber = totalBulletNumber;
     }
 }

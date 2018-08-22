@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface WebUserMapper {
-    int countByExample(WebUserExample example);
+    long countByExample(WebUserExample example);
 
     int deleteByExample(WebUserExample example);
 

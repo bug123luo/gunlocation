@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface SosMessageMapper {
-    int countByExample(SosMessageExample example);
+    long countByExample(SosMessageExample example);
 
     int deleteByExample(SosMessageExample example);
 

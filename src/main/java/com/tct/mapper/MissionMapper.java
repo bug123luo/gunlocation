@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface MissionMapper {
-    int countByExample(MissionExample example);
+    long countByExample(MissionExample example);
 
     int deleteByExample(MissionExample example);
 

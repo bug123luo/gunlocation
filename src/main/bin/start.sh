@@ -9,7 +9,7 @@ bin=`dirname "$1"`
  
 export GUN_HOME=`cd $bin/../; pwd`
  
-GUN_CONF_DIR=$MYJETTY_HOME/conf
+GUN_CONF_DIR=$GUN_HOME/conf
 CLASSPATH="${GUN_CONF_DIR}"
  
 for f in $GUN_HOME/lib/*.jar; do

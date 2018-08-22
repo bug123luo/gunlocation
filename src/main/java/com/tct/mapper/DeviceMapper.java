@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceMapper {
-    int countByExample(DeviceExample example);
+    long countByExample(DeviceExample example);
 
     int deleteByExample(DeviceExample example);
 

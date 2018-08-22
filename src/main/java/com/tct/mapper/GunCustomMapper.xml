@@ -34,6 +34,9 @@
 			<if test="version!=null">
 				version=#{version},
 			</if>
+			<if test="total_bullet_number!=null">
+				total_bullet_number=#{total_bullet_number}s
+			</if>
 		</set>
 		where bluetooth_mac=#{bluetoothMac}
 	</update>
