@@ -111,7 +111,7 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getNowTime()));
 		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom);
-		int i = deviceLocationCustomMapper.updateByPrimaryKeySelective(deviceLocationCustom);
+		int i = deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
 		
 		//更新枪支信息表
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();

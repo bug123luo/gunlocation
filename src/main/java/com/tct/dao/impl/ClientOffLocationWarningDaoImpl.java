@@ -30,14 +30,18 @@ public class ClientOffLocationWarningDaoImpl implements ClientOffLocationWarning
 	
 	@Override
 	public boolean updateClientOffLocationWaring(DeviceLocationCustom deviceLocationCustom,GunCustom gunCustom,SosMessageCustom sosMessageCustom) throws Exception {
+		boolean flag = false;
+		try {
+			deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
+			gunCustomMapper.updateSelective(gunCustom);
+			sosMessageCustomMapper.insertSelective(sosMessageCustom);
+			flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			flag =false;
+		}
 		
-		deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
-		
-		gunCustomMapper.updateSelective(gunCustom);
-		
-		sosMessageCustomMapper.insertSelective(sosMessageCustom);
-		
-		return false;
+		return flag;
 	}
 
 }

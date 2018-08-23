@@ -60,7 +60,7 @@
   		</where>
   	</select>
   	
-    <update id="updateByPrimaryKeySelective" parameterType="com.tct.po.DeviceLocationCustom">
+<!--     <update id="updateByPrimaryKeySelective" parameterType="com.tct.po.DeviceLocationCustom">
     update device_location
     <set>
       <if test="deviceNo != null">
@@ -83,5 +83,5 @@
       </if>
     </set>
     where device_no = #{deviceNo,jdbcType=VARCHAR}
-  </update>
+  </update> -->
 </mapper>

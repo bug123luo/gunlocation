@@ -34,7 +34,7 @@
 			<if test="version!=null">
 				version=#{version},
 			</if>
-			<if test="total_bullet_number!=null">
+			<if test="totalBulletNumber!=null">
 				total_bullet_number=#{totalBulletNumber}
 			</if>
 		</set>

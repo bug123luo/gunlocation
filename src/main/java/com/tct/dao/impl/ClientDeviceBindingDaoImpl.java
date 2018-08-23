@@ -26,8 +26,8 @@ public class ClientDeviceBindingDaoImpl implements ClientDeviceBindingDao {
 	@Override
 	public boolean updateDeviceBindingState(DeviceLocationCustom deviceLocationCustom, GunCustom gunCustom)
 			throws Exception {
-		deviceLocationCustomMapper.updateByPrimaryKeySelective(deviceLocationCustom);
 		
+		deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
 		gunCustomMapper.updateSelective(gunCustom);
 		
 		return true;
