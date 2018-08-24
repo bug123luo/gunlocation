@@ -98,6 +98,8 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 			WatchDeviceCustom watchDeviceCustom = new WatchDeviceCustom();
 			watchDeviceCustom.setDeviceNo(deviceQueryVo.getDeviceCustom().getDeviceNo());
 			watchDeviceCustom.setPassword(deviceQueryVo.getDeviceCustom().getPassword());
+			watchDeviceCustom.setDeviceName(deviceQueryVo.getDeviceCustom().getDeviceName());
+			watchDeviceQueryVo.setWatchDeviceCustom(watchDeviceCustom);
 			WatchDeviceCustom watchDeviceCustom2=null;
 			try {
 				watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
@@ -108,6 +110,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 			if (watchDeviceCustom2!=null) {
 				deviceCustom = new DeviceCustom();
 				BeanUtils.copyProperties(watchDeviceCustom2, deviceCustom);
+				deviceCustom.setId(null);
 				try {
 					deviceCustomMapper.insertSelective(deviceCustom);
 				} catch (Exception e) {

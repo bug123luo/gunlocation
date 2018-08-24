@@ -48,6 +48,11 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientHeartBeatMessage message = (ClientHeartBeatMessage)msg;
 		
+		if(message.getMessageBody().getBluetoothMac()==null || message.getMessageBody().getBluetoothMac().length()<0) {
+			log.info("心跳报文 参数blueMac为空，请网关检查心跳报文数据是否正常 ");
+			return false;
+		}
+		
 		//查找枪支的 deviceNo
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
