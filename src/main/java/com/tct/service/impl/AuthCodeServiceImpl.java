@@ -122,19 +122,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 					+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String authJson = JSONObject.toJSONString(simpleReplyMessage);
-			//将回应消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), authJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-			
+			String authJson = JSONObject.toJSONString(simpleReplyMessage);			
 			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return true;
 		}else {

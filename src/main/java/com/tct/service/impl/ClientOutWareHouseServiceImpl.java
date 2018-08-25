@@ -187,21 +187,8 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 		serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 		
-		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
-		
+		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);	
 		webTopicSender.sendMessage(webtopicDestination, serverbingJson);
-		//将回应消息放进消息缓存队列中
-/*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-		}
-		if(tempUnSendReplyMessageMap==null) {
-			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-		}
-		tempUnSendReplyMessageMap.put(message.getSerialNumber(), strJson);
-		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-		
 		return true;
 	}
 

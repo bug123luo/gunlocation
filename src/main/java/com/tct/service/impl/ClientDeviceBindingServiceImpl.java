@@ -162,18 +162,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 
-			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
-			
-/*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
-				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
-			}
-			if(webUnSendReplyMessageMap==null) {
-				webUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);*/
-			
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);	
 			flag = true;
 		}else {
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
@@ -198,22 +187,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 					+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
-			
+			String bingJson = JSONObject.toJSONString(simpleReplyMessage);	
 			outQueueSender.sendMessage(outQueueDestination, bingJson);
-
-			//将回应APP消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-			
+	
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
 			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
@@ -240,15 +216,6 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
-/*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
-				webUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
-			}
-			if(webUnSendReplyMessageMap==null) {
-				webUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			webUnSendReplyMessageMap.put(message.getSerialNumber(), serverbingJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", webUnSendReplyMessageMap);*/
 		}
 		return flag;
 	}

@@ -119,17 +119,6 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 		outQueueSender.sendMessage(outQueueDestination, strJson);
-/*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-		Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-		if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-			tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-		}
-		if(tempUnSendReplyMessageMap==null) {
-			tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-		}
-		tempUnSendReplyMessageMap.put("s"+message.getSerialNumber(), strJson);
-		unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-		
 		return true;
 	}
 

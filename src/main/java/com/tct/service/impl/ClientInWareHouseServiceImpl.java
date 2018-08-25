@@ -180,15 +180,6 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
-/*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
-			
 			flag = true;
 		}else {
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
@@ -214,19 +205,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
 			
-			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);
-			//将APP回应消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientInWareHouseReplyjson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-			
+			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);			
 			//将向服务器的发送消息放在缓存队列中
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
@@ -253,17 +232,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
-			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
-			
-/*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), serverInWareReplyJson);
-			unSendReplyMessageHashMap.put("WebOutQueue", tempUnSendReplyMessageMap);*/
-			
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);			
 			flag = true;
 		}
 		

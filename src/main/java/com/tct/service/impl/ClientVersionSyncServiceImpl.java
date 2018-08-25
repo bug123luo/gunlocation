@@ -119,17 +119,7 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			
 			String clientsyncJson = JSONObject.toJSONString(simpleReplyMessage);
 			outQueueSender.sendMessage(outQueueDestination, clientsyncJson);
-			//将回应消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientsyncJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
+
 		}else {
 			ClientVersionSyncReplyMessage clientVersionSyncReplyMessage = new ClientVersionSyncReplyMessage();
 			ClientVersionSyncReplyBody clientVersionSyncReplyBody =  new ClientVersionSyncReplyBody();
@@ -158,17 +148,6 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 			
 			String clientsyncJson = JSONObject.toJSONString(simpleReplyMessage);
 			outQueueSender.sendMessage(outQueueDestination, clientsyncJson);
-			//将回应消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), clientsyncJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
 		}
 		
 		
