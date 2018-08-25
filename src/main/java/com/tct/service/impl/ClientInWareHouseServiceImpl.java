@@ -177,6 +177,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
+			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
 /*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
@@ -250,6 +252,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
+			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
 			
 /*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {

@@ -160,6 +160,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
+			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 /*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
@@ -235,6 +237,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
+			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 /*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
