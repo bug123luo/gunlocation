@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
 import com.tct.codec.pojo.ClientDeviceBindingReplyMessage;
@@ -72,6 +72,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientDeviceBindingMessage message = (ClientDeviceBindingMessage)msg;
 		
+		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
+		
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
@@ -82,11 +84,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			log.info("上传绑定消息在deviceGun中无法找到对应的记录！");
 			return false;
 		}
-		
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-
-		
+			
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
@@ -158,9 +156,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
+			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
-			
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
@@ -233,7 +231,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
-			
+			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);

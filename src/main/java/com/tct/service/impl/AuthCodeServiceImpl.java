@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
@@ -56,8 +56,6 @@ public class AuthCodeServiceImpl implements SimpleService{
 		//缓存消息
 		//AuthCodeMessage 中的username目前是警员编号
 		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		//根据用户名查询在线队列的人的名称
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();

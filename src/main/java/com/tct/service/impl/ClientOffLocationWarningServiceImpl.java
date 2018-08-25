@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.media.jfxmedia.events.NewFrameEvent;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.SessionMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.codec.pojo.ClientOffLocationWarningMessage;
 import com.tct.codec.pojo.ClientOffLocationWarningReplyBody;
 import com.tct.codec.pojo.ClientOffLocationWarningReplyMessage;
@@ -85,11 +85,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
-		
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-		
-		
+				
 		//插入device_location表，插入sos_message表，更新 gun表状态
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());

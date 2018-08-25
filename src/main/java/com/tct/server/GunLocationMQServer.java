@@ -8,7 +8,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.thread.GateWayConsumerThread;
 import com.tct.thread.ProducerThread;
 import com.tct.thread.WebConsumerThread;
@@ -30,12 +30,12 @@ public class GunLocationMQServer {
 /*		Hashtable<String, String> webQueueMap = new Hashtable<String,String>();
 		webQueueMap.put("webSendQueue", "WebOutQueue");
 		webQueueMap.put("webRecQueue","WebInQueue");
-		UserOnlineQueueCache.getOnlineUserQueueMap().put("WebServer", webQueueMap);
+		DeviceNoBingingWebUserCache.getOnlineUserQueueMap().put("WebServer", webQueueMap);
 		
 		Hashtable<String, String> nettyQueuemap = new Hashtable<String,String>();
 		nettyQueuemap.put("nettyRecQue", "InputQueue");
 		nettyQueuemap.put("nettySendQue", "OutQueue");
-		UserOnlineQueueCache.getOnlineUserQueueMap().put("NettyServer", nettyQueuemap);*/
+		DeviceNoBingingWebUserCache.getOnlineUserQueueMap().put("NettyServer", nettyQueuemap);*/
 		
 /*		ProducerThread producerThread =new ProducerThread(paraMap,"producer");
 		producerThread.start();*/

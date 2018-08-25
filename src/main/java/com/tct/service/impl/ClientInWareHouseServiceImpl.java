@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.SessionMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
 import com.tct.codec.pojo.ClientInWareHouseReplyBody;
@@ -84,6 +84,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientInWareHouseMessage message = (ClientInWareHouseMessage)msg;
 		
+		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
+		
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
@@ -94,10 +96,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			log.info("上传入库消息中，无法在device gun表中找到相应的记录");
 			return false;
 		}
-		
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
-				
+					
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
@@ -174,6 +173,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
+			serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
@@ -246,7 +246,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			
+			serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);

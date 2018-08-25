@@ -1,8 +1,6 @@
 package com.tct.service.impl;
 
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Resource;
 import javax.jms.Destination;
 
@@ -12,10 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.SessionMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ServerInWareHouseMessage;
 import com.tct.codec.pojo.SimpleMessage;
@@ -56,9 +52,11 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		ServerInWareHouseMessage message = (ServerInWareHouseMessage)msg;
 		
 		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
+		
+		//将要入库的设备编号和web用户绑定
+		deviceNoBingingWebUserCache.put(message.getMessageBody().getDeviceNo(), message.getUserName());
 		
 		//数据库中获取需要通知的终端的 deviceNo信息
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();

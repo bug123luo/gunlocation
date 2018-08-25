@@ -21,7 +21,7 @@ public class ServerInWareHouseMessageCodec implements MessageCodec {
 		serverInWareHouseMessage.setSendTime(json.getString("sendTime"));
 		serverInWareHouseMessage.setMessageBody(json.getObject("messageBody",ServerInWareHouseBody.class));
 		serverInWareHouseMessage.setSessionToken(json.getString("sessionToken"));
-		
+		serverInWareHouseMessage.setUserName(json.getString("userName"));
 		//slog.info(json.toJSONString());
 		return serverInWareHouseMessage;
 	}

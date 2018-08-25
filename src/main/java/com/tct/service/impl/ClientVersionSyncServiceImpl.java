@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientVersionSyncMessage;
 import com.tct.codec.pojo.ClientVersionSyncReplyBody;
@@ -65,8 +65,6 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 		
 		ClientVersionSyncMessage message = (ClientVersionSyncMessage)msg;
 		
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		
 		String currentVersion = message.getMessageBody().getCurrentVersion();

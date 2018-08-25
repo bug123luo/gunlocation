@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.SessionMessageCache;
-import com.tct.cache.UserOnlineQueueCache;
+import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.codec.pojo.ClientHeartBeatReplyBody;
 import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
@@ -64,11 +64,6 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			log.info("There is no record in device gun!");
 			return false;
 		}
-		
-		//缓存消息
-		//AuthCodeMessage 中的username目前是警员编号
-		ConcurrentHashMap<String, Hashtable<String, String>> userOnlineQueueHashMap = UserOnlineQueueCache.getOnlineUserQueueMap();
-		ConcurrentHashMap<String, Hashtable<String, Object>> unSendReplyMessageHashMap = UnSendReplyMessageCache.getUnSendReplyMessageMap();
 		
 		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
