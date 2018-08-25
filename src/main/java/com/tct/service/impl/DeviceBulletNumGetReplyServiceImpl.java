@@ -28,6 +28,7 @@ import com.tct.codec.pojo.DeviceBulletNumGetReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.DeviceLocationCustomMapper;
 import com.tct.mapper.GunCustomMapper;
@@ -71,6 +72,13 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")
@@ -127,7 +135,8 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 			gunCustomMapper.updateSelective(gunCustom);
 				
 			String searchToClienJson = JSONObject.toJSONString(message);
-			webOutQueueSender.sendMessage(webOutQueueDestination, searchToClienJson);
+			webTopicSender.sendMessage(webtopicDestination, searchToClienJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, searchToClienJson);
 		}else {
 			return false;
 		}

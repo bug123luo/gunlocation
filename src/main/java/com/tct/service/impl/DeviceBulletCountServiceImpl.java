@@ -120,7 +120,6 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 			simpleReplyMessage.setSendTime(StringUtil.getDateString());
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			
 			String strJson = JSONObject.toJSONString(simpleReplyMessage);
 			outQueueSender.sendMessage(outQueueDestination, strJson);
 /*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");

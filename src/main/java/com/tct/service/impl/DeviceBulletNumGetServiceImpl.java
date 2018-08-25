@@ -32,6 +32,7 @@ import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.service.SimpleService;
@@ -60,6 +61,13 @@ public class DeviceBulletNumGetServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")

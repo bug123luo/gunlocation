@@ -25,6 +25,7 @@ import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -51,6 +52,13 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")
@@ -153,7 +161,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			
-			webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
+			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 /*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
@@ -226,7 +235,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
-			webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
+			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 /*			Hashtable<String, Object> webUnSendReplyMessageMap = null;
 			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {

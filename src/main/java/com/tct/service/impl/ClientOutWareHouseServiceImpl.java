@@ -2,15 +2,12 @@ package com.tct.service.impl;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Resource;
 import javax.jms.Destination;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.UserOnlineQueueCache;
@@ -18,23 +15,25 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.ClientOutWareHouseReplyBody;
 import com.tct.codec.pojo.ClientOutWareHouseReplyMessage;
+import com.tct.codec.pojo.ServerDeviceBindingBody;
+import com.tct.codec.pojo.ServerDeviceBindingReplyMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.GunCustom;
+import com.tct.po.GunQueryVo;
 import com.tct.po.WatchDeviceCustom;
 import com.tct.po.WatchDeviceQueryVo;
 import com.tct.service.SimpleService;
 import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
-
-
 
 @Service(value="clientOutWareHouseService")
 public class ClientOutWareHouseServiceImpl implements SimpleService {
@@ -56,6 +55,13 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")
@@ -163,6 +169,30 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 		outQueueSender.sendMessage(outQueueDestination, strJson);
+		
+		GunCustom gunCustom2 = new GunCustom();
+		GunQueryVo gunQueryVo = new GunQueryVo();
+		gunCustom2.setBluetoothMac(watchDeviceCustom2.getGunMac());
+		gunQueryVo.setGunCustom(gunCustom2);
+		gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
+		
+		ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
+		ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
+		serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+		serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
+		serverDeviceBindingBody.setState(Integer.toString(1));
+		serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
+		serverDeviceBindingReplyMessage.setFormatVersion(message.getFormatVersion());
+		serverDeviceBindingReplyMessage.setMessageBody(serverDeviceBindingBody);
+		serverDeviceBindingReplyMessage.setMessageType("08");
+		serverDeviceBindingReplyMessage.setSendTime(message.getSendTime());
+		serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
+		serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
+		serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
+		
+		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
+		
+		webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 		//将回应消息放进消息缓存队列中
 /*		String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
 		Hashtable<String, Object> tempUnSendReplyMessageMap = null;

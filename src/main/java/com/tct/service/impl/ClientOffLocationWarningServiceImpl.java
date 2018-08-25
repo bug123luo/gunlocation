@@ -29,6 +29,7 @@ import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientOffLocationWarningDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -59,6 +60,13 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")
@@ -143,7 +151,8 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			BeanUtils.copyProperties(message, serverReplyMessage);
 			serverReplyMessage.setMessageBody(serverReplyBody);
 			String serverJson =JSONObject.toJSONString(message);
-			webOutQueueSender.sendMessage(webOutQueueDestination, serverJson);
+			webTopicSender.sendMessage(webtopicDestination, serverJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverJson);
 			flag = true;			
 		}else {
 			ClientOffLocationWarningReplyMessage clientOffLocationWarningReplyMessage = new ClientOffLocationWarningReplyMessage();
@@ -168,6 +177,19 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
 			outQueueSender.sendMessage(outQueueDestination, msgJson);
+			
+			ServerOffLocationWarningReplyMessage serverReplyMessage= new ServerOffLocationWarningReplyMessage();
+			ServerOffLocationWarningReplyBody serverReplyBody= new  ServerOffLocationWarningReplyBody();
+			serverReplyBody.setAreaCode(message.getMessageBody().getAreaCode());
+			serverReplyBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverReplyBody.setGunTag(deviceGunCustom.getGunMac());
+			serverReplyBody.setLa(message.getMessageBody().getLa());
+			serverReplyBody.setLo(message.getMessageBody().getLo());
+			serverReplyBody.setState(Integer.toString(1));
+			BeanUtils.copyProperties(message, serverReplyMessage);
+			serverReplyMessage.setMessageBody(serverReplyBody);
+			String serverJson =JSONObject.toJSONString(message);
+			webTopicSender.sendMessage(webtopicDestination, serverJson);
 		}
 		return false;
 	}

@@ -32,6 +32,7 @@ import com.tct.dao.ClientHeartBeatDao;
 import com.tct.dao.ClientInWareHouseDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
+import com.tct.jms.producer.WebTopicSender;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
@@ -63,6 +64,13 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 	
 	@Resource
 	private WebOutQueueSender webOutQueueSender;
+	
+	@Resource
+	private WebTopicSender webTopicSender;
+	
+	@Resource
+	@Qualifier("topicDestination")
+	private Destination webtopicDestination;
 	
 	@Resource
 	@Qualifier("outQueueDestination")
@@ -168,8 +176,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
-			
-			webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
+			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
 /*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
 			}
@@ -240,8 +248,8 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
-			
-			webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
+			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
+			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
 			
 /*			if(unSendReplyMessageHashMap.containsKey("WebOutQueue")) {
 				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get("WebOutQueue");
