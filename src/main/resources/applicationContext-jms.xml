@@ -25,14 +25,14 @@
                            brokerURL="tcp://120.76.156.120:6160?useInactivityMonitor=true&amp;useKeepAlive=true"
                            userName="admin"
                            password="admin" /> --> 
-     <!-- <amq:connectionFactory id="amqConnectionFactory"
-                           brokerURL="tcp://120.76.156.120:6160?useKeepAlive=true"
-                           userName="admin"
-                           password="admin" /> -->                     
      <amq:connectionFactory id="amqConnectionFactory"
+                           brokerURL="tcp://112.74.51.194:61616?useKeepAlive=true"
+                           userName="admin"
+                           password="admin" />                     
+     <!-- <amq:connectionFactory id="amqConnectionFactory"
                            brokerURL="tcp://192.168.0.103:61616?useKeepAlive=true"
                            userName="admin"
-                           password="admin" />
+                           password="admin" />-->
                    
     <!-- 配置JMS连接工长 -->
     <bean id="connectionFactory"
@@ -68,23 +68,32 @@
   	</bean>
   	
     <!-- 定义OutQueue 发送类 -->
-    <bean id="outQueueSender" class="com.tct.jms.producer.OutQueueSender"></bean>
-    <bean id="webOutQueueSender" class="com.tct.jms.producer.WebOutQueueSender"/>
-    <bean id="webTopicSender" class="com.tct.jms.producer.WebTopicSender"/>
+    <bean id="outQueueSender" class="com.tct.jms.producer.OutQueueSender">
+    	 <property name="template" ref="jmsTemplate" />  
+         <!-- <property name="destination" ref="outQueueDestination" /> -->
+    </bean>
+    <bean id="webOutQueueSender" class="com.tct.jms.producer.WebOutQueueSender">
+    	 <property name="template" ref="jmsTemplate" />  
+         <!-- <property name="destination" ref="webOutQueueDestination" /> -->
+    </bean>
+    <bean id="webTopicSender" class="com.tct.jms.producer.WebTopicSender">
+    	 <property name="template" ref="jmsTemplate" />  
+         <!-- <property name="destination" ref="topicDestination" /> -->
+    </bean>
 
     <!-- 配置JMS模板（Queue），Spring提供的JMS工具类，它发送、接收消息。 -->
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory" ref="connectionFactory" />
-        <property name="defaultDestination" ref="demoQueueDestination" />
+       <!--  <property name="defaultDestination" ref="demoQueueDestination" /> -->
         <!-- <property name="receiveTimeout" value="30000" /> -->
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
-        <property name="pubSubDomain" value="false" />
+        <!-- <property name="pubSubDomain" value="false" /> -->
     </bean>
 
-   	<bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+   	<!-- <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
      	<property name="connectionFactory" ref="connectionFactory" />
    		<property name="pubSubDomain" value="true" />
-  	</bean>
+  	</bean> -->
 
     <!-- 配置消息队列监听者（Queue） -->
     <bean id="queueMessageListener" class="com.tct.jms.consumer.ConsumerMessageListener" />

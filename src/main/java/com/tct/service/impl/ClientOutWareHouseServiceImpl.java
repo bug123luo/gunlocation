@@ -1,6 +1,5 @@
 package com.tct.service.impl;
 
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Resource;
 import javax.jms.Destination;
@@ -9,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
-import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.ClientOutWareHouseReplyBody;
@@ -91,13 +88,13 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
-		deviceGunCustom.setDeviceNo(watchDeviceCustom.getDeviceNo());
+		deviceGunCustom.setDeviceNo(watchDeviceCustom2.getDeviceNo());
 		deviceGunCustom.setGunMac(watchDeviceCustom2.getGunTag());
 		deviceGunCustom.setGunMac(watchDeviceCustom2.getGunMac());
 		deviceGunCustom.setOutWarehouseTime(StringUtil.getDate(message.getSendTime()));
 		deviceGunCustom.setState(0);
 		deviceGunCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
-		deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
+		deviceGunCustomMapper.insertSelective(deviceGunCustom);
 		
 		//腕表直接绑定出库后直接执行绑定命令业务操作
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -186,6 +183,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 		serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 		serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
+		serverDeviceBindingReplyMessage.setUserName("1");
 		
 		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);	
 		webTopicSender.sendMessage(webtopicDestination, serverbingJson);

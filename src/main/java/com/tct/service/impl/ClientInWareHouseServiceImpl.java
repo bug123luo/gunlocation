@@ -173,8 +173,11 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
-			
+			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
+				serverInWareHouseReplyMessage.setUserName("1");
+			}else {
+				serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			}			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
@@ -227,8 +230,12 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
-
+			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
+				serverInWareHouseReplyMessage.setUserName("1");
+			}else {
+				serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			}
+			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());

@@ -74,6 +74,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		GunQueryVo gunQueryVo = new GunQueryVo();
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setGunTag(message.getMessageBody().getLostGunTag());
+		gunQueryVo.setGunCustom(gunCustom);
 		gunCustom=gunCustomMapper.selectByGunTag(gunQueryVo);
 				
 		String sessionToken = userOnlineSessionCache.get(message.getMessageBody().getAssDeviceNo());
