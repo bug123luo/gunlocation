@@ -15,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 public class WebTopicSender {
 
 	@Resource
-	private JmsTemplate template;
+	private JmsTemplate jmsTopicTemplate;
 	
 	public void sendMessage(Destination destination,final String message) {
 		log.info("TopicSender 发送消息："+message);
 		//设置topic为持久化
-		template.setPubSubDomain(true);
-		template.setDeliveryMode(2);
-		template.send(destination, new MessageCreator() {
+		/*jmsTopicTemplate.setPubSubDomain(true);
+		jmsTopicTemplate.setDeliveryMode(2);*/
+		jmsTopicTemplate.send(destination, new MessageCreator() {
 			
 			@Override
 			public Message createMessage(Session session) throws JMSException {
@@ -32,15 +32,14 @@ public class WebTopicSender {
 		});
 	}
 
-	public JmsTemplate getTemplate() {
-		return template;
+	public JmsTemplate getJmsTopicTemplate() {
+		return jmsTopicTemplate;
 	}
 
-	public void setTemplate(JmsTemplate template) {
-		this.template = template;
+	public void setJmsTopicTemplate(JmsTemplate jmsTopicTemplate) {
+		this.jmsTopicTemplate = jmsTopicTemplate;
 	}
+
 	
-	
-	
-	
+
 }

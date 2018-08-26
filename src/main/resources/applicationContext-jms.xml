@@ -61,7 +61,7 @@
     	</constructor-arg>
     </bean>
     
-    <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+    <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic" >
       <constructor-arg>
     	  <value>WebTopic</value>
   	  </constructor-arg>
@@ -69,31 +69,32 @@
   	
     <!-- 定义OutQueue 发送类 -->
     <bean id="outQueueSender" class="com.tct.jms.producer.OutQueueSender">
-    	 <property name="template" ref="jmsTemplate" />  
+    	 <property name="jmsQueueTemplate" ref="jmsQueueTemplate" />  
          <!-- <property name="destination" ref="outQueueDestination" /> -->
     </bean>
     <bean id="webOutQueueSender" class="com.tct.jms.producer.WebOutQueueSender">
-    	 <property name="template" ref="jmsTemplate" />  
+    	 <property name="jmsQueueTemplate" ref="jmsQueueTemplate" />  
          <!-- <property name="destination" ref="webOutQueueDestination" /> -->
     </bean>
     <bean id="webTopicSender" class="com.tct.jms.producer.WebTopicSender">
-    	 <property name="template" ref="jmsTemplate" />  
+    	 <property name="jmsTopicTemplate" ref="jmsTopicTemplate" />  
          <!-- <property name="destination" ref="topicDestination" /> -->
     </bean>
 
     <!-- 配置JMS模板（Queue），Spring提供的JMS工具类，它发送、接收消息。 -->
-    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory" ref="connectionFactory" />
-       <!--  <property name="defaultDestination" ref="demoQueueDestination" /> -->
+        <!-- <property name="defaultDestination" ref="demoQueueDestination" /> -->
         <!-- <property name="receiveTimeout" value="30000" /> -->
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
-        <!-- <property name="pubSubDomain" value="false" /> -->
+        <property name="pubSubDomain" value="false" />
+        <property name="deliveryMode" value="2"/>
     </bean>
 
-   	<!-- <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+   	<bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
      	<property name="connectionFactory" ref="connectionFactory" />
    		<property name="pubSubDomain" value="true" />
-  	</bean> -->
+  	</bean>
 
     <!-- 配置消息队列监听者（Queue） -->
     <bean id="queueMessageListener" class="com.tct.jms.consumer.ConsumerMessageListener" />

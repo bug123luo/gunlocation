@@ -35,14 +35,14 @@ import lombok.extern.slf4j.Slf4j;
 public class OutQueueSender {
 	
 	@Resource
-	private JmsTemplate template;
+	private JmsTemplate jmsQueueTemplate;
  	
 	//发送消息
 	public void sendMessage(Destination destination,final String message) { 
 		log.info("OutQueue发送消息：");
 		log.info(message);
-		template.setPubSubDomain(false);
-		template.send(destination, new MessageCreator() {
+		/*jmsQueueTemplate.setPubSubDomain(false);*/
+		jmsQueueTemplate.send(destination, new MessageCreator() {
 			
 			@Override
 			public Message createMessage(Session session) throws JMSException {
@@ -53,17 +53,14 @@ public class OutQueueSender {
 		
 	}
 
-
-
-	public JmsTemplate getTemplate() {
-		return template;
+	public JmsTemplate getJmsQueueTemplate() {
+		return jmsQueueTemplate;
 	}
 
-
-
-	public void setTemplate(JmsTemplate template) {
-		this.template = template;
+	public void setJmsQueueTemplate(JmsTemplate jmsQueueTemplate) {
+		this.jmsQueueTemplate = jmsQueueTemplate;
 	}
+	
 	
 	
 }
