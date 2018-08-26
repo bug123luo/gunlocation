@@ -2,7 +2,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.0.0.xsd">
     <id>package</id>
     <formats>
-        <format>zip</format>
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
@@ -10,6 +9,8 @@
         <fileSet>
             <directory>src/main/bin</directory>
             <outputDirectory>bin</outputDirectory>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
