@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceLocationMapper {
-    long countByExample(DeviceLocationExample example);
+    int countByExample(DeviceLocationExample example);
 
     int deleteByExample(DeviceLocationExample example);
 

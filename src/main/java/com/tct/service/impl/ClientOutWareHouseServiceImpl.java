@@ -126,9 +126,9 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		ClientOutWareHouseReplyBody clientOutWareHouseReplyBody =  new ClientOutWareHouseReplyBody();
 		clientOutWareHouseReplyBody.setApplyTime(StringUtil.getDateString());
 		clientOutWareHouseReplyBody.setBluetoothMac(watchDeviceCustom2.getGunMac());
-		clientOutWareHouseReplyBody.setBroadcastInterval("1");
-		clientOutWareHouseReplyBody.setConncetionInterval("1");
-		clientOutWareHouseReplyBody.setConnectionTimeout("1");
+		clientOutWareHouseReplyBody.setBroadcastInterval("01");
+		clientOutWareHouseReplyBody.setConncetionInterval("01");
+		clientOutWareHouseReplyBody.setConnectionTimeout("02");
 		clientOutWareHouseReplyBody.setDeadlineTime("1");
 		clientOutWareHouseReplyBody.setGunTag(watchDeviceCustom2.getGunTag());
 		clientOutWareHouseReplyBody.setHeartbeat("1");
@@ -139,7 +139,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		clientOutWareHouseReplyBody.setSafeCode("1");
 		clientOutWareHouseReplyBody.setSoftwareversion("1.0");
 		clientOutWareHouseReplyBody.setSystemTime(StringUtil.getDateString());
-		clientOutWareHouseReplyBody.setTransmittingPower("1");
+		clientOutWareHouseReplyBody.setTransmittingPower("03");
 		
 		ClientOutWareHouseReplyMessage clientOutWareHouseReplyMessage = new ClientOutWareHouseReplyMessage();
 		clientOutWareHouseReplyMessage.setMessageBody(clientOutWareHouseReplyBody);

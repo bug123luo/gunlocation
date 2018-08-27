@@ -12,18 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.SessionMessageCache;
-import com.tct.cache.DeviceNoBingingWebUserCache;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
-import com.tct.codec.pojo.ClientHeartBeatReplyBody;
-import com.tct.codec.pojo.ClientHeartBeatReplyMessage;
-import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
-import com.tct.jms.producer.OutQueueSender;
-import com.tct.jms.producer.WebOutQueueSender;
+
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -46,14 +39,32 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
+		boolean flag = false;
 		ClientHeartBeatMessage message = (ClientHeartBeatMessage)msg;
 		
 		if(message.getMessageBody().getBluetoothMac()==null || message.getMessageBody().getBluetoothMac().length()<0) {
 			log.info("心跳报文 参数blueMac为空，请网关检查心跳报文数据是否正常 ");
-			return false;
+			return flag;
 		}
 		
 		//查找枪支的 deviceNo
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+		String sessionToken=message.getSessionToken();
+		String deviceNo=(String)StringUtil.getKey(userOnlineSessionCache, sessionToken);
+		if (deviceNo==null) {
+			log.info("session 中没有对应的 deviceNo 信息");
+			return flag;
+		}
+		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
+		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+		Date date = StringUtil.getDate(message.getSendTime());
+		deviceLocationCustom.setCreateTime(date);
+		deviceLocationCustom.setDeviceNo(deviceNo);
+		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+		deviceLocationCustom.setUpdateTime(date);
+		
+		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
@@ -61,23 +72,21 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
 		if(deviceGunCustom==null) {
-			log.info("There is no record in device gun!");
-			return false;
+			log.info("用户并未绑定枪支出库");
+			deviceLocationCustom.setState(1);
+		}else {
+			deviceLocationCustom.setState(0);
 		}
 		
-		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
-		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
-		GunCustom gunCustom = new GunCustom();
-		Date date = StringUtil.getDate(message.getSendTime());
-		deviceLocationCustom.setCreateTime(date);
-		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
-		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
-		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
-		deviceLocationCustom.setUpdateTime(date);
-		gunCustom.setBluetoothMac(deviceGunCustom.getGunMac());
-		boolean flag=clientHeartBeatDao.updateDeviceLocation(deviceLocationCustom, gunCustom);
+		int i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
 		
-		return false;
+		if(i>0) {
+			flag = true;
+		}else {
+			flag = false;
+		}
+		
+		return flag;
 	}
 
 }

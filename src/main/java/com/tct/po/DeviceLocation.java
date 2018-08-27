@@ -11,6 +11,8 @@ public class DeviceLocation {
 
     private String longitude;
 
+    private Integer state;
+
     private Date createTime;
 
     private Date updateTime;
@@ -47,6 +49,14 @@ public class DeviceLocation {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude == null ? null : longitude.trim();
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     public Date getCreateTime() {

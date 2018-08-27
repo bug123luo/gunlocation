@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,17 +48,20 @@ public class StringUtil {
 		return tString;
 	}
 	
-	public static synchronized Object getKey(Map map, Object value){
+	public static synchronized Object getKey(Map<String,String> map, String value){
+		Object tempobj = null;
 	    Set set = map.entrySet(); //通过entrySet()方法把map中的每个键值对变成对应成Set集合中的一个对象
-	    Iterator<Map.Entry<Object, Object>> iterator = set.iterator();
-	    ArrayList<Object> arrayList = new ArrayList();
+	    Iterator<Map.Entry<String, String>> iterator = set.iterator();
+	    //ArrayList<Object> arrayList = new ArrayList();
 	    while(iterator.hasNext()){
 	        //Map.Entry是一种类型，指向map中的一个键值对组成的对象
-	        Map.Entry<Object, Object> entry = iterator.next();
+	        Map.Entry<String, String> entry = iterator.next();
 	        if(entry.getValue().equals(value)){
-	            arrayList.add(entry.getKey());
+	            //arrayList.add(entry.getKey());
+	        	tempobj = entry.getKey();
 	        }
 	    }
-	    return arrayList;
+	    //return arrayList;
+	    return tempobj;
 	}
 }

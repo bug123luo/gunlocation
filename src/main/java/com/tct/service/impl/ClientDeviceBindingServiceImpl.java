@@ -70,6 +70,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 	
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
+		
+		boolean flag = false;
+		
 		ClientDeviceBindingMessage message = (ClientDeviceBindingMessage)msg;
 		
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
@@ -84,22 +87,23 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			log.info("上传绑定消息在deviceGun中无法找到对应的记录！");
 			return false;
 		}
-			
-		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
-		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
-		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
-		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
-		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
-		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
-		
-		GunCustom gunCustom = new GunCustom();
-		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
-		gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
-		gunCustom.setState(Integer.valueOf(0));
-		gunCustom.setRealTimeState(Integer.valueOf(0));
-		boolean flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
-		
+					
 		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
+			
+			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+			deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+			deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+			deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+			deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+			deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+			
+			GunCustom gunCustom = new GunCustom();
+			gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+			gunCustom.setState(Integer.valueOf(0));
+			gunCustom.setRealTimeState(Integer.valueOf(0));
+			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
+			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
 			ClientDeviceBindingReplyBody clientDeviceBindingReplyBody = new ClientDeviceBindingReplyBody();
@@ -124,19 +128,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
 			
 			outQueueSender.sendMessage(outQueueDestination, bingJson);
-			//将回应APP消息放进消息缓存队列中
-/*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
-			Hashtable<String, Object> tempUnSendReplyMessageMap = null;	
-			if(unSendReplyMessageHashMap.containsKey(toClientQue)) {
-				tempUnSendReplyMessageMap = unSendReplyMessageHashMap.get(toClientQue);
-			}
-			if(tempUnSendReplyMessageMap==null) {
-				tempUnSendReplyMessageMap = new Hashtable<String, Object>();
-			}
-			tempUnSendReplyMessageMap.put(message.getSerialNumber(), bingJson);
-			unSendReplyMessageHashMap.put(toClientQue, tempUnSendReplyMessageMap);*/
-			
-			//将回应消息发送到Web前端队列
+
 			GunCustom gunCustom2 = new GunCustom();
 			GunQueryVo gunQueryVo = new GunQueryVo();
 			gunCustom2.setBluetoothMac(message.getMessageBody().getBluetoothMac());
@@ -165,6 +157,21 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);	
 			flag = true;
 		}else {
+			
+			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+			deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+			deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+			deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+			deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+			deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+			
+			GunCustom gunCustom = new GunCustom();
+			gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			gunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+			gunCustom.setState(Integer.valueOf(1));
+			gunCustom.setRealTimeState(Integer.valueOf(1));
+			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
+			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
 			ClientDeviceBindingReplyBody clientDeviceBindingReplyBody = new ClientDeviceBindingReplyBody();

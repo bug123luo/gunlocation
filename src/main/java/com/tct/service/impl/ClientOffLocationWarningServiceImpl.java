@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.ResourceTransactionManager;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sun.media.jfxmedia.events.NewFrameEvent;
@@ -86,6 +87,10 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 				
+		if (deviceGunCustom==null) {
+			log.info("ClientOffLocationWarning 离位告警消息枪支没有出库");
+			return false;
+		}
 		//插入device_location表，插入sos_message表，更新 gun表状态
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());

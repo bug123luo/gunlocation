@@ -10,4 +10,6 @@ public interface ClientHeartBeatDao {
 	
 	boolean updateDeviceLocation(DeviceLocationCustom deviceLocationCustom,GunCustom gunCustom)throws Exception;
 	
+	int insertDeviceLocation(DeviceLocationCustom deviceLocationCustom) throws Exception;
+	
 }

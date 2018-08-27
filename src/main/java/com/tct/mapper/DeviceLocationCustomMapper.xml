@@ -25,6 +25,9 @@
       <if test="version != null">
         version,
       </if>
+      <if test="state != null">
+      	state,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -47,6 +50,9 @@
       </if>
       <if test="version != null">
         #{version,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+      	#{state,jdbcType=INTEGER},
       </if>
     </trim>
   	</insert>

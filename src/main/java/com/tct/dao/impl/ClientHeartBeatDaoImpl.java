@@ -43,6 +43,11 @@ public class ClientHeartBeatDaoImpl implements ClientHeartBeatDao {
 		return true;
 	}
 
+	@Override
+	public int insertDeviceLocation(DeviceLocationCustom deviceLocationCustom) throws Exception {
+		return deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
+	}
+
 
 
 

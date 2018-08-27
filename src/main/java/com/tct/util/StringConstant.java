@@ -11,7 +11,6 @@
  */
 package com.tct.util;
 
-import org.apache.camel.impl.cloud.StaticServiceDiscoveryFactory;
 
 /**   
  * @ClassName:  StringConstant   
