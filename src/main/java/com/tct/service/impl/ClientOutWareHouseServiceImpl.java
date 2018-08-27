@@ -32,6 +32,10 @@ import com.tct.service.SimpleService;
 import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
+import lombok.extern.slf4j.Slf4j;
+import sun.util.logging.resources.logging;
+
+@Slf4j
 @Service(value="clientOutWareHouseService")
 public class ClientOutWareHouseServiceImpl implements SimpleService {
 
@@ -84,6 +88,13 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		//从手表设备表中查出对应的枪支号码，枪支mac地址，警员编号，密码
 		WatchDeviceCustom watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
 	
+		int countBing = deviceGunCustomMapper.selectCount(watchDeviceCustom2.getGunMac());
+		
+		if(countBing >1) {
+			log.info("枪支已经出库，请先入库再重新出库");
+			return false;
+		}
+		
 		userOnlineSessionCache.put(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
 		
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
