@@ -88,12 +88,14 @@
         <!-- <property name="receiveTimeout" value="30000" /> -->
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
         <property name="pubSubDomain" value="false" />
-        <property name="deliveryMode" value="2"/>
+        <property name="explicitQosEnabled" value="true"/>
     </bean>
 
    	<bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
      	<property name="connectionFactory" ref="connectionFactory" />
    		<property name="pubSubDomain" value="true" />
+   		<property name="deliveryMode" value="2"/>
+   		<property name="explicitQosEnabled" value="true"/>
   	</bean>
 
     <!-- 配置消息队列监听者（Queue） -->

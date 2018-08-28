@@ -45,7 +45,7 @@ public class ClientInWareHouseDaoImpl implements ClientInWareHouseDao {
 			gunCustom.setState(1);
 			gunCustom.setRealTimeState(1);
 			gunCustomMapper.updateSelective(gunCustom);
-			deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
+			//deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

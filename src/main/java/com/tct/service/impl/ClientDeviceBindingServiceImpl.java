@@ -26,6 +26,7 @@ import com.tct.dao.ClientHeartBeatDao;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.jms.producer.WebTopicSender;
+import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -41,6 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="clientDeviceBindingService")
 public class ClientDeviceBindingServiceImpl implements SimpleService {
 
+	@Autowired
+	DeviceGunCustomMapper deviceGunCustomMapper;
+	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
@@ -103,6 +107,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			gunCustom.setState(Integer.valueOf(0));
 			gunCustom.setRealTimeState(Integer.valueOf(0));
 			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
+			
+			deviceGunCustom.setState(Integer.valueOf(0));
+			deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
 			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
@@ -171,6 +178,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			gunCustom.setState(Integer.valueOf(1));
 			gunCustom.setRealTimeState(Integer.valueOf(1));
 			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
+
+			deviceGunCustom.setState(Integer.valueOf(1));
+			deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
 			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();

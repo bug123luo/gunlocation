@@ -16,7 +16,7 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
-
+import com.tct.mapper.GunCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
@@ -36,6 +36,9 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 	
 	@Autowired
 	ClientDeviceBindingDao clientDeviceBindingDao;
+	
+	@Autowired
+	GunCustomMapper gunCustomMapper;
 		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -78,7 +81,30 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			deviceLocationCustom.setState(0);
 		}
 		
+		
+		
 		int i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
+		
+		if (message.getMessageBody().getState().equals("0")) {
+			GunCustom gunCustom = new GunCustom();
+			gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
+			if(Integer.parseInt(message.getMessageBody().getRealTimeState())==1) {
+				log.info("client realTimeState is {}",message.getMessageBody().getRealTimeState());
+				gunCustom.setRealTimeState(0);
+			}else if (Integer.parseInt(message.getMessageBody().getRealTimeState())==0) {
+				log.info("client realTimeState is {}",message.getMessageBody().getRealTimeState());
+				gunCustom.setRealTimeState(1);
+			}else if(Integer.parseInt(message.getMessageBody().getRealTimeState())==2){
+				log.info("client realTimeState is {}",message.getMessageBody().getRealTimeState());
+				gunCustom.setRealTimeState(2);
+			}else {
+				log.info("client realTimeState is {}",message.getMessageBody().getRealTimeState());
+			}
+		
+			int j=gunCustomMapper.updateSelective(gunCustom);
+		}
+		
+
 		
 		if(i>0) {
 			flag = true;
