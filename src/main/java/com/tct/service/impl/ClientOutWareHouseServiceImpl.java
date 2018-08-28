@@ -139,7 +139,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		clientOutWareHouseReplyBody.setSafeCode("1");
 		clientOutWareHouseReplyBody.setSoftwareversion("1.0");
 		clientOutWareHouseReplyBody.setSystemTime(StringUtil.getDateString());
-		clientOutWareHouseReplyBody.setTransmittingPower("03");
+		clientOutWareHouseReplyBody.setTransmittingPower("04");
 		
 		ClientOutWareHouseReplyMessage clientOutWareHouseReplyMessage = new ClientOutWareHouseReplyMessage();
 		clientOutWareHouseReplyMessage.setMessageBody(clientOutWareHouseReplyBody);
