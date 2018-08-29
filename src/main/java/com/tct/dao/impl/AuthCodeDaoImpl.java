@@ -111,6 +111,7 @@ public class AuthCodeDaoImpl implements AuthCodeDao{
 				deviceCustom = new DeviceCustom();
 				BeanUtils.copyProperties(watchDeviceCustom2, deviceCustom);
 				deviceCustom.setId(null);
+				deviceCustom.setState(0);
 				try {
 					deviceCustomMapper.insertSelective(deviceCustom);
 				} catch (Exception e) {

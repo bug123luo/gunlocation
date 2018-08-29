@@ -1,26 +1,18 @@
 package com.tct.service.impl;
 
-
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Resource;
 import javax.jms.Destination;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import com.tct.util.RandomNumber;
 import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
-
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.SessionMessageCache;
-import com.tct.cache.UnSendReplyMessageCache;
-import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
 import com.tct.codec.pojo.AuthCodeReplyBody;
@@ -29,7 +21,6 @@ import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.jms.producer.OutQueueSender;
-import com.tct.mapper.DeviceCustomMapper;
 import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceLocationCustom;
 import com.tct.po.DeviceQueryVo;
