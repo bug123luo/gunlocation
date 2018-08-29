@@ -25,11 +25,11 @@ public class AuthCodeMessageCodec implements MessageCodec{
 		authCodeMessage.setMessageType(json.getString("messageType"));
 		authCodeMessage.setSendTime(json.getString("sendTime"));
 		authCodeMessage.setMessageBody(json.getObject("messageBody", AuthCodeMessageBody.class));
-		double la=Double.parseDouble(authCodeMessage.getMessageBody().getLa());
+/*		double la=Double.parseDouble(authCodeMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(authCodeMessage.getMessageBody().getLo());
 		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
 		authCodeMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
-		authCodeMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
+		authCodeMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		authCodeMessage.setSessionToken(json.getString("sessionToken"));
 		
 		//authCodeMessage.setMessageBody((AuthCodeMessageBody)json.get("messageBody"));

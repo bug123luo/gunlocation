@@ -50,11 +50,11 @@ public class DeviceBulletNumGetReplyMessageCodec implements MessageCodec {
 		deviceBulletNumGetReplyMessage.setMessageType(json.getString("messageType"));
 		deviceBulletNumGetReplyMessage.setSendTime(json.getString("sendTime"));
 		deviceBulletNumGetReplyMessage.setMessageBody(json.getObject("messageBody", DeviceBulletNumGetReplyBody.class));
-		double la=Double.parseDouble(deviceBulletNumGetReplyMessage.getMessageBody().getLa());
+/*		double la=Double.parseDouble(deviceBulletNumGetReplyMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(deviceBulletNumGetReplyMessage.getMessageBody().getLo());
 		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
 		deviceBulletNumGetReplyMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
-		deviceBulletNumGetReplyMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
+		deviceBulletNumGetReplyMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		deviceBulletNumGetReplyMessage.setSessionToken(json.getString("sessionToken"));
 		
 		//authCodeMessage.setMessageBody((AuthCodeMessageBody)json.get("messageBody"));

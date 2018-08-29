@@ -19,11 +19,11 @@ public class ClientOffLocationWarningMessageCodec implements MessageCodec {
 		
 		ClientOffLocationWarningMessage clientOffLocationWarningMessage = new ClientOffLocationWarningMessage();
 		clientOffLocationWarningMessage.setMessageBody(json.getObject("messageBody",ClientOffLocationWarningBody.class));
-		double la=Double.parseDouble(clientOffLocationWarningMessage.getMessageBody().getLa());
+/*		double la=Double.parseDouble(clientOffLocationWarningMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(clientOffLocationWarningMessage.getMessageBody().getLo());
 		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
 		clientOffLocationWarningMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
-		clientOffLocationWarningMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
+		clientOffLocationWarningMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		clientOffLocationWarningMessage.setServiceType(json.getString("serviceType"));
 		clientOffLocationWarningMessage.setFormatVersion(json.getString("formatVersion"));
 		clientOffLocationWarningMessage.setDeviceType(json.getInteger("deviceType"));

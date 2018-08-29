@@ -19,11 +19,11 @@ public class ClientOutWareHouseMessageCodec implements MessageCodec {
 		
 		ClientOutWareHouseMessage clientOutWareHouseMessage = new ClientOutWareHouseMessage();
 		clientOutWareHouseMessage.setMessageBody(json.getObject("messageBody",ClientOutWareHouseBody.class));
-		double la=Double.parseDouble(clientOutWareHouseMessage.getMessageBody().getLa());
+/*		double la=Double.parseDouble(clientOutWareHouseMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(clientOutWareHouseMessage.getMessageBody().getLo());
 		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
 		clientOutWareHouseMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
-		clientOutWareHouseMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
+		clientOutWareHouseMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		clientOutWareHouseMessage.setServiceType(json.getString("serviceType"));
 		clientOutWareHouseMessage.setFormatVersion(json.getString("formatVersion"));
 		clientOutWareHouseMessage.setDeviceType(json.getInteger("deviceType"));

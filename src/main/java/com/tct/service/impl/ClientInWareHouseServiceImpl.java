@@ -93,7 +93,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
 		if (deviceGunCustom==null) {
-			log.info("上传入库消息中，无法在device gun表中找到相应的记录");
+			log.info("枪支未出库，无法在device gun表中找到相应的记录");
 			return false;
 		}
 					
