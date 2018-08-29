@@ -28,7 +28,11 @@ public class ConsumerMessageListener implements MessageListener {
 				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			
 				MessageCodec messageCodec = null;
 				try {
-					log.info(textMessage.getText());
+					//log.info(textMessage.getText());
+					String[] temps=textMessage.getText().split(",");
+					for(String str1:temps) {
+						log.info(str1);
+					}
 					messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
 				} catch (Exception e2) {
 					log.debug(e2+"消息解码器不存在");

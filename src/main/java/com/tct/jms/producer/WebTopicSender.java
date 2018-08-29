@@ -22,6 +22,11 @@ public class WebTopicSender {
 		//设置topic为持久化
 		/*jmsTopicTemplate.setPubSubDomain(true);
 		jmsTopicTemplate.setDeliveryMode(2);*/
+		
+		String[] temps=message.split(",");
+		for(String str1:temps) {
+			log.info(str1);
+		}
 		jmsTopicTemplate.send(destination, new MessageCreator() {
 			
 			@Override

@@ -40,7 +40,11 @@ public class OutQueueSender {
 	//发送消息
 	public void sendMessage(Destination destination,final String message) { 
 		log.info("OutQueue发送消息：");
-		log.info(message);
+		//log.info(message);
+		String[] temps=message.split(",");
+		for(String str1:temps) {
+			log.info(str1);
+		}
 		/*jmsQueueTemplate.setPubSubDomain(false);*/
 		jmsQueueTemplate.send(destination, new MessageCreator() {
 			

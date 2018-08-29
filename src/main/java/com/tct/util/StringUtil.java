@@ -52,6 +52,7 @@ public class StringUtil {
 		Object tempobj = null;
 	    Set set = map.entrySet(); //通过entrySet()方法把map中的每个键值对变成对应成Set集合中的一个对象
 	    Iterator<Map.Entry<String, String>> iterator = set.iterator();
+	    log.info("SessionToken is {}",value);
 	    //ArrayList<Object> arrayList = new ArrayList();
 	    while(iterator.hasNext()){
 	        //Map.Entry是一种类型，指向map中的一个键值对组成的对象

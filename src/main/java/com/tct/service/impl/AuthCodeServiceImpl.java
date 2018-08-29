@@ -92,7 +92,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 			authCodeReplyBody.setHeartbeat("2");
 			authCodeReplyBody.setLo(message.getMessageBody().getLo());
 			authCodeReplyBody.setLa(message.getMessageBody().getLa());
-			authCodeReplyBody.setAuthCode(RandomNumber.getRandomNumber());
+			authCodeReplyBody.setAuthCode(message.getSessionToken());
 			authCodeReplyBody.setDia("2");
 			
 			authCodeReplyMessage.setDeviceType(message.getDeviceType());
