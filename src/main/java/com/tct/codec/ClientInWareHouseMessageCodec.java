@@ -3,6 +3,7 @@ package com.tct.codec;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ClientInWareHouseBody;
 import com.tct.codec.pojo.ClientInWareHouseMessage;
+import com.tct.util.CoordinateConvertUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +19,11 @@ public class ClientInWareHouseMessageCodec implements MessageCodec{
 		
 		ClientInWareHouseMessage clientInWareHouseMessage= new ClientInWareHouseMessage();
 		clientInWareHouseMessage.setMessageBody(json.getObject("messageBody",ClientInWareHouseBody.class));
+		double la=Double.parseDouble(clientInWareHouseMessage.getMessageBody().getLa());
+		double lo=Double.parseDouble(clientInWareHouseMessage.getMessageBody().getLo());
+		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
+		clientInWareHouseMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
+		clientInWareHouseMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
 		clientInWareHouseMessage.setServiceType(json.getString("serviceType"));
 		clientInWareHouseMessage.setFormatVersion(json.getString("formatVersion"));;
 		clientInWareHouseMessage.setDeviceType(json.getInteger("deviceType"));

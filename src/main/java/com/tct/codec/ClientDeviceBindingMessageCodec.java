@@ -3,6 +3,7 @@ package com.tct.codec;
 import com.alibaba.fastjson.JSONObject;
 import com.tct.codec.pojo.ClientDeviceBindingBody;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
+import com.tct.util.CoordinateConvertUtil;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -23,6 +24,11 @@ public class ClientDeviceBindingMessageCodec implements MessageCodec {
 		clientDeviceBindingMessage.setSerialNumber(json.getString("serialNumber"));
 		clientDeviceBindingMessage.setServiceType(json.getString("serviceType"));
 		clientDeviceBindingMessage.setMessageBody(json.getObject("messageBody",ClientDeviceBindingBody.class));
+		double la=Double.parseDouble(clientDeviceBindingMessage.getMessageBody().getLa());
+		double lo=Double.parseDouble(clientDeviceBindingMessage.getMessageBody().getLo());
+		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
+		clientDeviceBindingMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
+		clientDeviceBindingMessage.getMessageBody().setLo(Double.toString(dtemp[1]));
 		clientDeviceBindingMessage.setSessionToken(json.getString("sessionToken"));
 		
 		return clientDeviceBindingMessage;
