@@ -83,7 +83,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
 		ClientInWareHouseMessage message = (ClientInWareHouseMessage)msg;
-		
+		boolean flag=false;
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
 		
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
@@ -97,24 +97,25 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			return false;
 		}
 					
-		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
-		deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
-		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
-		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
-		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
-		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
-		DeviceGunCustom deviceGunCustom2 = new DeviceGunCustom();
-		deviceGunCustom2.setGunMac(message.getMessageBody().getBluetoothMac());
-		deviceGunCustom2.setInWarehouseTime(new Date());
-		deviceGunCustom2.setState(1);
-		DeviceCustom deviceCustom =  new DeviceCustom();
-		deviceCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
-		deviceCustom.setState(1);
-		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
-		deviceQueryVo.setDeviceCustom(deviceCustom);
-		
-		boolean flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2,deviceQueryVo);
 		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
+			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
+			deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+			deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
+			deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+			deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+			deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+			DeviceGunCustom deviceGunCustom2 = new DeviceGunCustom();
+			deviceGunCustom2.setGunMac(message.getMessageBody().getBluetoothMac());
+			deviceGunCustom2.setInWarehouseTime(new Date());
+			deviceGunCustom2.setState(1);
+			DeviceCustom deviceCustom =  new DeviceCustom();
+			deviceCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+			deviceCustom.setState(1);
+			DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+			deviceQueryVo.setDeviceCustom(deviceCustom);
+			
+			flag = clientInWareHouseDao.updateDeviceInWareHouseState(deviceLocationCustom, deviceGunCustom2,deviceQueryVo);
+			
 			ClientInWareHouseReplyMessage clientInWareHouseReplyMessage =  new ClientInWareHouseReplyMessage();
 			ClientInWareHouseReplyBody clientInWareHouseReplyBody = new ClientInWareHouseReplyBody();
 			clientInWareHouseReplyBody.setAuthCode(message.getMessageBody().getAuthCode());
