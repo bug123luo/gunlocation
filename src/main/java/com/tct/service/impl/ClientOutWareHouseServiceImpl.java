@@ -28,7 +28,9 @@ import com.tct.po.GunCustom;
 import com.tct.po.GunQueryVo;
 import com.tct.po.WatchDeviceCustom;
 import com.tct.po.WatchDeviceQueryVo;
+import com.tct.service.BluetoothPara;
 import com.tct.service.SimpleService;
+import com.tct.service.SpringContextUtil;
 import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
@@ -122,24 +124,25 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		gunCustom.setRealTimeState(Integer.valueOf(0));
 		clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 		
-		//
+		//腕带出库的调试消息
+		BluetoothPara bluetoothPara = SpringContextUtil.getBean("bluetoothPara");
 		ClientOutWareHouseReplyBody clientOutWareHouseReplyBody =  new ClientOutWareHouseReplyBody();
 		clientOutWareHouseReplyBody.setApplyTime(StringUtil.getDateString());
 		clientOutWareHouseReplyBody.setBluetoothMac(watchDeviceCustom2.getGunMac());
-		clientOutWareHouseReplyBody.setBroadcastInterval("01");
-		clientOutWareHouseReplyBody.setConncetionInterval("01");
-		clientOutWareHouseReplyBody.setConnectionTimeout("02");
+		clientOutWareHouseReplyBody.setBroadcastInterval(bluetoothPara.getBroadcastInterval());
+		clientOutWareHouseReplyBody.setConncetionInterval(bluetoothPara.getConncetionInterval());
+		clientOutWareHouseReplyBody.setConnectionTimeout(bluetoothPara.getConnectionTimeout());
 		clientOutWareHouseReplyBody.setDeadlineTime("1");
 		clientOutWareHouseReplyBody.setGunTag(watchDeviceCustom2.getGunTag());
-		clientOutWareHouseReplyBody.setHeartbeat("1");
-		clientOutWareHouseReplyBody.setMatchTime("1");
-		clientOutWareHouseReplyBody.setPowerAlarmLevel("1");
-		clientOutWareHouseReplyBody.setPowerSampling("1");
+		clientOutWareHouseReplyBody.setHeartbeat(bluetoothPara.getHeartbeat());
+		clientOutWareHouseReplyBody.setMatchTime(bluetoothPara.getMatchTime());
+		clientOutWareHouseReplyBody.setPowerAlarmLevel(bluetoothPara.getPowerAlarmLevel());
+		clientOutWareHouseReplyBody.setPowerSampling(bluetoothPara.getPowerSampling());
 		clientOutWareHouseReplyBody.setReserve("1");
 		clientOutWareHouseReplyBody.setSafeCode("1");
-		clientOutWareHouseReplyBody.setSoftwareversion("1.0");
+		clientOutWareHouseReplyBody.setSoftwareversion(bluetoothPara.getSoftwareversion());
 		clientOutWareHouseReplyBody.setSystemTime(StringUtil.getDateString());
-		clientOutWareHouseReplyBody.setTransmittingPower("04");
+		clientOutWareHouseReplyBody.setTransmittingPower(bluetoothPara.getTransmittingPower());
 		
 		ClientOutWareHouseReplyMessage clientOutWareHouseReplyMessage = new ClientOutWareHouseReplyMessage();
 		clientOutWareHouseReplyMessage.setMessageBody(clientOutWareHouseReplyBody);
