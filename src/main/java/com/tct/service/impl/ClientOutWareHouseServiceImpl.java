@@ -89,8 +89,19 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 			
 		//从手表设备表中查出对应的枪支号码，枪支mac地址，警员编号，密码
 		WatchDeviceCustom watchDeviceCustom2 = watchDeviceCustomMapper.selectByWatchDeviceQueryVo(watchDeviceQueryVo);
+		
+		if (watchDeviceCustom2==null) {
+			log.info("watch_device 中用户不存在，请先注册");
+			return false;
+		}
 	
-		int countBing = deviceGunCustomMapper.selectCount(watchDeviceCustom2.getGunMac());
+		if(userOnlineSessionCache.get(watchDeviceCustom2.getDeviceNo())==null) {
+			log.info("用户未登陆，请先登录，再出库");
+			return false;
+		}
+		
+		
+		int countBing = deviceGunCustomMapper.selectCount(watchDeviceCustom2);
 		
 		if(countBing >1) {
 			log.info("枪支已经出库，请先入库再重新出库");

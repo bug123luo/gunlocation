@@ -25,10 +25,10 @@
 			</if>.
 		</where>
 	</select>
-	<select id="selectCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+	<select id="selectCount" parameterType="com.tct.po.WatchDeviceCustom" resultType="java.lang.Integer">
 		select count(*) from device_gun
 		<where>
-			<if test="deviceNo!=null and deviceNo!=''">
+			<if test="gunMac!=null and gunMac!=''">
 				gun_mac=#{gunMac} AND state=0
 			</if>
 		</where>
