@@ -100,7 +100,6 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 			return false;
 		}
 		
-		
 		int countBing = deviceGunCustomMapper.selectCount(watchDeviceCustom2);
 		
 		if(countBing >1) {

@@ -22,14 +22,14 @@
 		<where>
 			<if test="deviceGunCustom!=null and deviceGunCustom.deviceNo !=null">
 				device_no=#{deviceGunCustom.deviceNo} AND state=0
-			</if>.
+			</if>
 		</where>
 	</select>
 	<select id="selectCount" parameterType="com.tct.po.WatchDeviceCustom" resultType="java.lang.Integer">
 		select count(*) from device_gun
 		<where>
-			<if test="gunMac!=null and gunMac!=''">
-				gun_mac=#{gunMac} AND state=0
+			<if test="deviceNo!=null and deviceNo !=null">
+				device_no=#{deviceNo} AND state=0
 			</if>
 		</where>
 	</select>

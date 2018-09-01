@@ -107,7 +107,7 @@ public class DeviceBulletNumGetReplyServiceImpl implements SimpleService {
 		String deviceNo= (String) StringUtil.getKey(userOnlineSessionCache, sessionToken);
 		
 		if (deviceNo!=null) {
-			log.info("该用户不是登录用户，不允许发送弹射计数");
+			log.info("该用户不是登录用户，不允许发送弹射计数回应报文消息");
 			return false;
 		}
 		
