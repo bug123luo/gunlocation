@@ -16,6 +16,7 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.GunCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
@@ -39,6 +40,9 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 	
 	@Autowired
 	GunCustomMapper gunCustomMapper;
+	
+	@Autowired
+	DeviceGunCustomMapper deviceGunCustomMapper;
 		
 	@Override
 	public boolean handleCodeMsg(Object msg) throws Exception {
@@ -70,9 +74,9 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
-		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
+		deviceGunCustom.setGunMac(deviceNo);
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
-		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
+		deviceGunCustom= deviceGunCustomMapper.selectByDeviceNo(deviceGunQueryVo);
 		
 		if(deviceGunCustom==null) {
 			log.info("用户并未绑定枪支出库");
@@ -80,8 +84,6 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		}else {
 			deviceLocationCustom.setState(0);
 		}
-		
-		
 		
 		int i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
 		
