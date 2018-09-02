@@ -1,0 +1,39 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/task 
+        http://www.springframework.org/schema/task/spring-task-4.3.xsd">
+
+	<bean id="job1" class="com.tct.timer.TimeOutUserClearTimer"></bean>
+	
+	<!-- 配置定时器详情 -->
+	<bean id="timeDitail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="job1"></property>
+		<property name="targetMethod" value="runClearTimer"></property>
+	</bean>
+	<!-- 定义时间间隔触发器 -->
+	<bean id="timeTigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="timeDitail"></property>
+		<property name="cronExpression" value="0 */1 * * * ?"></property>
+	</bean>
+	<!-- 启动定时器 -->
+	<bean id="startJob" class="">
+		<property name="triggers">
+			<list>
+				<ref bean="timeTigger"/>
+			</list>
+		</property>
+	
+	</bean>
+</beans>

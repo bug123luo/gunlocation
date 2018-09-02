@@ -1,6 +1,5 @@
 package com.tct.cache;
 
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tct.codec.pojo.SimpleMessage;

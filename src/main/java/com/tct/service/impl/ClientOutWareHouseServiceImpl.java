@@ -35,7 +35,6 @@ import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import sun.util.logging.resources.logging;
 
 @Slf4j
 @Service(value="clientOutWareHouseService")

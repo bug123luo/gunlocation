@@ -10,5 +10,7 @@ public interface DeviceLocationCustomMapper {
 	
 	int insertSelective(DeviceLocationCustom deviceLocationCustom) throws Exception;
 	
+	
+	
 	//int updateByPrimaryKeySelective(DeviceLocationCustom deviceLocationCustom) throws Exception;
 }
