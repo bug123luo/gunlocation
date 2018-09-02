@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.tct.cache.OnlineUserLastHBTimeCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.dao.ClientDeviceBindingDao;
@@ -62,6 +63,11 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			log.info("session 中没有对应的 deviceNo 信息");
 			return flag;
 		}
+		
+		//将当前最新的心跳时间放入缓存中
+		ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap =OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
+		onlineUserLastHBTimeMap.put(deviceNo, StringUtil.getDate(message.getSendTime()));
+		
 		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		Date date = StringUtil.getDate(message.getSendTime());
@@ -74,7 +80,7 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
-		deviceGunCustom.setGunMac(deviceNo);
+		deviceGunCustom.setDeviceNo(deviceNo);
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= deviceGunCustomMapper.selectByDeviceNo(deviceGunQueryVo);
 		
