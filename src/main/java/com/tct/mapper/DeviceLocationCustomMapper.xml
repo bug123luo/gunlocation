@@ -58,12 +58,8 @@
   	</insert>
   	
   	<select id="selectByDeviceLocationQueryVo" parameterType="com.tct.po.DeviceLocationQueryVo" resultType="com.tct.po.DeviceLocationCustom">
-  		SELECT MAX(id) id,device_no deviceNo,latitude,longitude,create_time createTime,update_time updateTime,version FROM device_location
-  		<where>
-  			<if test="deviceLocationCustom.deviceNo !=null">
-  				device_no=#{deviceLocationCustom.deviceNo}
-  			</if>
-  		</where>
+		SELECT id,device_no deviceNo,latitude,longitude,create_time createTime,update_time updateTime,VERSION 
+		FROM device_location WHERE id =(SELECT MAX(d2.id) FROM device_location AS d2  WHERE device_no=#{deviceLocationCustom.deviceNo});
   	</select>
   	
 <!--     <update id="updateByPrimaryKeySelective" parameterType="com.tct.po.DeviceLocationCustom">

@@ -23,17 +23,23 @@
 		<property name="targetMethod" value="runClearTimer"></property>
 	</bean>
 	<!-- 定义时间间隔触发器 -->
-	<bean id="timeTigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	<!-- <bean id="timeTigger" class="org.springframework.scheduling.quartz.CronTriggerBean"> -->
+	<bean id="timeTigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="timeDitail"></property>
 		<property name="cronExpression" value="0 */1 * * * ?"></property>
 	</bean>
 	<!-- 启动定时器 -->
-	<bean id="startJob" class="">
+	<bean id="startJob" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="timeTigger"/>
 			</list>
 		</property>
-	
+		<property name="quartzProperties"> 
+			<props>
+			<!-- 主要是这个参数 解除Quartz version update check failed: Server returned HTTP response code: 403错误-->
+			<prop key="org.quartz.scheduler.skipUpdateCheck">true</prop> 
+			</props>
+		</property>
 	</bean>
 </beans>

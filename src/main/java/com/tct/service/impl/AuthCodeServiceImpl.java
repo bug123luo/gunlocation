@@ -1,5 +1,6 @@
 package com.tct.service.impl;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Resource;
 import javax.jms.Destination;
@@ -12,6 +13,7 @@ import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
+import com.tct.cache.OnlineUserLastHBTimeCache;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.AuthCodeMessage;
@@ -48,6 +50,8 @@ public class AuthCodeServiceImpl implements SimpleService{
 		//AuthCodeMessage 中的username目前是警员编号
 		ConcurrentHashMap<String, SimpleMessage> sessionMessageMap= SessionMessageCache.getSessionMessageMessageMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
+		ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap=OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
+
 		//根据用户名查询在线队列的人的名称
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		DeviceCustom deviceCustom =  new DeviceCustom();
@@ -73,6 +77,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 		BeanUtils.copyProperties(message, simpleMessage);
 		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		sessionMessageMap.put(message.getSessionToken(), simpleMessage);
+		onlineUserLastHBTimeMap.put(deviceCustom2.getDeviceNo(), StringUtil.getDate(message.getSendTime()));
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceCustom2.getDeviceNo());
