@@ -65,8 +65,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		}
 		
 		//将当前最新的心跳时间放入缓存中
-		ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap =OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
-		onlineUserLastHBTimeMap.put(deviceNo, StringUtil.getDate(message.getSendTime()));
+		//ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap =OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
+		//onlineUserLastHBTimeMap.put(deviceNo, StringUtil.getDate(message.getSendTime()));
 		
 		//将位置信息插入在device_location表中，在将gun表中小区代码字段更新
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();

@@ -22,7 +22,8 @@ public class ConsumerMessageListener implements MessageListener {
 		if(message instanceof TextMessage) {
 	        TextMessage textMessage = (TextMessage) message;
 
-			log.info("ConsumerMessageListener 接收消息");				
+	        log.info("-------------------------------------------------------------------");
+			log.info("ConsumerMessageListener 接收消息");	
 			if(null !=textMessage) {
 				//编解码器选择器
 				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			
@@ -33,6 +34,7 @@ public class ConsumerMessageListener implements MessageListener {
 					for(String str1:temps) {
 						log.info(str1);
 					}
+			        log.info("-------------------------------------------------------------------");
 					messageCodec = messageCodecSelector.getMessageDecode(textMessage.getText());
 				} catch (Exception e2) {
 					log.debug(e2+"消息解码器不存在");

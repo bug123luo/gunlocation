@@ -17,4 +17,6 @@ public interface DeviceGunCustomMapper {
 	int updateByDeviceGunCustom(DeviceGunCustom deviceGunCustom) throws Exception;
 	
 	int insertSelective(DeviceGunCustom deviceGunCustom) throws Exception;
+	
+	int deleteBydeviceNo(DeviceGunCustom deviceGunCustom) throws Exception;
 }

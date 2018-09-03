@@ -18,6 +18,7 @@ public class WebTopicSender {
 	private JmsTemplate jmsTopicTemplate;
 	
 	public void sendMessage(Destination destination,final String message) {
+		log.info("------------------------------------------------------------");
 		log.info("TopicSender 发送消息："+message);
 		//设置topic为持久化
 		/*jmsTopicTemplate.setPubSubDomain(true);
@@ -27,6 +28,8 @@ public class WebTopicSender {
 		for(String str1:temps) {
 			log.info(str1);
 		}
+		log.info("------------------------------------------------------------");
+
 		jmsTopicTemplate.send(destination, new MessageCreator() {
 			
 			@Override

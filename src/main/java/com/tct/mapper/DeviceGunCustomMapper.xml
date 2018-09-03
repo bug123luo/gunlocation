@@ -137,4 +137,15 @@
       </if>
     </trim>
   </insert>
+  <delete id="deleteBydeviceNo" parameterType="com.tct.po.DeviceGunCustom">
+  	delete from device_gun
+  	<where>
+  		<if test="1==1">
+  			state=0
+  		</if>
+  		<if test="deviceNo!=null and deviceNo!=''">
+  			AND device_no=#{deviceNo}
+  		</if>
+  	</where>
+  </delete>
 </mapper>

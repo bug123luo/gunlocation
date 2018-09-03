@@ -19,6 +19,7 @@ import com.tct.po.DeviceLocationQueryVo;
 import com.tct.po.DeviceQueryVo;
 import com.tct.service.SpringContextUtil;
 import com.tct.service.TimerPara;
+import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import sun.util.logging.resources.logging;
@@ -32,7 +33,7 @@ public class TimeOutUserClearTimer {
 	@Autowired
 	DeviceCustomMapper deviceCustomMapper;
 
-	ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap=OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
+	//ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap=OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
 	ConcurrentHashMap<String, String> userSessionMap=UserOnlineSessionCache.getuserSessionMap();
 	ConcurrentHashMap<String, SimpleMessage> sessionMessageMap=SessionMessageCache.getSessionMessageMessageMap();
 	
@@ -41,7 +42,7 @@ public class TimeOutUserClearTimer {
 		TimerPara timerPara = SpringContextUtil.getBean("timerPara");
 		long clearTime=Long.parseLong(timerPara.getClearTime());
 		
-		for(String deviceNo:onlineUserLastHBTimeMap.keySet()) {
+		for(String deviceNo:userSessionMap.keySet()) {
 			log.info("Map is not empty");
 			DeviceLocationQueryVo deviceLocationQueryVo = new DeviceLocationQueryVo();
 			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
@@ -50,9 +51,11 @@ public class TimeOutUserClearTimer {
 			DeviceLocationCustom deviceLocationCustom2=deviceLocationCustomMapper.selectByDeviceLocationQueryVo(deviceLocationQueryVo);
 			if (deviceLocationCustom2!=null) {
 				log.info("The Timer select deviceLocationCustom2 is not null");
-				Date dold = deviceLocationCustom.getCreateTime();
-				Date dnew = (Date)onlineUserLastHBTimeMap.get(deviceNo);
-				
+				Date dold = deviceLocationCustom2.getCreateTime();
+				//Date dnew = (Date)onlineUserLastHBTimeMap.get(deviceNo);
+				Date dnew = new Date();
+				log.info("old time is {}",dold);
+				log.info("new time is {}",dnew);
 	            long diff = dnew.getTime() - dold.getTime();
 	            long diffSeconds = diff / 1000;
 	            //long diffMinutes = diff / (60 * 1000) % 60;
@@ -62,10 +65,10 @@ public class TimeOutUserClearTimer {
 	            	log.info("The user hb is outTime, user is not online user now");
 	            	userSessionMap.remove(deviceNo);
 	            	sessionMessageMap.remove(deviceNo);
-	            	onlineUserLastHBTimeMap.remove(deviceNo);  	
+	            	//onlineUserLastHBTimeMap.remove(deviceNo);  	
 	            	DeviceCustom deviceCustom = new DeviceCustom();
 	            	deviceCustom.setDeviceNo(deviceNo);
-	            	deviceCustom.setState(2);
+	            	deviceCustom.setState(1);
 	            	DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 	            	deviceQueryVo.setDeviceCustom(deviceCustom);
 	            	deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);

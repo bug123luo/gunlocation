@@ -77,7 +77,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 		BeanUtils.copyProperties(message, simpleMessage);
 		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		sessionMessageMap.put(message.getSessionToken(), simpleMessage);
-		onlineUserLastHBTimeMap.put(deviceCustom2.getDeviceNo(), StringUtil.getDate(message.getSendTime()));
+		//onlineUserLastHBTimeMap.put(deviceCustom2.getDeviceNo(), StringUtil.getDate(message.getSendTime()));
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 		deviceLocationCustom.setDeviceNo(deviceCustom2.getDeviceNo());
