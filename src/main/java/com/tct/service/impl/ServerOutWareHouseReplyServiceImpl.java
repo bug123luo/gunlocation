@@ -29,7 +29,7 @@ public class ServerOutWareHouseReplyServiceImpl implements SimpleService {
 		
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		
-		String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getSessionToken());
+		String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
 		
 		if(deviceNo==null) {
 			log.info("用户未登陆，对接收到04号报文不处理");
@@ -37,9 +37,9 @@ public class ServerOutWareHouseReplyServiceImpl implements SimpleService {
 		}
 		
 		if(message.getMessageBody().getReserve().equals("0")) {
-			DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
+/*			DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 			deviceGunCustom.setDeviceNo(deviceNo);
-			deviceGunCustomMapper.deleteBydeviceNo(deviceGunCustom);
+			deviceGunCustomMapper.deleteBydeviceNo(deviceGunCustom);*/
 		}
 		
 		flag = true;

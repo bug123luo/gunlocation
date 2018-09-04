@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tct.cache.UnSendReplyMessageCache;
+import com.tct.cache.UserOnlineSessionCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
 import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
@@ -80,19 +81,28 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		ClientDeviceBindingMessage message = (ClientDeviceBindingMessage)msg;
 		
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
-		
+		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();					
+
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
-		if(deviceGunCustom ==null) {
-			log.info("上传绑定消息在device_gun中无法找到对应的记录！");
-			return false;
-		}
-					
 		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
+			
+		    //20180904 0724 luochengcong modified 当服务器收到上传绑定消息之后，如果数据库中不存在记录则往数据库中插入数据
+			if(deviceGunCustom==null) {
+				String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
+				deviceGunCustom=new DeviceGunCustom();
+				deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
+				deviceGunCustom.setCreateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+				deviceGunCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+				deviceGunCustom.setDeviceNo(deviceNo);
+				deviceGunCustom.setState(0);
+				deviceGunCustom.setOutWarehouseTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
+				deviceGunCustomMapper.insertSelective(deviceGunCustom);
+			}
 			
 			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
 			deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
@@ -108,8 +118,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			gunCustom.setRealTimeState(Integer.valueOf(0));
 			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 			
-			deviceGunCustom.setState(Integer.valueOf(0));
-			deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
+			//改成由服务器端插入后 20180904 0726 luochengcong 数据库中记录已经插入不需要再修改状态
+			//deviceGunCustom.setState(Integer.valueOf(0));
+			//deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
 			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
@@ -179,8 +190,9 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			gunCustom.setRealTimeState(Integer.valueOf(1));
 			flag = clientDeviceBindingDao.updateDeviceBindingState(deviceLocationCustom, gunCustom);
 
-			deviceGunCustom.setState(Integer.valueOf(1));
-			deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
+			//改成由服务器处理出库消息后，当失败时将不再插入数据，也不修改数据20180904 0727
+			//deviceGunCustom.setState(Integer.valueOf(1));
+			//deviceGunCustomMapper.updateByDeviceGunCustom(deviceGunCustom);
 			
 			//发送返回消息到客户端并且通知web前端绑定成功，枪支出库
 			ClientDeviceBindingReplyMessage clientDeviceBindingReplyMessage = new ClientDeviceBindingReplyMessage();
