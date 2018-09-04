@@ -83,6 +83,14 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();					
 
+		String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
+		if (deviceNo==null) {
+			log.info("User is not login.");
+			return flag;
+		}else {
+			log.info("DeviceBinding deviceNo is {}",deviceNo);
+		}
+		
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
@@ -93,7 +101,6 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 		    //20180904 0724 luochengcong modified 当服务器收到上传绑定消息之后，如果数据库中不存在记录则往数据库中插入数据
 			if(deviceGunCustom==null) {
-				String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
 				deviceGunCustom=new DeviceGunCustom();
 				deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 				deviceGunCustom.setCreateTime(StringUtil.getDate(message.getMessageBody().getBindTime()));
@@ -144,7 +151,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
-			
+			log.info("Device Binding Reply Message send to {}",deviceNo);
 			outQueueSender.sendMessage(outQueueDestination, bingJson);
 
 			GunCustom gunCustom2 = new GunCustom();
@@ -169,6 +176,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
+			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 
@@ -216,7 +224,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 					+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String bingJson = JSONObject.toJSONString(simpleReplyMessage);	
+			String bingJson = JSONObject.toJSONString(simpleReplyMessage);
+			log.info("Device Binding Reply Message send to {}",deviceNo);
 			outQueueSender.sendMessage(outQueueDestination, bingJson);
 	
 			GunCustom gunCustom2 = new GunCustom();
@@ -241,6 +250,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
 
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
+			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);

@@ -185,6 +185,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
+		log.info("Client Out WareHouse Message is send to  {}",deviceGunCustom.getDeviceNo());
 		outQueueSender.sendMessage(outQueueDestination, strJson);
 		
 		GunCustom gunCustom2 = new GunCustom();
@@ -208,7 +209,8 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
 		serverDeviceBindingReplyMessage.setUserName("1");
 		
-		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);	
+		String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
+		log.info("The {} Client Out WareHouse Message is send to WebServer",deviceGunCustom.getDeviceNo());
 		webTopicSender.sendMessage(webtopicDestination, serverbingJson);
 		return true;
 	}

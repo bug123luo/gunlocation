@@ -21,7 +21,7 @@ public class ClientHeartBeatMessageCodec implements MessageCodec {
 		clientHeartBeatMessage.setMessageBody(json.getObject("messageBody",ClientHeartBeatBody.class));
 /*		double la=Double.parseDouble(clientHeartBeatMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(clientHeartBeatMessage.getMessageBody().getLo());
-		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
+		double[] dtemp=CoordinateConvertUtil.gcj2BD09(la,lo);
 		clientHeartBeatMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
 		clientHeartBeatMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		clientHeartBeatMessage.setDeviceType(json.getInteger("deviceType"));

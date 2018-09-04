@@ -139,6 +139,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
+			log.info("Client off location Message send to {}",deviceGunCustom.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, msgJson);
 			
 			ServerOffLocationWarningReplyMessage serverReplyMessage= new ServerOffLocationWarningReplyMessage();
@@ -152,6 +153,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			BeanUtils.copyProperties(message, serverReplyMessage);
 			serverReplyMessage.setMessageBody(serverReplyBody);
 			String serverJson =JSONObject.toJSONString(message);
+			log.info("The {} Client off location Message send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverJson);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverJson);
 			flag = true;			
@@ -177,6 +179,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String msgJson = JSONObject.toJSONString(simpleReplyMessage);
+			log.info("Client off location Message send to {}",deviceGunCustom.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, msgJson);
 			
 			ServerOffLocationWarningReplyMessage serverReplyMessage= new ServerOffLocationWarningReplyMessage();
@@ -190,6 +193,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 			BeanUtils.copyProperties(message, serverReplyMessage);
 			serverReplyMessage.setMessageBody(serverReplyBody);
 			String serverJson =JSONObject.toJSONString(message);
+			log.info("The {} Client off location Message send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverJson);
 		}
 		return false;

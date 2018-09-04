@@ -130,6 +130,7 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		simpleReplyMessage.setMessageBody(replyBody);
 		
 		String searchToClienJson = JSONObject.toJSONString(simpleReplyMessage);
+		log.info("The WebServer off location search message is send to {}",message.getMessageBody().getAssDeviceNo());
 		outQueueSender.sendMessage(outQueueDestination, searchToClienJson);
 
 		

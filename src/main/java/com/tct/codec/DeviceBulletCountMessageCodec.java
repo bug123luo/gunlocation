@@ -21,7 +21,7 @@ public class DeviceBulletCountMessageCodec implements MessageCodec {
 		deviceBulletCountMessage.setMessageBody(json.getObject("messageBody",DeviceBulletCountBody.class));
 /*		double la=Double.parseDouble(deviceBulletCountMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(deviceBulletCountMessage.getMessageBody().getLo());
-		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
+		double[] dtemp=CoordinateConvertUtil.gcj2BD09(la,lo);
 		deviceBulletCountMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
 		deviceBulletCountMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		deviceBulletCountMessage.setServiceType(json.getString("serviceType"));

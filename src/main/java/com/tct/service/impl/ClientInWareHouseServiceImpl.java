@@ -138,7 +138,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 				+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
-			
+			log.info("Client In WareHouse Reply send to {}",deviceGunCustom.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);
 			//将APP回应消息放进消息缓存队列中
 /*			String toClientQue = userOnlineQueueHashMap.get("NettyServer").get("nettySendQue");
@@ -180,6 +180,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 				serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
 			}			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
+			log.info("The {} Client In WareHouse Reply send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 
@@ -208,7 +209,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			
 			simpleReplyMessage.setMessageBody(replyBody);
 			String clientInWareHouseReplyjson = JSONObject.toJSONString(simpleReplyMessage);
-			
+			log.info("Client In WareHouse Reply send to {}",deviceGunCustom.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, clientInWareHouseReplyjson);			
 			//将向服务器的发送消息放在缓存队列中
 			GunCustom gunCustom2 = new GunCustom();
@@ -238,6 +239,7 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			}
 			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
+			log.info("The {} Client In WareHouse Reply send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
 			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);			

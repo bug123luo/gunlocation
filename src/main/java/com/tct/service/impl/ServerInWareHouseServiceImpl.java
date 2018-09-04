@@ -95,6 +95,7 @@ public class ServerInWareHouseServiceImpl implements SimpleService {
 		simpleReplyMessage.setMessageBody(replyBody);
 		//发送到producer处理队列上
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
+		log.info("The WebServer in house message is send to {}",deviceGunCustom.getDeviceNo());
 		outQueueSender.sendMessage(outQueueDestination, strJson);
 		return true;
 	}

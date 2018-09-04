@@ -21,7 +21,7 @@ public class ClientInWareHouseMessageCodec implements MessageCodec{
 		clientInWareHouseMessage.setMessageBody(json.getObject("messageBody",ClientInWareHouseBody.class));
 /*		double la=Double.parseDouble(clientInWareHouseMessage.getMessageBody().getLa());
 		double lo=Double.parseDouble(clientInWareHouseMessage.getMessageBody().getLo());
-		double[] dtemp=CoordinateConvertUtil.wgs2BD09(la,lo);
+		double[] dtemp=CoordinateConvertUtil.gcj2BD09(la,lo);
 		clientInWareHouseMessage.getMessageBody().setLa(Double.toString(dtemp[0]));
 		clientInWareHouseMessage.getMessageBody().setLo(Double.toString(dtemp[1]));*/
 		clientInWareHouseMessage.setServiceType(json.getString("serviceType"));

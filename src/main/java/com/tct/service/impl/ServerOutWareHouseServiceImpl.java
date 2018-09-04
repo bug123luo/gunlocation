@@ -118,6 +118,7 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		
 		
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
+		log.info("The WebServer out WareHouse message is send to {}",deviceGunCustom.getDeviceNo());
 		outQueueSender.sendMessage(outQueueDestination, strJson);
 		return true;
 	}

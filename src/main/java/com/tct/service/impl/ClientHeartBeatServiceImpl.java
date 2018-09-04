@@ -28,6 +28,7 @@ import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import sun.util.logging.resources.logging;
 
 @Slf4j
 @Service(value="clientHeartBeatService")
@@ -62,6 +63,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		if (deviceNo==null) {
 			log.info("session 中没有对应的 deviceNo 信息");
 			return flag;
+		}else {
+			log.info("HB deviceNo is {}",deviceNo);
 		}
 		
 		//将当前最新的心跳时间放入缓存中

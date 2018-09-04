@@ -71,7 +71,12 @@ public class AuthCodeServiceImpl implements SimpleService{
 		if(deviceCustom2==null || deviceCustom2.getDeviceNo()==null) {
 			log.info("用户不存在请重新注册或者在数据库中添加");
 			return false;
+		}else {
+			log.info("login deviceNo is {}",deviceCustom2.getDeviceNo());
 		}
+		deviceCustom2.setCreateTime(StringUtil.getDate(message.getSendTime()));
+		deviceCustom2.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+		authcodeDao.updateDevice(deviceCustom2);
 		
 		SimpleMessage simpleMessage = new SimpleMessage();
 		BeanUtils.copyProperties(message, simpleMessage);
@@ -118,7 +123,8 @@ public class AuthCodeServiceImpl implements SimpleService{
 					+StringConstant.MSG_BODY_SUFFIX;
 			simpleReplyMessage.setMessageBody(replyBody);
 			
-			String authJson = JSONObject.toJSONString(simpleReplyMessage);			
+			String authJson = JSONObject.toJSONString(simpleReplyMessage);
+			log.info("Login Reply Message send to {}",deviceCustom2.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return true;
 		}else {
