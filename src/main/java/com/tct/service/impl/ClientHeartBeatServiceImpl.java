@@ -80,6 +80,17 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setUpdateTime(date);
 		
+		//201809050133 luochengcong 将位置状态信息加上
+		if(message.getMessageBody().getRealTimeState().equals("0")){
+			deviceLocationCustom.setState(1);
+		}else if (message.getMessageBody().getRealTimeState().equals("1")) {
+			deviceLocationCustom.setState(0);
+		}else if (message.getMessageBody().getRealTimeState().equals("2")) {
+			deviceLocationCustom.setState(2);
+		} else {
+
+		}
+		
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();

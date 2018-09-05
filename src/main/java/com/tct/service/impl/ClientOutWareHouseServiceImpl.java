@@ -125,6 +125,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
 		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
+		deviceLocationCustom.setState(0);
 		
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(watchDeviceCustom2.getGunMac());

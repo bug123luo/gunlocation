@@ -98,6 +98,7 @@ public class ClientOffLocationWarningServiceImpl implements SimpleService {
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
 		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
+		deviceLocationCustom.setState(2);//201809050126 luochengcong 修改 发生离位告警信息，将标志设置为2
 		
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());

@@ -85,8 +85,9 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 		deviceLocationCustom.setDeviceNo(deviceNo);
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
+		deviceLocationCustom.setState(0);
 		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getMessageBody().getOccurTime()));
-		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom);
+		deviceLocationQueryVo.setDeviceLocationCustom(deviceLocationCustom);	
 		int i = deviceLocationCustomMapper.insertSelective(deviceLocationCustom);
 		
 		//更新枪支信息表

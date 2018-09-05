@@ -162,7 +162,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
 			ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
-			serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverDeviceBindingBody.setDeviceNo(deviceNo);
 			serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
 			serverDeviceBindingBody.setState(Integer.toString(1));
 			serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
@@ -178,14 +178,14 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
-			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+			deviceNoBingingWebUserCache.remove(deviceNo);
 
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);	
 			flag = true;
 		}else {
 			
 			DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
-			deviceLocationCustom.setDeviceNo(deviceGunCustom.getDeviceNo());
+			deviceLocationCustom.setDeviceNo(deviceNo);
 			deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
 			deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 			deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
@@ -236,7 +236,7 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			
 			ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
 			ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
-			serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
+			serverDeviceBindingBody.setDeviceNo(deviceNo);
 			serverDeviceBindingBody.setGunTag(gunCustom2.getGunTag());
 			serverDeviceBindingBody.setState(Integer.toString(0));
 			serverDeviceBindingReplyMessage.setDeviceType(message.getDeviceType());
@@ -247,12 +247,12 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
-			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceNo));
 
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
-			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+			deviceNoBingingWebUserCache.remove(deviceNo);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 		}
