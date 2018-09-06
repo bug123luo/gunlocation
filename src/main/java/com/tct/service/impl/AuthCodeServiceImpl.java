@@ -89,11 +89,16 @@ public class AuthCodeServiceImpl implements SimpleService{
 		deviceLocationCustom.setLatitude(message.getMessageBody().getLa());
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
-		Boolean tempboolean = authcodeDao.updateDeviceLocation(deviceLocationCustom);
+		if (message.getMessageBody().getLa().equals("0.0") || message.getMessageBody().getLa().equals("0.0")) {
+			
+		} else {
+			Boolean tempboolean = authcodeDao.updateDeviceLocation(deviceLocationCustom);
+		}
+		
 		
 		deviceCustom2.setState(0);
 		boolean flag = authcodeDao.updateDevice(deviceCustom2);
-		if(tempboolean) {
+		/*if(tempboolean) {*/
 			//构造回应消息
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();
 			AuthCodeReplyBody authCodeReplyBody = new AuthCodeReplyBody();
@@ -127,10 +132,10 @@ public class AuthCodeServiceImpl implements SimpleService{
 			log.info("Login Reply Message send to {}",deviceCustom2.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return true;
-		}else {
+/*		}else {
 			log.debug("数据库更新数据失败");
 			return false;
-		}
+		}*/
 		
 	}
 

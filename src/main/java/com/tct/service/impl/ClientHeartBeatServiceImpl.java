@@ -17,11 +17,14 @@ import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
+import com.tct.mapper.DeviceCustomMapper;
 import com.tct.mapper.DeviceGunCustomMapper;
 import com.tct.mapper.GunCustomMapper;
+import com.tct.po.DeviceCustom;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceGunQueryVo;
 import com.tct.po.DeviceLocationCustom;
+import com.tct.po.DeviceQueryVo;
 import com.tct.po.GunCustom;
 import com.tct.service.SimpleService;
 import com.tct.util.StringConstant;
@@ -34,6 +37,9 @@ import sun.util.logging.resources.logging;
 @Service(value="clientHeartBeatService")
 public class ClientHeartBeatServiceImpl implements SimpleService {
 
+	@Autowired
+	DeviceCustomMapper deviceCustomMapper;
+	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
@@ -80,16 +86,26 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		deviceLocationCustom.setLongitude(message.getMessageBody().getLo());
 		deviceLocationCustom.setUpdateTime(date);
 		
+		DeviceCustom deviceCustom = new DeviceCustom();
+		
 		//201809050133 luochengcong 将位置状态信息加上
 		if(message.getMessageBody().getRealTimeState().equals("0")){
 			deviceLocationCustom.setState(1);
+			deviceCustom.setState(1);
 		}else if (message.getMessageBody().getRealTimeState().equals("1")) {
 			deviceLocationCustom.setState(0);
+			deviceCustom.setState(0);
 		}else if (message.getMessageBody().getRealTimeState().equals("2")) {
 			deviceLocationCustom.setState(2);
+			deviceCustom.setState(2);
 		} else {
 
 		}
+		
+		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		deviceCustom.setDeviceNo(deviceNo);
+		deviceQueryVo.setDeviceCustom(deviceCustom);
+		deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
 		
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
@@ -105,7 +121,13 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 			deviceLocationCustom.setState(0);
 		}
 		
-		int i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
+		int i=0;
+		if (deviceLocationCustom.getLatitude().equals("4.9E-324")||
+				deviceLocationCustom.getLongitude().equals("4.9E-324")) {
+			
+		}else {
+			i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
+		}
 		
 		if (message.getMessageBody().getState().equals("0")) {
 			GunCustom gunCustom = new GunCustom();
@@ -125,8 +147,6 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		
 			int j=gunCustomMapper.updateSelective(gunCustom);
 		}
-		
-
 		
 		if(i>0) {
 			flag = true;
