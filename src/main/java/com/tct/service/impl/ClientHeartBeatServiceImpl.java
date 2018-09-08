@@ -129,6 +129,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		
 		if (message.getMessageBody().getState().equals("0")) {
 			GunCustom gunCustom = new GunCustom();
+			int s=Integer.parseInt(message.getMessageBody().getDeviceBatteryPower());
+			gunCustom.setDeviceBatteryPower(String.valueOf(2+s*0.1));
 			gunCustom.setBluetoothMac(message.getMessageBody().getBluetoothMac());
 			if(Integer.parseInt(message.getMessageBody().getRealTimeState())==1) {
 				log.info("client realTimeState is {}",message.getMessageBody().getRealTimeState());

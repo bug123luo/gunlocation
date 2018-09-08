@@ -69,7 +69,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 		}
 		
 		if(deviceCustom2==null || deviceCustom2.getDeviceNo()==null) {
-			log.info("用户不存在请重新注册或者在数据库中添加");
+			log.info("用户不存在请重新注册或者用户名或者密码错误");
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();
 			AuthCodeReplyBody authCodeReplyBody = new AuthCodeReplyBody();
 			
@@ -99,7 +99,6 @@ public class AuthCodeServiceImpl implements SimpleService{
 			simpleReplyMessage.setMessageBody(replyBody);
 			
 			String authJson = JSONObject.toJSONString(simpleReplyMessage);
-			log.info("Login Reply Message send to {}",deviceCustom2.getDeviceNo());
 			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return false;
 		}else {

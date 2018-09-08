@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tct.mapper.GunCustomMapper">
+
+	<sql id="selectColumn">
+		id,
+		web_id webId,
+		gun_tag gunTag,
+		gun_model gunModel,
+		gun_type gunType,
+		bluetooth_mac bluetoothMac,
+		warehouse_name warehouseName,
+		warehouse_id warehouseId,
+		bullet_number bulletNumber,
+		state,
+		device_battery_power deviceBatteryPower,
+		real_time_state realTimeState,
+		create_time createTime,
+		update_time updateTime,
+		version
+	</sql>
 	<update id="updateSelective" parameterType="com.tct.po.GunCustom">
 		update gun
 		<set>
@@ -37,12 +55,15 @@
 			<if test="totalBulletNumber!=null">
 				total_bullet_number=#{totalBulletNumber}
 			</if>
+			<if test="deviceBatteryPower!=null">
+				device_battery_power=#{deviceBatteryPower}
+			</if>
 		</set>
 		where bluetooth_mac=#{bluetoothMac}
 	</update>
 	
 	<select id="selectBybluetoothMac" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
-				select id,web_id webId,gun_tag gunTag,bluetooth_mac bluetoothMac,warehouse_name warehouseName,warehouse_id warehouseId,bullet_number bulletNumber,state,real_time_state realTimeState,create_time createTime,update_time updateTime,version from gun
+				select <include refid="selectColumn"/> from gun
 		<where>
 			<if test="gunCustom!=null and gunCustom.bluetoothMac!=null">
 				bluetooth_mac=#{gunCustom.bluetoothMac}
@@ -51,7 +72,7 @@
 	</select>
 	
 	<select id="selectByGunTag" parameterType="com.tct.po.GunQueryVo" resultType="com.tct.po.GunCustom">
-		select id,web_id webId,gun_tag gunTag,bluetooth_mac bluetoothMac,warehouse_name warehouseName,warehouse_id warehouseId,bullet_number bulletNumber,state,real_time_state realTimeState,create_time createTime,update_time updateTime,version  from gun
+		select <include refid="selectColumn"/>  from gun
 		<where>
 			<if test="gunCustom!=null and gunCustom.gunTag!=null">
 				gun_tag=#{gunCustom.gunTag}

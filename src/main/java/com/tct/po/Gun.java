@@ -11,6 +11,8 @@ public class Gun {
 
     private String gunModel;
 
+    private Integer gunType;
+
     private String bluetoothMac;
 
     private String warehouseName;
@@ -18,6 +20,10 @@ public class Gun {
     private Integer warehouseId;
 
     private Integer bulletNumber;
+
+    private Integer totalBulletNumber;
+
+    private String deviceBatteryPower;
 
     private Integer state;
 
@@ -28,8 +34,6 @@ public class Gun {
     private Date updateTime;
 
     private Integer version;
-
-    private Integer totalBulletNumber;
 
     public Integer getId() {
         return id;
@@ -63,6 +67,14 @@ public class Gun {
         this.gunModel = gunModel == null ? null : gunModel.trim();
     }
 
+    public Integer getGunType() {
+        return gunType;
+    }
+
+    public void setGunType(Integer gunType) {
+        this.gunType = gunType;
+    }
+
     public String getBluetoothMac() {
         return bluetoothMac;
     }
@@ -93,6 +105,22 @@ public class Gun {
 
     public void setBulletNumber(Integer bulletNumber) {
         this.bulletNumber = bulletNumber;
+    }
+
+    public Integer getTotalBulletNumber() {
+        return totalBulletNumber;
+    }
+
+    public void setTotalBulletNumber(Integer totalBulletNumber) {
+        this.totalBulletNumber = totalBulletNumber;
+    }
+
+    public String getDeviceBatteryPower() {
+        return deviceBatteryPower;
+    }
+
+    public void setDeviceBatteryPower(String deviceBatteryPower) {
+        this.deviceBatteryPower = deviceBatteryPower == null ? null : deviceBatteryPower.trim();
     }
 
     public Integer getState() {
@@ -133,13 +161,5 @@ public class Gun {
 
     public void setVersion(Integer version) {
         this.version = version;
-    }
-
-    public Integer getTotalBulletNumber() {
-        return totalBulletNumber;
-    }
-
-    public void setTotalBulletNumber(Integer totalBulletNumber) {
-        this.totalBulletNumber = totalBulletNumber;
     }
 }

@@ -21,6 +21,7 @@ import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
 import com.tct.jms.producer.WebTopicSender;
 import com.tct.mapper.DeviceGunCustomMapper;
+import com.tct.mapper.GunCustomMapper;
 import com.tct.mapper.WatchDeviceCustomMapper;
 import com.tct.po.DeviceGunCustom;
 import com.tct.po.DeviceLocationCustom;
@@ -42,6 +43,9 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 
 	@Autowired
 	AuthCodeDao authcodeDao;
+	
+	@Autowired
+	GunCustomMapper gunCustomMapper;
 	
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
@@ -107,6 +111,16 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		}
 		
 		userOnlineSessionCache.put(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
+		GunQueryVo gunQueryVo = new GunQueryVo();
+		GunCustom gunCustom = new GunCustom();
+		gunCustom.setBluetoothMac(watchDeviceCustom2.getGunMac());
+		gunQueryVo.setGunCustom(gunCustom);
+		GunCustom gunCustom2 = gunCustomMapper.selectBybluetoothMac(gunQueryVo);
+		if(gunCustom2==null) {
+			log.info("枪支表中不存在该枪支");
+			return false;
+		}
+		
 		
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
 		deviceGunCustom.setCreateTime(StringUtil.getDate(message.getSendTime()));
@@ -127,7 +141,6 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		deviceLocationCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
 		deviceLocationCustom.setState(0);
 		
-		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(watchDeviceCustom2.getGunMac());
 		gunCustom.setUpdateTime(StringUtil.getDate(message.getSendTime()));
 		gunCustom.setState(Integer.valueOf(0));
@@ -143,7 +156,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		clientOutWareHouseReplyBody.setConncetionInterval(bluetoothPara.getConncetionInterval());
 		clientOutWareHouseReplyBody.setConnectionTimeout(bluetoothPara.getConnectionTimeout());
 		clientOutWareHouseReplyBody.setDeadlineTime("1");
-		clientOutWareHouseReplyBody.setGunTag(watchDeviceCustom2.getGunTag());
+		clientOutWareHouseReplyBody.setGunTag(gunCustom2.getGunType()+"+"+gunCustom2.getGunModel()+"+"+watchDeviceCustom2.getGunTag());
 		clientOutWareHouseReplyBody.setHeartbeat(bluetoothPara.getHeartbeat());
 		clientOutWareHouseReplyBody.setMatchTime(bluetoothPara.getMatchTime());
 		clientOutWareHouseReplyBody.setPowerAlarmLevel(bluetoothPara.getPowerAlarmLevel());
@@ -168,7 +181,8 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		BeanUtils.copyProperties(clientOutWareHouseReplyMessage, simpleReplyMessage);
 		String replyBody=StringConstant.MSG_BODY_PREFIX+clientOutWareHouseReplyMessage.getMessageBody().getReserve()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getBluetoothMac()
-				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getGunTag()
+				//+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getGunTag()
+				+StringConstant.MSG_BODY_SEPARATOR+gunCustom2.getGunType()+"+"+gunCustom2.getGunModel()+"+"+watchDeviceCustom2.getGunTag()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getApplyTime()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getDeadlineTime()
 				+StringConstant.MSG_BODY_SEPARATOR+clientOutWareHouseReplyMessage.getMessageBody().getPowerAlarmLevel()
@@ -188,13 +202,7 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 		String strJson = JSONObject.toJSONString(simpleReplyMessage);
 		log.info("Client Out WareHouse Message is send to  {}",deviceGunCustom.getDeviceNo());
 		outQueueSender.sendMessage(outQueueDestination, strJson);
-		
-		GunCustom gunCustom2 = new GunCustom();
-		GunQueryVo gunQueryVo = new GunQueryVo();
-		gunCustom2.setBluetoothMac(watchDeviceCustom2.getGunMac());
-		gunQueryVo.setGunCustom(gunCustom2);
-		gunCustom2 = clientDeviceBindingDao.selectBybluetoothMac(gunQueryVo);
-		
+				
 		ServerDeviceBindingReplyMessage serverDeviceBindingReplyMessage = new ServerDeviceBindingReplyMessage();
 		ServerDeviceBindingBody serverDeviceBindingBody =  new ServerDeviceBindingBody();
 		serverDeviceBindingBody.setDeviceNo(deviceGunCustom.getDeviceNo());
