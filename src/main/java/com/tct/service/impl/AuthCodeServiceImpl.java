@@ -70,6 +70,37 @@ public class AuthCodeServiceImpl implements SimpleService{
 		
 		if(deviceCustom2==null || deviceCustom2.getDeviceNo()==null) {
 			log.info("用户不存在请重新注册或者在数据库中添加");
+			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();
+			AuthCodeReplyBody authCodeReplyBody = new AuthCodeReplyBody();
+			
+			authCodeReplyBody.setReserve("1");
+			authCodeReplyBody.setHeartbeat("2");
+			authCodeReplyBody.setLo(message.getMessageBody().getLo());
+			authCodeReplyBody.setLa(message.getMessageBody().getLa());
+			authCodeReplyBody.setAuthCode(message.getSessionToken());
+			authCodeReplyBody.setDia("2");
+			
+			authCodeReplyMessage.setDeviceType(message.getDeviceType());
+			authCodeReplyMessage.setFormatVersion(message.getFormatVersion());
+			authCodeReplyMessage.setMessageType("02");
+			authCodeReplyMessage.setSendTime(message.getSendTime());
+			authCodeReplyMessage.setSerialNumber(message.getSerialNumber());;
+			authCodeReplyMessage.setServiceType(message.getServiceType());
+			authCodeReplyMessage.setMessageBody(authCodeReplyBody);
+			authCodeReplyMessage.setSessionToken(message.getSessionToken());
+							
+			SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
+			BeanUtils.copyProperties(authCodeReplyMessage, simpleReplyMessage);
+			String replyBody = StringConstant.MSG_BODY_PREFIX+authCodeReplyBody.getReserve()
+					+StringConstant.MSG_BODY_SEPARATOR+authCodeReplyBody.getAuthCode()
+					+StringConstant.MSG_BODY_SEPARATOR+StringConstant.IP
+					+StringConstant.MSG_BODY_SEPARATOR+StringConstant.PORT
+					+StringConstant.MSG_BODY_SUFFIX;
+			simpleReplyMessage.setMessageBody(replyBody);
+			
+			String authJson = JSONObject.toJSONString(simpleReplyMessage);
+			log.info("Login Reply Message send to {}",deviceCustom2.getDeviceNo());
+			outQueueSender.sendMessage(outQueueDestination, authJson);
 			return false;
 		}else {
 			log.info("login deviceNo is {}",deviceCustom2.getDeviceNo());
@@ -103,7 +134,7 @@ public class AuthCodeServiceImpl implements SimpleService{
 			AuthCodeReplyMessage authCodeReplyMessage =  new AuthCodeReplyMessage();
 			AuthCodeReplyBody authCodeReplyBody = new AuthCodeReplyBody();
 			
-			authCodeReplyBody.setReserve("1");
+			authCodeReplyBody.setReserve("0");
 			authCodeReplyBody.setHeartbeat("2");
 			authCodeReplyBody.setLo(message.getMessageBody().getLo());
 			authCodeReplyBody.setLa(message.getMessageBody().getLa());

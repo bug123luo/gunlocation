@@ -91,7 +91,7 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//201809050133 luochengcong 将位置状态信息加上
 		if(message.getMessageBody().getRealTimeState().equals("0")){
 			deviceLocationCustom.setState(1);
-			deviceCustom.setState(1);
+			deviceCustom.setState(0);
 		}else if (message.getMessageBody().getRealTimeState().equals("1")) {
 			deviceLocationCustom.setState(0);
 			deviceCustom.setState(0);
@@ -122,10 +122,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		}
 		
 		int i=0;
-		if (deviceLocationCustom.getLatitude().equals("4.9E-324")||
-				deviceLocationCustom.getLongitude().equals("4.9E-324")) {
-			
-		}else {
+		if ((!deviceLocationCustom.getLatitude().equals("4.9E-324"))||
+				(!deviceLocationCustom.getLongitude().equals("4.9E-324"))) {
 			i=clientHeartBeatDao.insertDeviceLocation(deviceLocationCustom);
 		}
 		
