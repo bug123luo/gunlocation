@@ -91,21 +91,22 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//201809050133 luochengcong 将位置状态信息加上
 		if(message.getMessageBody().getRealTimeState().equals("0")){
 			deviceLocationCustom.setState(1);
-			deviceCustom.setState(0);
+			//deviceCustom.setState(0); 201809091649 不修改device状态
 		}else if (message.getMessageBody().getRealTimeState().equals("1")) {
 			deviceLocationCustom.setState(0);
-			deviceCustom.setState(0);
+			//deviceCustom.setState(0); 201809091649 不修改device状态
 		}else if (message.getMessageBody().getRealTimeState().equals("2")) {
 			deviceLocationCustom.setState(2);
-			deviceCustom.setState(2);
+			//deviceCustom.setState(2);201809091649 不修改device状态
 		} else {
 
 		}
 		
-		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
+		//201809091649 不修改device状态
+/*		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		deviceCustom.setDeviceNo(deviceNo);
 		deviceQueryVo.setDeviceCustom(deviceCustom);
-		deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);
+		deviceCustomMapper.updateByDeviceQueryVo(deviceQueryVo);*/
 		
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();

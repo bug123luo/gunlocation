@@ -23,7 +23,14 @@ public class ConsumerMessageListener implements MessageListener {
 	        TextMessage textMessage = (TextMessage) message;
 
 	        log.info("-------------------------------------------------------------------");
-			log.info("ConsumerMessageListener 接收消息");	
+			log.info("ConsumerMessageListener 接收消息");
+			try {
+				log.info(textMessage.getText());
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			if(null !=textMessage) {
 				//编解码器选择器
 				MessageCodecSelector messageCodecSelector = new MessageCodecSelector();			

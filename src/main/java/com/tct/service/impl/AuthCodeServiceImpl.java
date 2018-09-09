@@ -52,6 +52,11 @@ public class AuthCodeServiceImpl implements SimpleService{
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		ConcurrentHashMap<String, Date> onlineUserLastHBTimeMap=OnlineUserLastHBTimeCache.getOnlineUserLastHBTimeMap();
 
+		if (message.getMessageBody().getUsername()==null||message.getMessageBody().getCommand()==null) {
+			log.info("用户名或者密码是空值");
+			return false;
+		}
+		
 		//根据用户名查询在线队列的人的名称
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		DeviceCustom deviceCustom =  new DeviceCustom();
