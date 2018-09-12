@@ -111,9 +111,10 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//查找用户是否绑定枪支出库
 		DeviceGunQueryVo deviceGunQueryVo =  new DeviceGunQueryVo();
 		DeviceGunCustom deviceGunCustom = new DeviceGunCustom();
-		deviceGunCustom.setDeviceNo(deviceNo);
+		//deviceGunCustom.setDeviceNo(deviceNo);
+		deviceGunCustom.setGunMac(message.getMessageBody().getBluetoothMac());
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
-		deviceGunCustom= deviceGunCustomMapper.selectByDeviceNo(deviceGunQueryVo);
+		deviceGunCustom= deviceGunCustomMapper.selectByDeviceGunQueryVo(deviceGunQueryVo);
 		
 		if(deviceGunCustom==null) {
 			log.info("用户并未绑定枪支出库");
