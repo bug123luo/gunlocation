@@ -41,6 +41,8 @@
 		<property name="timeout" value="${redis.expiration}" />
 		<!-- 是否使用连接池. -->
 		<property name="usePool" value="true" />
+		<!-- 访问制定的数据库 -->
+		<property name="database" value="${redis.dbIndex}"/>
 	</bean>
 	
 		<!-- Spring提供的访问Redis类. -->
