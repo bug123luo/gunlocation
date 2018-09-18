@@ -1,6 +1,14 @@
 package com.tct.codec.pojo;
 
-public class SimpleMessage {
+import java.io.Serializable;
+
+public class SimpleMessage implements Serializable{
+	
+
+	/**   
+	 * @Fields serialVersionUID : TODO(用一句话描述这个变量表示什么)   
+	 */ 
+	private static final long serialVersionUID = 4110618336925236368L;
 	
 	private String serviceType;
 	private String formatVersion;
