@@ -7,6 +7,7 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.tct.util.RandomNumber;
 import com.tct.util.StringConstant;
@@ -28,9 +29,13 @@ import com.tct.po.DeviceLocationCustom;
 import com.tct.po.DeviceQueryVo;
 import com.tct.service.SimpleService;
 
+
 @Slf4j
 @Service(value="authCodeService")
 public class AuthCodeServiceImpl implements SimpleService{
+	
+	@Autowired
+	private StringRedisTemplate redisTemplate;
 	
 	@Autowired
 	AuthCodeDao authcodeDao;
@@ -115,7 +120,8 @@ public class AuthCodeServiceImpl implements SimpleService{
 		
 		SimpleMessage simpleMessage = new SimpleMessage();
 		BeanUtils.copyProperties(message, simpleMessage);
-		userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
+		redisTemplate.opsForValue().set(deviceCustom2.getDeviceNo(), message.getSessionToken());
+		//userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		sessionMessageMap.put(message.getSessionToken(), simpleMessage);
 		//onlineUserLastHBTimeMap.put(deviceCustom2.getDeviceNo(), StringUtil.getDate(message.getSendTime()));
 		

@@ -10,6 +10,7 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +44,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="clientDeviceBindingService")
 public class ClientDeviceBindingServiceImpl implements SimpleService {
 
+	@Autowired
+	private StringRedisTemplate redisTemplate;
+	
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
 	
