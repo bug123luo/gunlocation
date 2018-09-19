@@ -9,9 +9,12 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
@@ -40,6 +43,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="serverOffLocationSearchService")
 public class ServerOffLocationSearchServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	GunCustomMapper gunCustomMapper;
 	
@@ -76,8 +87,9 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		gunCustom.setGunTag(message.getMessageBody().getLostGunTag());
 		gunQueryVo.setGunCustom(gunCustom);
 		gunCustom=gunCustomMapper.selectByGunTag(gunQueryVo);
-				
-		String sessionToken = userOnlineSessionCache.get(message.getMessageBody().getAssDeviceNo());
+		
+		//String sessionToken = userOnlineSessionCache.get(message.getMessageBody().getAssDeviceNo());
+		String sessionToken = stringRedisTemplate.opsForValue().get(message.getMessageBody().getAssDeviceNo());
 		if(sessionToken==null) {
 			log.info("协助查找人员不在线，请另找高明");
 			return false;
@@ -110,7 +122,8 @@ public class ServerOffLocationSearchServiceImpl implements SimpleService {
 		serverOffLocationSearchToClientMessage.setServiceType(message.getServiceType());
 		serverOffLocationSearchToClientMessage.setSessionToken(sessionToken);
 		
-		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		//SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		SimpleMessage simpleMessage = (SimpleMessage)jedisTemplate.opsForHash().get(StringConstant.SESSION_MESSAGE_HASH, sessionToken);
 		
 		//修改为[]格式返回到客户端
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();

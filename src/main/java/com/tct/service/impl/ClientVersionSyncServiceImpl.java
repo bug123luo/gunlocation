@@ -9,15 +9,18 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientVersionSyncMessage;
 import com.tct.codec.pojo.ClientVersionSyncReplyBody;
 import com.tct.codec.pojo.ClientVersionSyncReplyMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
@@ -37,6 +40,10 @@ import com.tct.util.StringUtil;
 @Service(value="clientVersionSyncService")
 public class ClientVersionSyncServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	SoftwareVersionCustomMapper softwareVersionCustomMapper;
 	
@@ -74,7 +81,8 @@ public class ClientVersionSyncServiceImpl implements SimpleService {
 		softwareVersionQueryVo.setSoftwareVersionCustom(softwareVersionCustom);
 		softwareVersionCustom=softwareVersionCustomMapper.selectBySoftwareVersionQueryVo(softwareVersionQueryVo);
 		
-		String deviceNo= userOnlineSessionCache.get(message.getSessionToken());
+		//String deviceNo= (String) StringUtil.getKey(userOnlineSessionCache, message.getSessionToken());
+		String deviceNo= (String)jedisTemplate.opsForHash().get(StringConstant.SESSION_DEVICE_HASH, message.getSessionToken());
 		DeviceQueryVo deviceQueryVo = new DeviceQueryVo();
 		DeviceCustom deviceCustom = new DeviceCustom();
 		deviceCustom.setDeviceNo(deviceNo);

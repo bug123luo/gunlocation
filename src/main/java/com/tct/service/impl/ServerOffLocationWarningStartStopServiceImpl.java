@@ -9,8 +9,11 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
@@ -33,6 +36,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="serverOffLocationWarningStartStopService")
 public class ServerOffLocationWarningStartStopServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
@@ -65,7 +76,8 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
-		String sessionToken=userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
+		//String sessionToken=userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
+		String sessionToken=stringRedisTemplate.opsForValue().get(deviceGunCustom.getDeviceNo());
 		
 		if(sessionToken==null) {
 			log.info("该用户不在线，无法发送查找启停命令");
@@ -74,7 +86,8 @@ public class ServerOffLocationWarningStartStopServiceImpl implements SimpleServi
 		
 		message.setSessionToken(sessionToken);
 				
-		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		//SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		SimpleMessage simpleMessage =(SimpleMessage)jedisTemplate.opsForHash().get(StringConstant.SESSION_MESSAGE_HASH, sessionToken);
 
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);

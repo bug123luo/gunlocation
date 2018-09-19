@@ -9,14 +9,17 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.DeviceBulletCountMessage;
 import com.tct.codec.pojo.DeviceBulletCountReplyBody;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.jms.producer.OutQueueSender;
 import com.tct.jms.producer.WebOutQueueSender;
@@ -40,6 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="deviceBulletCountService")
 public class DeviceBulletCountServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	GunCustomMapper gunCustomMapper;
 	
@@ -72,7 +79,8 @@ public class DeviceBulletCountServiceImpl implements SimpleService {
 		
 		String sessionToken = message.getSessionToken();
 		
-		String deviceNo= (String) StringUtil.getKey(userOnlineSessionCache, sessionToken);
+		//String deviceNo= (String) StringUtil.getKey(userOnlineSessionCache, sessionToken);
+		String deviceNo= (String)jedisTemplate.opsForHash().get(StringConstant.SESSION_DEVICE_HASH, sessionToken);
 		
 		if (deviceNo!=null) {
 			log.info("该用户不是登录用户，不允许发送弹射计数");

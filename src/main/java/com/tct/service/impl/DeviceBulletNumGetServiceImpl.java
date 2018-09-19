@@ -20,9 +20,12 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
@@ -53,6 +56,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="deviceBulletNumGetService")
 public class DeviceBulletNumGetServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
@@ -103,9 +114,12 @@ public class DeviceBulletNumGetServiceImpl implements SimpleService {
 			return false;
 		}
 		
-		String sessionToken = userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
-				
-		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		String sessionToken = stringRedisTemplate.opsForValue().get(deviceGunCustom.getDeviceNo());
+		//String sessionToken = userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
+		
+		SimpleMessage simpleMessage = (SimpleMessage)jedisTemplate.opsForHash().get(StringConstant.SESSION_MESSAGE_HASH, sessionToken);
+		
+		//SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);

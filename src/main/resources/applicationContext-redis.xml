@@ -46,17 +46,31 @@
 	</bean>
 	
 		<!-- Spring提供的访问Redis类. -->
-	<bean id="jedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+<!-- 	<bean id="jedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
 		<property name="keySerializer">
 			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
 		</property>
 		<property name="valueSerializer">
 			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
-			<!-- <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" /> -->
+			<bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" />
+		</property>
+	</bean> -->
+
+	<bean id="jedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="keySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="hashKeySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="">
+			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
 		</property>
 	</bean>
-
-	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" p:connection-factory-ref="jedisConnectionFactory"/>
+	
+	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" 
+		p:connection-factory-ref="jedisConnectionFactory" />
 
 </beans>

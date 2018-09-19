@@ -6,14 +6,18 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientOutWareHouseMessage;
 import com.tct.codec.pojo.ClientOutWareHouseReplyBody;
 import com.tct.codec.pojo.ClientOutWareHouseReplyMessage;
 import com.tct.codec.pojo.ServerDeviceBindingBody;
 import com.tct.codec.pojo.ServerDeviceBindingReplyMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.AuthCodeDao;
 import com.tct.dao.ClientDeviceBindingDao;
@@ -41,6 +45,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="clientOutWareHouseService")
 public class ClientOutWareHouseServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	AuthCodeDao authcodeDao;
 	
@@ -98,7 +110,9 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 			return false;
 		}
 	
-		if(userOnlineSessionCache.get(watchDeviceCustom2.getDeviceNo())==null) {
+		//if(userOnlineSessionCache.get(watchDeviceCustom2.getDeviceNo())==null) {
+		
+		if(stringRedisTemplate.opsForValue().get(watchDeviceCustom2.getDeviceNo())==null) {
 			log.info("用户未登陆，请先登录，再出库");
 			return false;
 		}
@@ -110,7 +124,9 @@ public class ClientOutWareHouseServiceImpl implements SimpleService {
 			return false;
 		}
 		
-		userOnlineSessionCache.put(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
+		//userOnlineSessionCache.put(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
+		stringRedisTemplate.opsForValue().set(watchDeviceCustom2.getDeviceNo(), message.getSessionToken());
+		jedisTemplate.opsForHash().put(StringConstant.SESSION_DEVICE_HASH, message.getSessionToken(), watchDeviceCustom2.getDeviceNo());
 		GunQueryVo gunQueryVo = new GunQueryVo();
 		GunCustom gunCustom = new GunCustom();
 		gunCustom.setBluetoothMac(watchDeviceCustom2.getGunMac());

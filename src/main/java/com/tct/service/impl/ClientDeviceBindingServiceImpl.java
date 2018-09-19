@@ -10,11 +10,12 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tct.cache.UnSendReplyMessageCache;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.codec.pojo.ClientDeviceBindingMessage;
@@ -22,6 +23,7 @@ import com.tct.codec.pojo.ClientDeviceBindingReplyBody;
 import com.tct.codec.pojo.ClientDeviceBindingReplyMessage;
 import com.tct.codec.pojo.ServerDeviceBindingBody;
 import com.tct.codec.pojo.ServerDeviceBindingReplyMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.codec.pojo.SimpleReplyMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
@@ -45,7 +47,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientDeviceBindingServiceImpl implements SimpleService {
 
 	@Autowired
-	private StringRedisTemplate redisTemplate;
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
 	
 	@Autowired
 	DeviceGunCustomMapper deviceGunCustomMapper;
@@ -87,7 +94,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();					
 
-		String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
+		//String deviceNo = (String)StringUtil.getKey(userOnlineSessionCache, message.getMessageBody().getAuthCode());
+		String deviceNo = (String)jedisTemplate.opsForHash().get(StringConstant.SESSION_DEVICE_HASH, message.getMessageBody().getAuthCode());
 		if (deviceNo==null) {
 			log.info("User is not login.");
 			return flag;
@@ -101,6 +109,8 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 		deviceGunQueryVo.setDeviceGunCustom(deviceGunCustom);
 		deviceGunCustom= clientHeartBeatDao.selectDeviceNoByDeviceGunQueryVo(deviceGunQueryVo);
 		
+		String webUserName=(String)jedisTemplate.opsForHash().get(StringConstant.DEVICE_WEB_BINDINGHASH, deviceNo);
+
 		if (Integer.parseInt(message.getMessageBody().getReserve())==1) {
 			
 		    //20180904 0724 luochengcong modified 当服务器收到上传绑定消息之后，如果数据库中不存在记录则往数据库中插入数据
@@ -177,13 +187,14 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
-			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			//serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			serverDeviceBindingReplyMessage.setUserName(webUserName);
 			
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
-			deviceNoBingingWebUserCache.remove(deviceNo);
-
+			//deviceNoBingingWebUserCache.remove(deviceNo);
+			jedisTemplate.opsForHash().delete(StringConstant.DEVICE_WEB_BINDINGHASH, deviceNo);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);	
 			flag = true;
 		}else {
@@ -251,12 +262,14 @@ public class ClientDeviceBindingServiceImpl implements SimpleService {
 			serverDeviceBindingReplyMessage.setSerialNumber(message.getSerialNumber());
 			serverDeviceBindingReplyMessage.setServiceType(message.getServiceType());
 			serverDeviceBindingReplyMessage.setSessionToken(message.getSessionToken());
-			serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceNo));
+			//serverDeviceBindingReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			serverDeviceBindingReplyMessage.setUserName(webUserName);
 
 			String serverbingJson = JSONObject.toJSONString(serverDeviceBindingReplyMessage);
 			log.info("The {} Device Binding Reply Message send to WebServer",deviceNo);
 			webTopicSender.sendMessage(webtopicDestination, serverbingJson);
-			deviceNoBingingWebUserCache.remove(deviceNo);
+			//deviceNoBingingWebUserCache.remove(deviceNo);
+			jedisTemplate.opsForHash().delete(StringConstant.DEVICE_WEB_BINDINGHASH, deviceNo);
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverbingJson);
 			
 		}

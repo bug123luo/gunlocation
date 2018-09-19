@@ -9,10 +9,12 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tct.cache.UnSendReplyMessageCache;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
 import com.tct.cache.UserOnlineSessionCache;
@@ -33,7 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service(value="serverOutWareHouseService")
 public class ServerOutWareHouseServiceImpl implements SimpleService {
-		
+
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	ServerOutWareHouseDao serverOutWareHouseDao;
 	
@@ -60,7 +70,8 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		ConcurrentHashMap<String, String> deviceNoBingingWebUserCache = DeviceNoBingingWebUserCache.getDeviceNoWebUserHashMap();
 		
 		//将要出库的设备编号和web用户绑定
-		deviceNoBingingWebUserCache.put(message.getMessageBody().getDeviceNo(), message.getUserName());
+		//deviceNoBingingWebUserCache.put(message.getMessageBody().getDeviceNo(), message.getUserName());
+		jedisTemplate.opsForHash().put(StringConstant.DEVICE_WEB_BINDINGHASH, message.getMessageBody().getDeviceNo(), message.getUserName());
 		
 		//获取需要通知的终端的 deviceNo信息
 		DeviceGunQueryVo deviceGunQueryVo = new DeviceGunQueryVo();
@@ -81,7 +92,8 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 			return false;
 		}
 		
-		String sessionToken = userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
+		//String sessionToken = userOnlineSessionCache.get(deviceGunCustom.getDeviceNo());
+		String sessionToken = stringRedisTemplate.opsForValue().get(deviceGunCustom.getDeviceNo());
 		if(sessionToken == null) {
 			log.info("申请人员不在线，请选择另外一个人来发送");
 			return false;
@@ -92,7 +104,8 @@ public class ServerOutWareHouseServiceImpl implements SimpleService {
 		
 		SimpleReplyMessage simpleReplyMessage = new SimpleReplyMessage();
 		//BeanUtils.copyProperties(message, simpleReplyMessage);
-		SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		//SimpleMessage simpleMessage = sessionMessageMap.get(sessionToken);
+		SimpleMessage simpleMessage = (SimpleMessage)jedisTemplate.opsForHash().get(StringConstant.SESSION_MESSAGE_HASH, sessionToken);
 		BeanUtils.copyProperties(simpleMessage, simpleReplyMessage);
 		simpleReplyMessage.setSerialNumber(message.getSerialNumber());
 		simpleReplyMessage.setSendTime(message.getSendTime());

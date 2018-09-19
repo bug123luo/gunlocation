@@ -11,6 +11,7 @@
  */
 package com.tct.util;
 
+import javax.print.DocFlavor.STRING;
 
 /**   
  * @ClassName:  StringConstant   
@@ -27,4 +28,7 @@ public class StringConstant {
 	public static final String MSG_BODY_SEPARATOR=";";
 	public static final String IP="120.76.156.120";
 	public static final String PORT="9876";
+	public static final String SESSION_MESSAGE_HASH="sessionMessageHash";
+	public static final String DEVICE_WEB_BINDINGHASH="deviceBingingWebHash";
+	public static final String SESSION_DEVICE_HASH="sessionDeviceHash";
 }

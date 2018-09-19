@@ -10,11 +10,14 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.OnlineUserLastHBTimeCache;
 import com.tct.cache.UserOnlineSessionCache;
 import com.tct.codec.pojo.ClientHeartBeatMessage;
+import com.tct.codec.pojo.SimpleMessage;
 import com.tct.dao.ClientDeviceBindingDao;
 import com.tct.dao.ClientHeartBeatDao;
 import com.tct.mapper.DeviceCustomMapper;
@@ -37,6 +40,10 @@ import sun.util.logging.resources.logging;
 @Service(value="clientHeartBeatService")
 public class ClientHeartBeatServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	DeviceCustomMapper deviceCustomMapper;
 	
@@ -65,7 +72,8 @@ public class ClientHeartBeatServiceImpl implements SimpleService {
 		//查找枪支的 deviceNo
 		ConcurrentHashMap<String, String> userOnlineSessionCache = UserOnlineSessionCache.getuserSessionMap();
 		String sessionToken=message.getSessionToken();
-		String deviceNo=(String)StringUtil.getKey(userOnlineSessionCache, sessionToken);
+		//String deviceNo=(String)StringUtil.getKey(userOnlineSessionCache, sessionToken);
+		String deviceNo= (String)jedisTemplate.opsForHash().get(StringConstant.SESSION_DEVICE_HASH, sessionToken);
 		if (deviceNo==null) {
 			log.info("session 中没有对应的 deviceNo 信息");
 			return flag;

@@ -7,6 +7,7 @@ import javax.jms.Destination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.tct.util.RandomNumber;
@@ -14,6 +15,7 @@ import com.tct.util.StringConstant;
 import com.tct.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.OnlineUserLastHBTimeCache;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.UserOnlineSessionCache;
@@ -35,7 +37,12 @@ import com.tct.service.SimpleService;
 public class AuthCodeServiceImpl implements SimpleService{
 	
 	@Autowired
-	private StringRedisTemplate redisTemplate;
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
 	
 	@Autowired
 	AuthCodeDao authcodeDao;
@@ -120,9 +127,11 @@ public class AuthCodeServiceImpl implements SimpleService{
 		
 		SimpleMessage simpleMessage = new SimpleMessage();
 		BeanUtils.copyProperties(message, simpleMessage);
-		redisTemplate.opsForValue().set(deviceCustom2.getDeviceNo(), message.getSessionToken());
 		//userOnlineSessionCache.put(deviceCustom2.getDeviceNo(), message.getSessionToken());
-		sessionMessageMap.put(message.getSessionToken(), simpleMessage);
+		stringRedisTemplate.opsForValue().set(deviceCustom2.getDeviceNo(), message.getSessionToken());
+		//sessionMessageMap.put(message.getSessionToken(), simpleMessage);
+		jedisTemplate.opsForHash().put(StringConstant.SESSION_DEVICE_HASH, message.getSessionToken(), deviceCustom2.getDeviceNo());
+		jedisTemplate.opsForHash().put(StringConstant.SESSION_MESSAGE_HASH, message.getSessionToken(), simpleMessage);
 		//onlineUserLastHBTimeMap.put(deviceCustom2.getDeviceNo(), StringUtil.getDate(message.getSendTime()));
 		
 		DeviceLocationCustom deviceLocationCustom = new DeviceLocationCustom();
