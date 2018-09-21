@@ -12,9 +12,12 @@ import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange.Map;
 import com.tct.cache.UnSendReplyMessageCache;
 import com.tct.cache.SessionMessageCache;
 import com.tct.cache.DeviceNoBingingWebUserCache;
@@ -50,6 +53,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service(value="clientInWareHouseService")
 public class ClientInWareHouseServiceImpl implements SimpleService {
 
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	private StringRedisTemplate stringRedisTemplate;
+	
+	@Autowired
+	@Qualifier("jedisTemplate")
+	private RedisTemplate<String,Map<String, ?>> jedisTemplate;
+	
 	@Autowired
 	ClientHeartBeatDao clientHeartBeatDao;
 	
@@ -175,16 +186,23 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
+/*			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
 				serverInWareHouseReplyMessage.setUserName("1");
 			}else {
 				serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
-			}			
+			}	*/
+			//String webUser=deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo());
+			String webUser=(String)jedisTemplate.opsForHash().get(StringConstant.DEVICE_WEB_BINDINGHASH, deviceGunCustom.getDeviceNo());
+			if(webUser==null){
+				serverInWareHouseReplyMessage.setUserName("1");
+			}else {
+				serverInWareHouseReplyMessage.setUserName(webUser);
+			}
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			log.info("The {} Client In WareHouse Reply send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
-			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
-
+			//deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+			jedisTemplate.opsForHash().delete(StringConstant.DEVICE_WEB_BINDINGHASH, deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);
 			flag = true;
 		}else {
@@ -233,16 +251,23 @@ public class ClientInWareHouseServiceImpl implements SimpleService {
 			serverInWareHouseReplyMessage.setServiceType(message.getServiceType());
 			serverInWareHouseReplyMessage.setMessageBody(serverInWareHouseReplyBody);
 			serverInWareHouseReplyMessage.setSessionToken(message.getSessionToken());
-			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
+/*			if(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo())==null){
 				serverInWareHouseReplyMessage.setUserName("1");
 			}else {
 				serverInWareHouseReplyMessage.setUserName(deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo()));
+			}*/
+			//String webUser=deviceNoBingingWebUserCache.get(deviceGunCustom.getDeviceNo());
+			String webUser=(String)jedisTemplate.opsForHash().get(StringConstant.DEVICE_WEB_BINDINGHASH, deviceGunCustom.getDeviceNo());
+			if(webUser==null){
+				serverInWareHouseReplyMessage.setUserName("1");
+			}else {
+				serverInWareHouseReplyMessage.setUserName(webUser);
 			}
-			
 			String serverInWareReplyJson = JSONObject.toJSONString(serverInWareHouseReplyMessage);
 			log.info("The {} Client In WareHouse Reply send to WebServer",deviceGunCustom.getDeviceNo());
 			webTopicSender.sendMessage(webtopicDestination, serverInWareReplyJson);
-			deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+			//deviceNoBingingWebUserCache.remove(deviceGunCustom.getDeviceNo());
+			jedisTemplate.opsForHash().delete(StringConstant.DEVICE_WEB_BINDINGHASH, deviceGunCustom.getDeviceNo());
 			//webOutQueueSender.sendMessage(webOutQueueDestination, serverInWareReplyJson);			
 			flag = true;
 		}
